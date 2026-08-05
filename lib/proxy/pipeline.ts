@@ -1,10 +1,10 @@
-// lib/proxy/pipeline.ts
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
-import { ensureAuthenticated } from "@/lib/auth/authenticate";
+import { ensureAuthenticated, redirectIfAuthenticated } from "@/lib/auth/authenticate";
 
 const AUTHENTICATED_ROUTES = ["/admin", "/post"];
+const GUEST_ROUTES = ["/login"];
 
 export async function dispatchRoutePipeline(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
@@ -13,14 +13,18 @@ export async function dispatchRoutePipeline(request: NextRequest) {
     return NextResponse.rewrite(new URL("/api/login", request.url));
   }
 
-  if (protectedRoute(pathname, AUTHENTICATED_ROUTES)) {
-    return await ensureAuthenticated(request);
+  if (matchRoute(pathname, GUEST_ROUTES)) {
+    return redirectIfAuthenticated(request);
+  }
+
+  if (matchRoute(pathname, AUTHENTICATED_ROUTES)) {
+    return ensureAuthenticated(request);
   }
 
   return NextResponse.next();
-} 
+}
 
-function protectedRoute(pathname: string, routes: readonly string[]) : boolean {
+function matchRoute(pathname: string, routes: readonly string[]): boolean {
   return routes.some(
     (route) =>
       pathname === route ||

@@ -6,6 +6,8 @@ export type HttpRequestOptions = Omit<AxiosRequestConfig, "url" | "method" | "da
 };
 
 export class HttpError extends Error {
+    static readonly Unauthorized = 401;
+
     constructor(
         message: string,
         public readonly status?: number,
@@ -24,8 +26,12 @@ export class Client {
         this.instance = axios.create(config);
     }
 
+    put_header(key: string, value: string): void {
+        this.instance.defaults.headers.common[key] = value;
+    }
+
     setBearerToken(token: string): void {
-        this.instance.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+        this.put_header("Authorization", `Bearer ${token}`);
     }
 
     clearBearerToken(): void {
@@ -96,7 +102,7 @@ function toHttpError(error: unknown): HttpError {
     return new HttpError(message, error.response?.status, responseData, error.code);
 }
 
-const apiUrl = process.env.PHOENIX_API_URL ?? "http://180.93.146.25:6003";
+const apiUrl = process.env.PHOENIX_API_URL ?? "http://localhost:4000";
 
 export const client = new Client({
     baseURL: apiUrl,
