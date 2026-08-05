@@ -1,6 +1,6 @@
 import type { NextRequest } from "next/server";
 
-import { dispatchRoutePipeline } from "@/lib/proxy/route-pipeline";
+import { dispatchRoutePipeline } from "@/lib/proxy/pipeline";
 
 export function proxy(request: NextRequest) {
   console.log("Proxy:", request.nextUrl.pathname);
