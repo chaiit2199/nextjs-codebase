@@ -3,14 +3,14 @@ import { NextRequest, NextResponse } from "next/server";
 import { client, HttpError } from "@/lib/http/client";
 
 type AuthTokens = {
-    message?: string;
-    access_token: string;
-    refresh_token: string;
+  message?: string;
+  access_token: string;
+  refresh_token: string;
 };
 
 type Session = {
-    access_token?: string;
-    refresh_token?: string;
+  access_token?: string;
+  refresh_token?: string;
 };
 
 const section_options = {
@@ -23,25 +23,20 @@ const section_options = {
     secure: process.env.NODE_ENV === "production",
 } as const;
 
-const DEVICE_COOKIE = "device_id";
-
 export async function ensureAuthenticated(request: NextRequest) {
     const session = get_session(request);
     const refreshToken = session.refresh_token;
     let accessToken = session.access_token;
-    const deviceId = get_device_id(request);
 
     if (!accessToken) {
         return clearSession(request);
     }
 
+
     try {
-        await client.get("/api/current_user", {
-            accessToken,
-            headers: deviceHeaders(deviceId),
-        });
+        await client.get("/api/current_user", { accessToken });
         client.setBearerToken(accessToken);
-        return with_device_cookie(NextResponse.next(), request, deviceId);
+        return NextResponse.next();
     } catch (error) {
         if (!(error instanceof HttpError) || error.status !== HttpError.Unauthorized) {
             throw error;
@@ -51,76 +46,52 @@ export async function ensureAuthenticated(request: NextRequest) {
             return clearSession(request);
         }
 
+        console.log("errorerrorerrorerrorerrorerrorerrorerror", error);
+
         try {
-            const tokens = await client.post<AuthTokens>(
-                "/api/refresh-token",
-                { refresh_token: refreshToken },
-                { headers: deviceHeaders(deviceId) },
-            );
+            client.put_header("x-device-id", get_device_id(request) ?? "");
+            const tokens = await client.post<AuthTokens>("/api/refresh-token", {
+                refresh_token: refreshToken,
+            });
+
+            console.log("tokens", tokens);
 
             accessToken = tokens.access_token;
-            await client.get("/api/current_user", {
-                accessToken,
-                headers: deviceHeaders(deviceId),
-            });
+            await client.get("/api/current_user", { accessToken });
             client.setBearerToken(accessToken);
 
-            return with_device_cookie(
-                put_session(NextResponse.next(), tokens.refresh_token, tokens.access_token),
-                request,
-                deviceId,
-            );
-        } catch (refreshError) {
-            if (!(refreshError instanceof HttpError) || refreshError.status !== HttpError.Unauthorized) {
-                throw refreshError;
+            const response = NextResponse.next();
+            return put_session(response, tokens.refresh_token, tokens.access_token);
+        } catch(error) {
+            console.log("refresh token failed", error);
+            if (!(error instanceof HttpError) || error.status !== HttpError.Unauthorized) {
+                throw error;
             }
 
-            return clearSession(request);
+            return NextResponse.redirect(new URL("/login", request.url), 303);
         }
     }
-}
-
-export async function redirectIfAuthenticated(request: NextRequest) {
-    const session = get_session(request);
-    const accessToken = session.access_token;
-
-    if (!accessToken) {
-        return NextResponse.next();
-    }
-
-    try {
-        await client.get("/api/current_user", {
-            accessToken,
-            headers: deviceHeaders(get_device_id(request)),
-        });
-        return NextResponse.redirect(new URL("/admin", request.url));
-    } catch {
-        return NextResponse.next();
-    }
-}
+} 
 
 export async function login(request: NextRequest) {
     const formData = await request.formData();
     const username = String(formData.get("username") ?? "");
     const password = String(formData.get("password") ?? "");
-    const deviceId = get_device_id(request);
+
+    if (!username || !password) {
+        return NextResponse.redirect(new URL("/login", request.url), 303);
+    }
+
+    client.put_header("x-device-id", get_device_id(request) ?? "");
 
     try {
-        const data = await client.post<AuthTokens>(
-            "/api/login",
-            { username, password },
-            { headers: deviceHeaders(deviceId) },
-        );
+        const data = await client.post<AuthTokens>("/api/login", { username, password });
         const response = NextResponse.redirect(new URL("/admin", request.url), 303);
 
         client.setBearerToken(data.access_token);
-        return with_device_cookie(
-            put_session(response, data.refresh_token, data.access_token),
-            request,
-            deviceId,
-        );
+        return put_session(response, data.refresh_token, data.access_token);
     } catch {
-        return clearSession(request);
+        return NextResponse.redirect(new URL("/login", request.url), 303);
     }
 }
 
@@ -159,7 +130,7 @@ function put_session(response: NextResponse, refresh_token: string, access_token
 }
 
 function clearSession(request: NextRequest) {
-    const response = NextResponse.redirect(new URL("/login", request.url), 303);
+    const response = NextResponse.redirect(new URL("/login", request.url));
 
     if (section_options.store === "cookie") {
         response.cookies.delete({
@@ -173,23 +144,5 @@ function clearSession(request: NextRequest) {
 }
 
 function get_device_id(request: NextRequest) {
-    return request.cookies.get(DEVICE_COOKIE)?.value ?? crypto.randomUUID();
-}
-
-function deviceHeaders(deviceId: string) {
-    return { "x-device-id": deviceId };
-}
-
-function with_device_cookie(response: NextResponse, request: NextRequest, deviceId: string) {
-    if (!request.cookies.get(DEVICE_COOKIE)?.value) {
-        response.cookies.set(DEVICE_COOKIE, deviceId, {
-            httpOnly: true,
-            sameSite: "lax",
-            path: "/",
-            secure: process.env.NODE_ENV === "production",
-            maxAge: 60 * 60 * 24 * 365,
-        });
-    }
-
-    return response;
+    return request.cookies.get("device_id")?.value;
 }
