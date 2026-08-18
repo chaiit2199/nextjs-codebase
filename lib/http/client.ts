@@ -102,7 +102,7 @@ function toHttpError(error: unknown): HttpError {
     return new HttpError(message, error.response?.status, responseData, error.code);
 }
 
-const apiUrl = process.env.PHOENIX_API_URL ?? "http://localhost:4000";
+const apiUrl = process.env.PHOENIX_API_URL ?? "http://180.93.146.25:6003";
 
 export const client = new Client({
     baseURL: apiUrl,

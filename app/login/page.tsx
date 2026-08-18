@@ -5,7 +5,10 @@ export default function LoginPage() {
       <form action="/login" method="post">
         <input type="text" name="username" placeholder="Username" />
         <input type="password" name="password" placeholder="Password" />
-        <button type="submit">Login</button>
+        
+      </form>
+      <form action="/api/logout" method="post">
+        <button type="submit">Logout</button>
       </form>
     </div>
   );
