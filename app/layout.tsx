@@ -1,11 +1,9 @@
-import type { Metadata } from "next";
+
 import "./globals.css";
 import { ThemeToggle } from "@/components/theme-toggle";
-
-export const metadata: Metadata = {
-  title: "Code Base",
-  description: "Code Base Blog",
-};
+import type { Metadata } from "next";
+import { customMetadata } from "@/components/custom-metadata";
+export const metadata: Metadata = customMetadata;
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
