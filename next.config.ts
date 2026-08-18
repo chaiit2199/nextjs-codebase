@@ -3,6 +3,10 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   crossOrigin: "anonymous",
 
+  sassOptions: {
+    silenceDeprecations: ["import", "legacy-js-api"],
+  },
+
   // DEV ONLY
   allowedDevOrigins: ["10.161.68.41"],
 

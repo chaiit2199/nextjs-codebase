@@ -1,5 +1,4 @@
-
-import "./globals.css";
+import "./app.scss";
 import { ThemeToggle } from "@/components/theme-toggle";
 import type { Metadata } from "next";
 import { customMetadata } from "@/components/custom-metadata";

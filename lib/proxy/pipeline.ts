@@ -1,29 +1,33 @@
-// lib/proxy/pipeline.ts
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
 import { ensureAuthenticated } from "@/lib/auth/authenticate";
-
+import { applySecurityHeaders } from "@/lib/proxy/secure_header";
 const AUTHENTICATED_ROUTES = ["/admin", "/post"];
 
 export async function dispatchRoutePipeline(request: NextRequest) {
+  if (request.method === "OPTIONS") {
+    const preflightResponse = new NextResponse(null, { status: 200 });
+    return applySecurityHeaders(request, preflightResponse);
+  }
+
   const pathname = request.nextUrl.pathname;
+  let response: NextResponse;
 
+  // Routing & Auth
   if (pathname === "/login" && request.method === "POST") {
-    return NextResponse.rewrite(new URL("/api/login", request.url));
+    response = NextResponse.rewrite(new URL("/api/login", request.url));
+  } else if (protectedRoute(pathname, AUTHENTICATED_ROUTES)) {
+    response = await ensureAuthenticated(request);
+  } else {
+    response = NextResponse.next();
   }
 
-  if (protectedRoute(pathname, AUTHENTICATED_ROUTES)) {
-    return await ensureAuthenticated(request);
-  }
+  return applySecurityHeaders(request, response);
+}
 
-  return NextResponse.next();
-} 
-
-function protectedRoute(pathname: string, routes: readonly string[]) : boolean {
+function protectedRoute(pathname: string, routes: readonly string[]): boolean {
   return routes.some(
-    (route) =>
-      pathname === route ||
-      pathname.startsWith(`${route}/`),
+    (route) => pathname === route || pathname.startsWith(`${route}/`),
   );
 }
