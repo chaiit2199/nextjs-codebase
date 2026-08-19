@@ -62,13 +62,20 @@ export class Client {
   private async refreshAccessToken(): Promise<string | null> {
     const session = await this.readSession();
 
-    if (!session.refresh_token) return null;
+    if (!session.refresh_token || !session.access_token) return null;
 
     try {
       const response = await axios.post<AuthTokens>(
-        `${this.instance.defaults.baseURL}/api/refresh-token`,
+        `${this.instance.defaults.baseURL}/api/v1/auth/refresh-token`,
         { refresh_token: session.refresh_token },
-        { timeout: 5_000 },
+        {
+          timeout: 5_000,
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session.access_token}`,
+          },
+        },
       );
 
       const tokens = response.data;

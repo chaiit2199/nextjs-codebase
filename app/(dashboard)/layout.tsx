@@ -1,4 +1,4 @@
-import { AdminSidebar } from "@/components/admin/sidebar";
+import { AdminSidebar } from "@/components/sidebar";
 import { DashboardHeader } from "@/components/admin/header";
 
 export default function DashboardLayout({ children }: LayoutProps<"/">) {

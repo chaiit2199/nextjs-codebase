@@ -1,11 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { client } from "@/lib/http/client";
 
-import {
-  SESSION_KEY,
-  SESSION_COOKIE_OPTIONS,
-  encodeSession,
-} from "@/lib/auth/session";
+import { SESSION_KEY, SESSION_COOKIE_OPTIONS, encodeSession } from "@/lib/auth/session";
 import { redirectToLogin } from "@/lib/auth/guard";
 
 type AuthTokens = {
