@@ -6,22 +6,24 @@ const ALLOWED_CORS_ORIGINS = parseList(process.env.ALLOWED_CORS_ORIGINS);
 
 export function applySecurityHeaders(request: NextRequest, response: NextResponse): NextResponse {
   const requestOrigin = request.headers.get("origin");
-  const frameAncestors = toFrameAncestorSources(ALLOWED_IFRAME);
+  const parentOrigin = getOrigin(request.headers.get("referer"));
 
-  if (frameAncestors.includes("*")) {
+  if (ALLOWED_IFRAME.includes("*")) {
     response.headers.set("Content-Security-Policy", "frame-ancestors *;");
-  } else if (frameAncestors.length > 0) {
+  } else if (parentOrigin && isAllowedHost(parentOrigin, ALLOWED_IFRAME)) {
     response.headers.set(
       "Content-Security-Policy",
-      `frame-ancestors 'self' ${frameAncestors.join(" ")};`
+      `frame-ancestors 'self' ${parentOrigin};`
     );
+  } else if (ALLOWED_IFRAME.length > 0) {
+    response.headers.set("Content-Security-Policy", "frame-ancestors 'self';");
   } else {
     response.headers.set("X-Frame-Options", "DENY");
   }
 
   if (ALLOWED_CORS_ORIGINS.includes("*")) {
     response.headers.set("Access-Control-Allow-Origin", "*");
-  } else if (requestOrigin && isAllowedOrigin(requestOrigin, ALLOWED_CORS_ORIGINS)) {
+  } else if (requestOrigin && isAllowedHost(requestOrigin, ALLOWED_CORS_ORIGINS)) {
     response.headers.set("Access-Control-Allow-Origin", requestOrigin);
     response.headers.set("Vary", "Origin");
   }
@@ -46,27 +48,17 @@ function parseList(value: string | undefined): string[] {
   return value.split(",").map((item) => item.trim()).filter(Boolean);
 }
 
-function toFrameAncestorSources(domains: string[]): string[] {
-  const sources: string[] = [];
+function getOrigin(url: string | null): string | null {
+  if (!url) return null;
 
-  for (const domain of domains) {
-    if (domain === "localhost" || domain === "127.0.0.1") {
-      sources.push(
-        "http://localhost:*",
-        "http://127.0.0.1:*",
-        "https://localhost:*",
-        "https://127.0.0.1:*"
-      );
-      continue;
-    }
-
-    sources.push(domain);
+  try {
+    return new URL(url).origin;
+  } catch {
+    return null;
   }
-
-  return [...new Set(sources)];
 }
 
-function isAllowedOrigin(origin: string, allowed: string[]): boolean {
+function isAllowedHost(origin: string, allowed: string[]): boolean {
   let hostname = origin;
 
   try {

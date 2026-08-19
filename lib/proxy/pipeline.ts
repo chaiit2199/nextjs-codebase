@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 
 import { ensureAuthenticated } from "@/lib/auth/authenticate";
 import { applySecurityHeaders } from "@/lib/proxy/secure_header";
-const AUTHENTICATED_ROUTES = ["/admin", "/post"];
+const AUTHENTICATED_ROUTES = ["/admin", "/"];
 
 export async function dispatchRoutePipeline(request: NextRequest) {
   if (request.method === "OPTIONS") {
