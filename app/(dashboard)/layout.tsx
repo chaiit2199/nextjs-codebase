@@ -1,11 +1,14 @@
-import { AdminSidebar } from "@/components/sidebar";
+import { SidebarComponent } from "@/components/sidebar";
 import { DashboardHeader } from "@/components/admin/header";
+import { getCurrentUser } from "@/lib/api/me";
 
-export default function DashboardLayout({ children }: LayoutProps<"/">) {
+export default async function DashboardLayout({ children }: LayoutProps<"/">) {
+  const user = await getCurrentUser();
+
   return (
     <div className="dashboard-layout">
       <div className="dashboard" id="dashboard">
-        <AdminSidebar />
+        <SidebarComponent user={user} />
         <div className="dashboard__container">
           <DashboardHeader />
           {children}

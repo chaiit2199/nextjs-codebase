@@ -163,21 +163,38 @@ function toHttpError(error: unknown): HttpError {
   }
 
   const responseData = error.response?.data;
-  let serverMessage: string | undefined;
-
-  if (responseData && typeof responseData === "object") {
-    if ("message" in responseData && responseData.message) {
-      serverMessage = Array.isArray(responseData.message)
-        ? responseData.message.join(", ")
-        : String(responseData.message);
-    } else if ("error" in responseData && typeof responseData.error === "string") {
-      serverMessage = responseData.error;
-    }
-  }
-
-  const message = serverMessage || error.message || "HTTP request failed";
+  const message =
+    extractServerMessage(responseData) || error.message || "HTTP request failed";
 
   return new HttpError(message, error.response?.status, responseData, error.code);
+}
+
+function extractServerMessage(data: unknown): string | undefined {
+  if (!data || typeof data !== "object") return undefined;
+
+  const body = data as Record<string, unknown>;
+  const nested = body.data;
+  const nestedRecord =
+    nested && typeof nested === "object" ? (nested as Record<string, unknown>) : undefined;
+
+  return (
+    readMessage(body.message) ||
+    readMessage(body.error) ||
+    readMessage(nestedRecord?.message) ||
+    readMessage(nestedRecord?.error)
+  );
+}
+
+function readMessage(value: unknown): string | undefined {
+  if (typeof value === "string" && value.trim()) return value;
+  if (Array.isArray(value)) {
+    const joined = value.filter((item) => typeof item === "string").join(", ");
+    return joined || undefined;
+  }
+  if (value && typeof value === "object" && "message" in value) {
+    return readMessage((value as { message: unknown }).message);
+  }
+  return undefined;
 }
 
 const apiUrl = process.env.BASE_API_URL;

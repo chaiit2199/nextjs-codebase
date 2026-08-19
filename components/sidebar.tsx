@@ -6,14 +6,20 @@ import { useEffect, useState } from "react";
 
 import { Dropdown } from "@/components/core_component";
 import { Icon } from "@/components/icon";
-import { UserAvatarRow } from "@/components/users/user-components";
-import { MOCK_USER, NAV_ITEMS, pageIdFromPath } from "@/lib/admin/nav";
+import { UserAvatarRow } from "@/server_component/users/user-components";
+import { NAV_ITEMS, pageIdFromPath } from "@/lib/admin/nav";
+import type { CurrentUser } from "@/lib/api/me";
+import { ChangePasswordComponent } from "@/server_component/users/change_password";
 
-export function AdminSidebar() {
+export function SidebarComponent({ user }: { user?: CurrentUser | null }) {
   const pathname = usePathname();
   const currentPage = pageIdFromPath(pathname);
   const [collapsed, setCollapsed] = useState(false);
   const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const displayName = user?.full_name || user?.username || "User";
+  const email = user?.email || "";
+  const role = user?.role ?? "1002";
+  const userId = String(user?.id ?? user?.username ?? "guest");
 
   useEffect(() => {
     const match = NAV_ITEMS.findIndex((item) =>
@@ -137,33 +143,18 @@ export function AdminSidebar() {
 
       <div className="sidebar__footer" id="sidebar-user-footer">
         <Dropdown
-          id={`header-user-actions-${MOCK_USER.id}`}
+          id={`header-user-actions-${userId}`}
           placement={collapsed ? "top-left" : "top-right"}
           className="header__user-menu"
-          label={
-            <UserAvatarRow fullname={MOCK_USER.full_name} role={MOCK_USER.role} />
-          }
+          label={<UserAvatarRow fullname={displayName} role={role} />}
         >
-          <div className="header-menu" role="menu">
-            <div className="header-menu__profile">
-              <div className="header-menu__greeting">
-                <Icon name="hero-hand-raised" className="header-menu__greeting-icon" />
-                <span>Xin chào, {MOCK_USER.full_name}</span>
-              </div>
-              <p className="header-menu__email">{MOCK_USER.email}</p>
-            </div>
-
-            <div className="header-menu__divider" role="separator" />
-
+          <div className="header-menu" role="menu"> 
             <div className="header-menu__section">
               <button type="button" id="open-account-info" className="header-menu__item" role="menuitem">
                 <Icon name="hero-identification" className="header-menu__icon" />
                 <span>Thông tin tài khoản</span>
-              </button>
-              <button type="button" id="open-change-password" className="header-menu__item" role="menuitem">
-                <Icon name="hero-lock-closed" className="header-menu__icon" />
-                <span>Đổi mật khẩu</span>
-              </button>
+              </button> 
+              <ChangePasswordComponent />
             </div>
 
             <div className="header-menu__divider" role="separator" />

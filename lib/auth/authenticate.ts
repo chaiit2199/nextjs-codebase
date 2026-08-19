@@ -35,7 +35,7 @@ export async function login(request: NextRequest) {
 
     return response;
   } catch {
-    return NextResponse.redirect(new URL("/login", request.url));
+    return NextResponse.redirect(new URL("/login", request.url), 303);
   }
 }
 

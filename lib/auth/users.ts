@@ -10,13 +10,17 @@ export type CreateUserInput = {
   address: string;
 };
 
-export async function createUser(input: CreateUserInput) {
+export async function changePassword(payload: {
+  current_password: string;
+  new_password: string;
+}) {
+  
   try {
-    await client.post("/api/v1/users", input);
+    await client.post("/api/v1/me/change-password", payload);
     return { ok: true as const };
   } catch (error) {
     const message =
-      error instanceof HttpError ? error.message : "Không thể tạo user";
+      error instanceof HttpError ? error.message : "Không thể đổi mật khẩu";
     return { ok: false as const, message };
   }
 }

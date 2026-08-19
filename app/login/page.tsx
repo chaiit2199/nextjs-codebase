@@ -1,12 +1,6 @@
-"use client";
-
-import { useState } from "react";
-
-import { Icon } from "@/components/icon";
+import { Input } from "@/components/core_component";
 
 export default function LoginPage() {
-  const [showPassword, setShowPassword] = useState(false);
-
   return (
     <div id="login-page" className="login-page">
       <div className="w-full">
@@ -20,47 +14,26 @@ export default function LoginPage() {
               </header>
 
               <form id="login-form" action="/login" method="post" className="login-form">
-                <div className="core_field">
-                  <label className="core_label" htmlFor="identity">
-                    Email hoặc tên đăng nhập *
-                  </label>
-                  <input
-                    id="identity"
-                    name="username"
-                    type="text"
-                    className="core_input"
-                    placeholder="mail@congty.com"
-                    autoComplete="username"
-                    required
-                  />
-                </div>
+                <Input
+                  id="identity"
+                  name="username"
+                  type="text"
+                  label="Email hoặc tên đăng nhập *"
+                  placeholder="mail@congty.com"
+                  autoComplete="username"
+                  required
+                />
 
-                <div className="login-field login-field--password">
-                  <label htmlFor="password" className="core_label">
-                    Mật khẩu *
-                  </label>
-                  <div className="login-field__control">
-                    <input
-                      id="password"
-                      name="password"
-                      type={showPassword ? "text" : "password"}
-                      className="core_input core_input--with-trailing w-full"
-                      placeholder="Tối thiểu 6 ký tự"
-                      autoComplete="current-password"
-                      minLength={6}
-                      required
-                    />
-                    <button
-                      type="button"
-                      id="toggle-password"
-                      className="login-field__trailing-btn"
-                      aria-label={showPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
-                      onClick={() => setShowPassword((value) => !value)}
-                    >
-                      <Icon name={showPassword ? "hero-eye-slash" : "hero-eye"} className="size-5" />
-                    </button>
-                  </div>
-                </div>
+                <Input
+                  id="password"
+                  name="password"
+                  type="password"
+                  label="Mật khẩu *"
+                  placeholder="Tối thiểu 6 ký tự"
+                  autoComplete="current-password"
+                  minLength={6}
+                  required
+                />
 
                 <div className="login-form__meta">
                   <a href="#" className="login-link" tabIndex={-1}>

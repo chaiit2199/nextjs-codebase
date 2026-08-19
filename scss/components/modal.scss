@@ -173,26 +173,31 @@
   margin-top: 4px;
 }
 
-.core_modal__btn {
-  padding: 8px 14px;
+.core_button {
+  @apply flex items-center justify-center h-10 transition-all;
+  padding: 8px 20px;
   border: 0;
-  border-radius: 10px;
+  border-radius: 12px;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
 }
 
-.core_modal__btn--primary {
-  background: #3b6e4b;
-  color: #fff;
+.core_button--primary {
+  background: var(--color-primary);
+  color: var(--color-white);
+
+  &:hover {
+    background: var(--color-theme-primary-hover);
+  }
 }
 
-.core_modal__btn--secondary {
+.core_button--secondary {
   background: #eef1ef;
   color: #374151;
 }
 
-.core_modal__btn--danger {
+.core_button--danger {
   background: #fdecec;
   color: #b42318;
 }

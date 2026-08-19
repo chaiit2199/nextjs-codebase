@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 import { DashMain } from "@/components/admin/dash-main";
 import { Icon } from "@/components/icon";
-import { UserAvatar } from "@/components/users/user-components";
+import { UserAvatar } from "@/server_component/users/user-components";
 import { MOCK_STAFF } from "@/lib/mock/overview";
 
 export const metadata: Metadata = { title: "Nhân viên" };
