@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+
 const STATS = [
   { label: "Doanh thu", value: "12,45 tỷ" },
   { label: "Đơn hàng", value: "1,248" },
@@ -20,12 +22,18 @@ const STAFF = [
   { name: "Phạm Quốc Dũng", region: "Cần Thơ", orders: 31, revenue: "1,5 tỷ" },
 ];
 
+export const metadata: Metadata = {
+  title: "Tổng quan",
+};
+
 export default function DashboardPage() {
   return (
     <>
       <header className="admin-page-header">
         <h1>Tổng quan</h1>
         <input className="admin-search" type="search" placeholder="Search" />
+
+        <button>Tạo mới</button>
       </header>
 
       <section className="admin-stats">
