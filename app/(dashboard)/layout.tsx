@@ -1,42 +1,16 @@
-import { cookies } from "next/headers";
-
 import { AdminSidebar } from "@/components/admin/sidebar";
-import { client } from "@/lib/http/client";
-import { SESSION_KEY, decodeSession } from "@/lib/auth/session";
+import { DashboardHeader } from "@/components/admin/header";
 
-type UserInfo = {
-  data: {
-    user: {
-      username: string;
-      full_name: string;
-    };
-  };
-};
-
-async function getCurrentUser() {
-  try {
-    const session = decodeSession((await cookies()).get(SESSION_KEY)?.value);
-    if (!session.access_token) return null;
-
-    const payload = await client.get<UserInfo>("/api/v1/me", {
-      accessToken: session.access_token,
-    });
-
-    return payload.data.user;
-  } catch {
-    return null;
-  }
-}
-
-export default async function DashboardLayout({ children }: LayoutProps<"/">) {
-  const user = await getCurrentUser();
-
+export default function DashboardLayout({ children }: LayoutProps<"/">) {
   return (
-    <div className="admin-shell">
-      <AdminSidebar user={user} />
-      <main className="admin-main">
-        <div className="admin-main__inner">{children}</div>
-      </main>
+    <div className="dashboard-layout">
+      <div className="dashboard" id="dashboard">
+        <AdminSidebar />
+        <div className="dashboard__container">
+          <DashboardHeader />
+          {children}
+        </div>
+      </div>
     </div>
   );
 }

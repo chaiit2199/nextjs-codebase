@@ -1,2 +1,16 @@
-@use "./modal";
-@use "./admin";
+* {
+  button,
+  a {
+    cursor: pointer;
+  }
+}
+
+@import "./dropdown.scss";
+@import "./header.scss";
+@import "./login.scss";
+@import "./dashboard.scss";
+@import "./overview.scss";
+@import "./forms.scss";
+@import "./orders.scss";
+@import "./admin.scss";
+@import "./modal.scss";

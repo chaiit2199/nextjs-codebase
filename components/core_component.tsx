@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useRef } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
 export type ModalCloseable = true | false | "close_button";
@@ -175,5 +175,94 @@ export function Modal({
       </div>
     </div>,
     document.body,
+  );
+}
+
+export type DropdownPlacement = | "bottom-left" | "bottom-right" | "top-left" | "top-right" | "top-center" | "center-right";
+
+export type DropdownItem = {
+  children: React.ReactNode;
+  onClick?: () => void;
+};
+
+export type DropdownProps = {
+  id?: string;
+  className?: string;
+  labelClassName?: string;
+  placement?: DropdownPlacement;
+  label: React.ReactNode;
+  items?: DropdownItem[];
+  children?: React.ReactNode;
+};
+
+export function Dropdown({
+  id,
+  className,
+  labelClassName,
+  placement = "bottom-left",
+  label,
+  items,
+  children,
+}: DropdownProps) {
+  const generatedId = useId();
+  const dropdownId = id ?? generatedId;
+  const rootRef = useRef<HTMLDivElement>(null);
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    if (!open) return;
+
+    function onPointerDown(event: MouseEvent) {
+      if (!rootRef.current?.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    }
+
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") setOpen(false);
+    }
+
+    document.addEventListener("mousedown", onPointerDown);
+    window.addEventListener("keydown", onKeyDown);
+
+    return () => {
+      document.removeEventListener("mousedown", onPointerDown);
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [open]);
+
+  return (
+    <div
+      ref={rootRef}
+      id={dropdownId}
+      className={["core_dropdown", open && "core_dropdown--active", className]
+        .filter(Boolean)
+        .join(" ")}
+    >
+      <div
+        className={["core_dropdown__title", labelClassName].filter(Boolean).join(" ")}
+        onClick={() => setOpen((value) => !value)}
+      >
+        {label}
+      </div>
+      <ul id={`${dropdownId}-list`} className="core_dropdown__list" data-placement={placement}>
+        {children
+          ? children
+          : items?.map((item, index) => (
+              <li key={index}>
+                <button
+                  type="button"
+                  className="item"
+                  onClick={() => {
+                    item.onClick?.();
+                    setOpen(false);
+                  }}
+                >
+                  {item.children}
+                </button>
+              </li>
+            ))}
+      </ul>
+    </div>
   );
 }

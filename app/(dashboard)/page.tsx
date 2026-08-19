@@ -1,26 +1,17 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
-const STATS = [
-  { label: "Doanh thu", value: "12,45 tỷ" },
-  { label: "Đơn hàng", value: "1,248" },
-  { label: "Đại lý hoạt động", value: "86" },
-  { label: "Nhân viên", value: "32" },
-];
-
-const ORDERS = [
-  { id: "#ORD-10482", agent: "Đại lý Hà Nội 01", total: "12.500.000đ", status: "Hoàn thành", tone: "is-done", date: "18/03/2026" },
-  { id: "#ORD-10481", agent: "Đại lý HCM 03", total: "8.200.000đ", status: "Đang xử lý", tone: "is-process", date: "18/03/2026" },
-  { id: "#ORD-10480", agent: "Đại lý Đà Nẵng", total: "15.800.000đ", status: "Đang giao", tone: "is-ship", date: "17/03/2026" },
-  { id: "#ORD-10479", agent: "Đại lý Cần Thơ", total: "6.400.000đ", status: "Hoàn thành", tone: "is-done", date: "17/03/2026" },
-  { id: "#ORD-10478", agent: "Đại lý Hải Phòng", total: "9.100.000đ", status: "Hủy", tone: "is-cancel", date: "16/03/2026" },
-];
-
-const STAFF = [
-  { name: "Nguyễn Văn An", region: "Hà Nội", orders: 48, revenue: "2,4 tỷ" },
-  { name: "Nguyễn Thị Bình", region: "TP.HCM", orders: 42, revenue: "2,1 tỷ" },
-  { name: "Lê Minh Châu", region: "Đà Nẵng", orders: 36, revenue: "1,8 tỷ" },
-  { name: "Phạm Quốc Dũng", region: "Cần Thơ", orders: 31, revenue: "1,5 tỷ" },
-];
+import { ChartPeriodFilter } from "@/components/admin/chart-period-filter";
+import { OrderPieChart } from "@/components/admin/order-pie-chart";
+import { SalesAreaChart } from "@/components/admin/sales-area-chart";
+import { Icon } from "@/components/icon";
+import {
+  KPIS,
+  ORDER_SERIES,
+  RECENT_ORDERS,
+  SALES_SERIES,
+  TOP_SALES,
+} from "@/lib/mock/overview";
 
 export const metadata: Metadata = {
   title: "Tổng quan",
@@ -28,129 +19,141 @@ export const metadata: Metadata = {
 
 export default function DashboardPage() {
   return (
-    <>
-      <header className="admin-page-header">
-        <h1>Tổng quan</h1>
-        <input className="admin-search" type="search" placeholder="Search" />
-
-        <button>Tạo mới</button>
-      </header>
-
-      <section className="admin-stats">
-        {STATS.map((stat) => (
-          <article key={stat.label} className="admin-card admin-stat">
-            <span className="admin-stat__icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-                <path d="M4 19V5" />
-                <path d="M4 19h16" />
-                <path d="M8 15l3-4 3 3 5-7" />
-              </svg>
+    <main className="dash-main overview" id="overview">
+      <section className="overview__kpis" aria-label="Chỉ số">
+        {KPIS.map((kpi) => (
+          <article key={kpi.id} id={`kpi-${kpi.id}`} className="overview-kpi">
+            <span className="overview-kpi__icon">
+              <Icon name={kpi.icon} className="size-6" />
             </span>
-            <div>
-              <small>{stat.label}</small>
-              <strong>{stat.value}</strong>
+            <div className="overview-kpi__body">
+              <p className="overview-kpi__label">{kpi.label}</p>
+              <p className="overview-kpi__value">{kpi.value}</p>
             </div>
           </article>
         ))}
       </section>
 
-      <section className="admin-grid">
-        <article className="admin-card">
-          <div className="admin-card__head">
-            <h2>Thống kê đơn hàng</h2>
-          </div>
-          <div className="admin-donut-wrap">
-            <div className="admin-donut">
-              <div className="admin-donut__label">
-                <strong>341</strong>
-                <span>đơn</span>
-              </div>
+      <div className="flex gap-6">
+        <article className="overview-card overview-card--chart min-w-[500px] max-w-[500px]" id="overview-order-chart">
+          <div className="overview-card__head">
+            <div className="overview-card__heading">
+              <Icon name="hero-chart-pie" className="overview-card__icon" />
+              <h2 className="overview-card__title">Thống kê đơn hàng</h2>
             </div>
-            <ul className="admin-legend">
-              <li><i style={{ background: "#3b6e4b" }} /> Hoàn thành — 198</li>
-              <li><i style={{ background: "#f59e0b" }} /> Đang xử lý — 67</li>
-              <li><i style={{ background: "#7c6af7" }} /> Đang giao — 52</li>
-              <li><i style={{ background: "#ef4444" }} /> Hủy — 24</li>
-            </ul>
           </div>
+          <OrderPieChart series={ORDER_SERIES} />
         </article>
 
-        <article className="admin-card">
-          <div className="admin-card__head">
-            <h2>Đơn hàng gần đây</h2>
+        <article className="overview-card overview-card--orders w-full" id="overview-order-table">
+          <div className="overview-card__head">
+            <div className="overview-card__heading">
+              <Icon name="hero-clipboard-document-list" className="overview-card__icon" />
+              <h2 className="overview-card__title">Đơn hàng gần đây</h2>
+            </div>
+            <Link href="/orders" className="overview-card__btn">
+              Xem tất cả
+              <Icon name="hero-arrow-right" className="size-3.5" />
+            </Link>
           </div>
-          <table className="admin-table">
-            <thead>
-              <tr>
-                <th>Mã đơn</th>
-                <th>Đại lý</th>
-                <th>Tổng tiền</th>
-                <th>Trạng thái</th>
-                <th>Ngày</th>
-              </tr>
-            </thead>
-            <tbody>
-              {ORDERS.map((order) => (
-                <tr key={order.id}>
-                  <td>{order.id}</td>
-                  <td>{order.agent}</td>
-                  <td>{order.total}</td>
-                  <td>
-                    <span className={`admin-badge ${order.tone}`}>{order.status}</span>
-                  </td>
-                  <td>{order.date}</td>
+          <div className="overview-table-wrap">
+            <table className="overview-table">
+              <thead>
+                <tr>
+                  <th>Mã đơn hàng</th>
+                  <th>Đại lý</th>
+                  <th className="is-num">Tổng tiền</th>
+                  <th className="is-center">Trạng thái</th>
+                  <th className="is-muted">Ngày tạo</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </article>
-      </section>
-
-      <section className="admin-grid">
-        <article className="admin-card">
-          <div className="admin-card__head">
-            <h2>Doanh thu theo thời gian</h2>
-            <select className="admin-select" defaultValue="day">
-              <option value="day">Theo ngày</option>
-              <option value="week">Theo tuần</option>
-              <option value="month">Theo tháng</option>
-            </select>
+              </thead>
+              <tbody>
+                {RECENT_ORDERS.map((order) => (
+                  <tr key={order.code} id={`order-${order.code}`}>
+                    <td className="overview-table__code">{order.code}</td>
+                    <td>{order.agent}</td>
+                    <td className="is-num overview-table__money">{order.total}</td>
+                    <td className="is-center">
+                      <span className={`orders-badge orders-badge--${order.status}`}>
+                        {order.status === "completed"
+                          ? "Hoàn thành"
+                          : order.status === "processing"
+                            ? "Đang xử lý"
+                            : order.status === "shipping"
+                              ? "Đang giao"
+                              : "Hủy"}
+                      </span>
+                    </td>
+                    <td className="overview-table__muted">{order.date}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
-          <div className="admin-line-chart">
-            <svg viewBox="0 0 400 120" preserveAspectRatio="none">
-              <polyline
-                fill="none"
-                stroke="#3b6e4b"
-                strokeWidth="3"
-                points="0,90 50,78 100,82 150,55 200,62 250,40 300,48 350,22 400,30"
-              />
-            </svg>
-            <div className="admin-axis">
-              <span>T2</span><span>T3</span><span>T4</span><span>T5</span>
-              <span>T6</span><span>T7</span><span>CN</span>
+        </article>
+      </div>
+
+      <div className="overview__grid">
+        <article className="overview-card overview-card--sales" id="overview-sales-chart">
+          <div className="overview-card__head">
+            <div className="overview-card__heading">
+              <Icon name="hero-chart-bar" className="overview-card__icon" />
+              <h2 className="overview-card__title">Doanh thu theo thời gian</h2>
+            </div>
+            <div className="overview-card__actions min-w-max">
+              <ChartPeriodFilter />
             </div>
           </div>
+          <SalesAreaChart series={SALES_SERIES} />
         </article>
 
-        <article className="admin-card">
-          <div className="admin-card__head">
-            <h2>Top nhân viên bán hàng</h2>
+        <article className="overview-card overview-card--sellers" id="overview-products-for-sales">
+          <div className="overview-card__head">
+            <div className="overview-card__heading">
+              <Icon name="hero-user-group" className="overview-card__icon" />
+              <h2 className="overview-card__title">Top nhân viên bán hàng</h2>
+            </div>
           </div>
-          <div className="admin-rank">
-            {STAFF.map((person, index) => (
-              <div key={person.name} className="admin-rank__row">
-                <span className="admin-rank__index">{String(index + 1).padStart(2, "0")}</span>
-                <span className="admin-rank__avatar">{person.name.charAt(0)}</span>
-                <span>
-                  {person.name}
-                  <small>{person.region} · {person.orders} đơn</small>
-                </span>
-                <b>{person.revenue}</b>
-              </div>
-            ))}
+          <div className="overview-table-wrap">
+            <table className="overview-table overview-table--sellers">
+              <thead>
+                <tr>
+                  <th className="is-center">Hạng</th>
+                  <th>Nhân viên</th>
+                  <th>Khu vực</th>
+                  <th className="is-num">Số đơn</th>
+                  <th className="is-num">Doanh thu</th>
+                </tr>
+              </thead>
+              <tbody>
+                {TOP_SALES.map((staff) => (
+                  <tr key={staff.code} id={`top-sales-${staff.code}`}>
+                    <td className="is-center">
+                      <span className={["overview-rank", staff.rank <= 3 && "overview-rank--top"].filter(Boolean).join(" ")}>
+                        {staff.rank}
+                      </span>
+                    </td>
+                    <td>
+                      <div className="overview-seller">
+                        <span className="overview-seller__avatar" style={{ background: staff.avatar }}>
+                          {staff.initials}
+                        </span>
+                        <div className="overview-seller__meta">
+                          <span className="overview-seller__name">{staff.name}</span>
+                          <span className="overview-seller__code">{staff.code}</span>
+                        </div>
+                      </div>
+                    </td>
+                    <td>{staff.region}</td>
+                    <td className="is-num">{staff.orders}</td>
+                    <td className="is-num overview-table__money">{staff.revenue}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </article>
-      </section>
-    </>
+      </div>
+    </main>
   );
 }

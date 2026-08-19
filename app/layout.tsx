@@ -12,8 +12,8 @@ export const viewport: Viewport = customViewport;
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html className={inter.className} lang="vi">
-      <body>{children}</body>
+    <html className={inter.className} lang="vi" data-theme="light">
+      <body className="overflow-hidden">{children}</body>
     </html>
   );
 }
