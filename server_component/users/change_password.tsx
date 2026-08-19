@@ -129,7 +129,7 @@ export function ChangePasswordComponent() {
             <button
               type="submit"
               className="core_button core_button--primary">
-              Cập nhật
+              Xác nhận
             </button>
           </div>
         </form>
