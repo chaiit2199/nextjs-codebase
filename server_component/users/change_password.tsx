@@ -114,7 +114,7 @@ export function ChangePasswordComponent() {
           autoComplete="off"
           onSubmit={onSubmit}
         >
-          <div className="flex-auto overflow-y-auto">
+          <div className="flex-auto overflow-y-auto gap-4 flex flex-col">
 
             <Input
               id="change-password-current"
