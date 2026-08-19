@@ -1,6 +1,9 @@
 import "@/scss/app.scss";
 import type { Metadata, Viewport } from "next";
+import { cookies } from "next/headers";
 import { customMetadata, customViewport } from "@/components/custom-metadata";
+import { FlashProvider } from "@/components/flash";
+import { FLASH_COOKIE, decodeFlash } from "@/lib/flash";
 import { Inter } from "next/font/google";
 
 const inter = Inter({
@@ -10,10 +13,15 @@ const inter = Inter({
 export const metadata: Metadata = customMetadata;
 export const viewport: Viewport = customViewport;
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  const cookieStore = await cookies();
+  const initialFlash = decodeFlash(cookieStore.get(FLASH_COOKIE)?.value);
+
   return (
     <html className={inter.className} lang="vi" data-theme="light">
-      <body className="overflow-hidden">{children}</body>
+      <body className="overflow-hidden">
+        <FlashProvider initialFlash={initialFlash}>{children}</FlashProvider>
+      </body>
     </html>
   );
 }

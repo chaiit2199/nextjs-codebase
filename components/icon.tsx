@@ -31,6 +31,12 @@ import {
   UsersIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
+import {
+  CheckCircleIcon,
+  ExclamationCircleIcon,
+  InformationCircleIcon,
+  XMarkIcon as XMarkSolidIcon,
+} from "@heroicons/react/20/solid";
 
 const ICONS = {
   "hero-adjustments-horizontal": AdjustmentsHorizontalIcon,
@@ -64,6 +70,10 @@ const ICONS = {
   "hero-user-group": UserGroupIcon,
   "hero-users": UsersIcon,
   "hero-x-mark": XMarkIcon,
+  "hero-x-mark-solid": XMarkSolidIcon,
+  "hero-information-circle-mini": InformationCircleIcon,
+  "hero-check-circle-mini": CheckCircleIcon,
+  "hero-exclamation-circle-mini": ExclamationCircleIcon,
 } as const;
 
 export type IconName = keyof typeof ICONS;

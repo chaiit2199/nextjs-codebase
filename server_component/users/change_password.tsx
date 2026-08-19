@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Icon } from "@/components/icon";
 import { Input, Modal, useDropdownClose } from "@/components/core_component";
 import { changePassword } from "@/lib/auth/users";
+import { putFlash } from "@/lib/flash";
 import {
   PASSWORD_MIN_LENGTH,
   hasPasswordErrors,
@@ -14,18 +15,15 @@ import {
 export function ChangePasswordComponent() {
   const closeDropdown = useDropdownClose();
   const [open, setOpen] = useState(false);
-  const [error, setError] = useState("");
   const [fieldErrors, setFieldErrors] = useState<ReturnType<typeof validateChangePassword>>({});
 
   function onClose() {
-    setError("");
     setFieldErrors({});
     setOpen(false);
   }
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setError("");
 
     const form = event.currentTarget;
     const data = new FormData(form);
@@ -46,13 +44,14 @@ export function ChangePasswordComponent() {
     });
 
     if (!result.ok) {
-      setError(result.message);
+      putFlash("error", result.message, 2000);
       return;
     }
 
     form.reset();
     setFieldErrors({});
     setOpen(false);
+    putFlash("success", "Đổi mật khẩu thành công", 2000);
   }
 
   return (
@@ -119,8 +118,6 @@ export function ChangePasswordComponent() {
             required
             error={fieldErrors.new_password_confirmation}
           />
-
-          {error && <p className="core_modal__error">{error}</p>}
 
           <div className="core_modal__actions">
             <button

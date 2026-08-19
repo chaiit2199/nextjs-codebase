@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { client } from "@/lib/http/client";
+import { client, HttpError } from "@/lib/http/client";
 
 import { SESSION_KEY, SESSION_COOKIE_OPTIONS, encodeSession } from "@/lib/auth/session";
 import { redirectToLogin } from "@/lib/auth/guard";
+import { withFlash } from "@/lib/flash/cookie";
 
 type AuthTokens = {
   data: {
@@ -17,7 +18,11 @@ export async function login(request: NextRequest) {
   const password = String(formData.get("password") ?? "");
 
   if (!username || !password) {
-    return NextResponse.redirect(new URL("/login", request.url), 303);
+    return withFlash(
+      NextResponse.redirect(new URL("/login", request.url), 303),
+      "error",
+      "Thiếu tên đăng nhập hoặc mật khẩu",
+    );
   }
 
   try {
@@ -33,9 +38,19 @@ export async function login(request: NextRequest) {
       SESSION_COOKIE_OPTIONS,
     );
 
-    return response;
-  } catch {
-    return NextResponse.redirect(new URL("/login", request.url), 303);
+    return withFlash(response, "success", "Đăng nhập thành công", 2000);
+  } catch (error) {
+    const message =
+      error instanceof HttpError && error.status === 401
+        ? "Tài khoản hoặc mật khẩu không chính xác"
+        : "Không thể đăng nhập";
+
+    return withFlash(
+      NextResponse.redirect(new URL("/login", request.url), 303),
+      "error",
+      message,
+      2000,
+    );
   }
 }
 

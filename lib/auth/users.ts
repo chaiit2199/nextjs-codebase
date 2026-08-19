@@ -19,6 +19,7 @@ export async function changePassword(payload: {
     await client.post("/api/v1/me/change-password", payload);
     return { ok: true as const };
   } catch (error) {
+    console.log(error);
     const message =
       error instanceof HttpError ? error.message : "Không thể đổi mật khẩu";
     return { ok: false as const, message };
