@@ -3,7 +3,16 @@ import { NextResponse } from "next/server";
 
 import { ensureAuthenticated } from "@/lib/auth/authenticate";
 import { applySecurityHeaders } from "@/lib/proxy/secure_header";
-const AUTHENTICATED_ROUTES = ["/admin", "/"];
+
+const AUTHENTICATED_ROUTES = [
+  "/",
+  "/products",
+  "/orders",
+  "/agents",
+  "/promotions",
+  "/staff",
+  "/settings",
+];
 
 export async function dispatchRoutePipeline(request: NextRequest) {
   if (request.method === "OPTIONS") {
@@ -27,7 +36,8 @@ export async function dispatchRoutePipeline(request: NextRequest) {
 }
 
 function protectedRoute(pathname: string, routes: readonly string[]): boolean {
-  return routes.some(
-    (route) => pathname === route || pathname.startsWith(`${route}/`),
-  );
+  return routes.some((route) => {
+    if (route === "/") return pathname === "/";
+    return pathname === route || pathname.startsWith(`${route}/`);
+  });
 }

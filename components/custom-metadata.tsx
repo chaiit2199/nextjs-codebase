@@ -1,58 +1,85 @@
-export const customMetadata = {
-    metadataBase: new URL("https://ccode.vn"),
-    title: { default: "CCode — Blog Lập Trình & Chia Sẻ Code Base", template: "%s | CCode"},
-    description: "Chia sẻ kiến thức lập trình, cấu trúc code base chuẩn, hướng dẫn Next.js, React và kinh nghiệm phát triển phần mềm tối ưu.",
-    keywords: ["CCode",  "Code Base", "Next.js", "React", "Lập trình web", "Frontend Development", "Clean Code", "Blog lập trình"],
-    authors: [{ name: "CCode", url: "https://ccode.vn" }],
-    creator: "CCode",
-    publisher: "CCode",
-    applicationName: "CCode",
-    robots: {
+import type { Metadata, Viewport } from "next";
+
+const SITE_NAME = "USA FARM AGRI";
+const SITE_DESCRIPTION =
+  "USA FARM AGRI - Công ty phân bón, đồng hành cùng nhà nông";
+const SITE_URL = "https://usafarm-agri.com";
+
+export const customViewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: "#ffffff",
+};
+
+export const customMetadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: SITE_NAME,
+    template: `%s · ${SITE_NAME}`,
+  },
+  description: SITE_DESCRIPTION,
+  keywords: [
+    "USA FARM AGRI",
+    "phân bón",
+    "nông nghiệp",
+    "sản xuất phân bón",
+    "giá vốn phân bón",
+    "nguyên liệu phân bón",
+    "bao bì phân bón",
+    "đại lý phân bón",
+    "quản lý đơn hàng",
+    "quản lý kho",
+    "đầu tư nông nghiệp",
+  ],
+  authors: [{ name: SITE_NAME, url: SITE_URL }],
+  creator: SITE_NAME,
+  publisher: SITE_NAME,
+  applicationName: SITE_NAME,
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
       index: true,
       follow: true,
-      googleBot: {
-        index: true,
-        follow: true,
-        "max-video-preview": -1,
-        "max-image-preview": "large" as const,
-        "max-snippet": -1,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  alternates: {
+    canonical: "./",
+  },
+  appleWebApp: {
+    title: SITE_NAME,
+    statusBarStyle: "default",
+  },
+  openGraph: {
+    title: SITE_NAME,
+    description: SITE_DESCRIPTION,
+    url: SITE_URL,
+    siteName: SITE_NAME,
+    locale: "vi_VN",
+    type: "website",
+    images: [
+      {
+        url: "/images/thumbnail.jpg",
+        width: 222,
+        height: 180,
+        alt: SITE_NAME,
+        type: "image/jpeg",
       },
-    },
-  
-    alternates: {
-      canonical: "./",
-    },
-  
-    openGraph: {
-      title: "CCode — Blog Lập Trình & Chia Sẻ Code Base",
-      description:
-        "Chia sẻ kiến thức lập trình, cấu trúc code base chuẩn, hướng dẫn Next.js, React và kinh nghiệm phát triển phần mềm.",
-      url: "https://ccode.vn",
-      siteName: "CCode",
-      locale: "vi_VN",
-      type: "website",
-      images: [
-        {
-          url: "/og-image.png",
-          width: 1200,
-          height: 630,
-          alt: "CCode Blog & Code Base",
-        },
-      ],
-    },
-  
-    twitter: {
-      card: "summary_large_image",
-      title: "CCode — Blog Lập Trình & Chia Sẻ Code Base",
-      description:
-        "Chia sẻ kiến thức lập trình, cấu trúc code base chuẩn và kinh nghiệm lập trình Next.js / React.",
-      images: ["/og-image.png"],
-      creator: "@ccode",
-    },
-  
-    icons: {
-      icon: [{ url: "/icons/favicon.png", type: "image/png" }],
-      shortcut: "/icons/favicon.png",
-      apple: "/icons/favicon.png",
-    },
+    ],
+  },
+  twitter: {
+    card: "summary",
+    title: SITE_NAME,
+    description: SITE_DESCRIPTION,
+    images: ["/images/thumbnail.jpg"],
+  },
+  icons: {
+    icon: [{ url: "/icons/favicon.png", type: "image/png" }],
+    shortcut: "/icons/favicon.png",
+    apple: "/icons/favicon.png",
+  },
 };

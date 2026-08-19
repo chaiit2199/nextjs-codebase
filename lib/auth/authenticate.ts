@@ -40,7 +40,7 @@ export async function login(request: NextRequest) {
 
     try {
         const payload = await client.post<AuthTokens>("/api/v1/auth/login", { username, password });
-        const response = NextResponse.redirect(new URL("/admin", request.url), 303);
+        const response = NextResponse.redirect(new URL("/", request.url), 303);
 
         response.cookies.set(
             SESSION_KEY,
