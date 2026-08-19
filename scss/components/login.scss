@@ -122,7 +122,7 @@
   border: 0;
   border-radius: 9999px;
   background: transparent;
-  color: #6b7280;
+  color: var(--color-theme-muted);
   cursor: pointer;
   transition:
     color 0.15s ease,

@@ -1,16 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { client, HttpError } from "@/lib/http/client";
+import { client, HttpError, type AuthTokenResponse } from "@/lib/http/client";
 
 import { SESSION_KEY, SESSION_COOKIE_OPTIONS, encodeSession } from "@/lib/auth/session";
 import { redirectToLogin } from "@/lib/auth/guard";
 import { withFlash } from "@/lib/flash/cookie";
-
-type AuthTokens = {
-  data: {
-    access_token: string;
-    refresh_token: string;
-  };
-};
 
 export async function login(request: NextRequest) {
   const formData = await request.formData();
@@ -26,7 +19,7 @@ export async function login(request: NextRequest) {
   }
 
   try {
-    const payload = await client.post<AuthTokens>("/api/v1/auth/login", { username, password });
+    const payload = await client.post<AuthTokenResponse>("/api/v1/auth/login", { username, password });
     const response = NextResponse.redirect(new URL("/", request.url), 303);
 
     response.cookies.set(

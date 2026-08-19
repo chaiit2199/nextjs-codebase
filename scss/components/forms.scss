@@ -90,7 +90,7 @@
   border: 0;
   border-radius: 9999px;
   background: transparent;
-  color: #6b7280;
+  color: var(--color-theme-muted);
   cursor: pointer;
   transition:
     color 0.15s ease,
@@ -98,7 +98,7 @@
 }
 
 .core_input__toggle:hover {
-  color: #1a2e22;
+  color: var(--color-theme-base-content);
   background: rgba(0, 0, 0, 0.06);
 }
 

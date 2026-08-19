@@ -14,10 +14,43 @@ export type HttpRequestOptions = Omit<AxiosRequestConfig, "url" | "method" | "da
   accessToken?: string;
 };
 
-type AuthTokens = {
+export type AuthTokenData = {
+  via?: string;
+  access_token: string;
+  expires_in?: number;
+  refresh_token: string;
+  token_type?: string;
+};
+
+export type AuthTokenResponse = {
+  data: AuthTokenData;
+  meta?: {
+    trace_id?: string;
+  };
+};
+
+type SessionTokens = {
   access_token: string;
   refresh_token: string;
 };
+
+const AUTH_SKIP_REFRESH = ["/api/v1/auth/login", "/api/v1/auth/refresh-token"];
+
+function unwrapTokens(
+  body: AuthTokenResponse | undefined,
+  fallbackRefresh?: string,
+): SessionTokens | null {
+  const access_token = body?.data?.access_token;
+  const refresh_token = body?.data?.refresh_token ?? fallbackRefresh;
+
+  if (!access_token || !refresh_token) return null;
+
+  return { access_token, refresh_token };
+}
+
+function isAuthSkipRefresh(url?: string) {
+  return AUTH_SKIP_REFRESH.some((path) => url?.includes(path));
+}
 
 export class HttpError extends Error {
   static readonly Unauthorized = 401;
@@ -61,30 +94,27 @@ export class Client {
 
   private async refreshAccessToken(): Promise<string | null> {
     const session = await this.readSession();
+    const refreshToken = session.refresh_token;
 
-    if (!session.refresh_token || !session.access_token) return null;
+    if (!refreshToken) return null;
 
     try {
-      const response = await axios.post<AuthTokens>(
+      const response = await axios.post<AuthTokenResponse>(
         `${this.instance.defaults.baseURL}/api/v1/auth/refresh-token`,
-        { refresh_token: session.refresh_token },
+        { refresh_token: refreshToken },
         {
           timeout: 5_000,
           headers: {
             Accept: "application/json",
             "Content-Type": "application/json",
-            Authorization: `Bearer ${session.access_token}`,
           },
         },
       );
 
-      const tokens = response.data;
+      const tokens = unwrapTokens(response.data, refreshToken);
+      if (!tokens) return null;
 
-      await this.writeSession({
-        access_token: tokens.access_token,
-        refresh_token: tokens.refresh_token,
-      });
-
+      await this.writeSession(tokens);
       return tokens.access_token;
     } catch {
       return null;
@@ -100,7 +130,10 @@ export class Client {
   ): Promise<TResponse> {
     const { accessToken: explicitToken, headers, ...requestConfig } = options;
 
-    const token = explicitToken ?? (await this.readSession()).access_token;
+    const skipAuthHeader = isAuthSkipRefresh(typeof url === "string" ? url : undefined);
+    const token = skipAuthHeader
+      ? undefined
+      : (explicitToken ?? (await this.readSession()).access_token);
 
     try {
       const response = await this.instance.request<TResponse>({
@@ -118,7 +151,11 @@ export class Client {
     } catch (error) {
       const httpError = toHttpError(error);
 
-      if (!isRetry && httpError.status === HttpError.Unauthorized) {
+      if (
+        !isRetry &&
+        httpError.status === HttpError.Unauthorized &&
+        !skipAuthHeader
+      ) {
         const newAccessToken = await this.refreshAccessToken();
 
         if (newAccessToken) {

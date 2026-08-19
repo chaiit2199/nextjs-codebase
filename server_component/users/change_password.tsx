@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 import { Icon } from "@/components/icon";
 import { Input, Modal, useDropdownClose } from "@/components/core_component";
@@ -12,21 +12,37 @@ import {
   validateChangePassword,
 } from "@/lib/auth/password";
 
+type PendingPassword = {
+  current_password: string;
+  new_password: string;
+};
+
 export function ChangePasswordComponent() {
   const closeDropdown = useDropdownClose();
+  const formRef = useRef<HTMLFormElement>(null);
   const [open, setOpen] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [pending, setPending] = useState<PendingPassword | null>(null);
   const [fieldErrors, setFieldErrors] = useState<ReturnType<typeof validateChangePassword>>({});
 
   function onClose() {
+    if (saving) return;
     setFieldErrors({});
+    setPending(null);
+    setConfirmOpen(false);
     setOpen(false);
   }
 
-  async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
+  function onCloseConfirm() {
+    if (saving) return;
+    setConfirmOpen(false);
+  }
+
+  function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    const form = event.currentTarget;
-    const data = new FormData(form);
+    const data = new FormData(event.currentTarget);
     const values = {
       current_password: String(data.get("current_password") ?? ""),
       new_password: String(data.get("new_password") ?? ""),
@@ -38,18 +54,30 @@ export function ChangePasswordComponent() {
 
     if (hasPasswordErrors(nextFieldErrors)) return;
 
-    const result = await changePassword({
+    setPending({
       current_password: values.current_password,
       new_password: values.new_password,
     });
+    setConfirmOpen(true);
+  }
+
+  async function onConfirm() {
+    if (!pending || saving) return;
+
+    setSaving(true);
+    const result = await changePassword(pending);
+    setSaving(false);
 
     if (!result.ok) {
+      setConfirmOpen(false);
       putFlash("error", result.message, 2000);
       return;
     }
 
-    form.reset();
+    formRef.current?.reset();
     setFieldErrors({});
+    setPending(null);
+    setConfirmOpen(false);
     setOpen(false);
     putFlash("success", "Đổi mật khẩu thành công", 2000);
   }
@@ -75,64 +103,99 @@ export function ChangePasswordComponent() {
         show={open}
         title="Đổi mật khẩu"
         subtitle="Đặt lại mật khẩu mới để bảo mật tài khoản của bạn."
-        closeable="close_button"
+        closeable={confirmOpen ? false : "close_button"}
         width="md"
         onClose={onClose}
       >
         <form
+          ref={formRef}
           id="change-password-form"
           className="core_modal__form"
           autoComplete="off"
           onSubmit={onSubmit}
         >
-          <Input
-            id="change-password-current"
-            name="current_password"
-            type="password"
-            label="Mật khẩu hiện tại *"
-            placeholder="Nhập mật khẩu hiện tại"
-            autoComplete="off"
-            minLength={PASSWORD_MIN_LENGTH}
-            required
-            error={fieldErrors.current_password}
-          />
-          <Input
-            id="change-password-new"
-            name="new_password"
-            type="password"
-            label="Mật khẩu mới *"
-            placeholder={`Tối thiểu ${PASSWORD_MIN_LENGTH} ký tự`}
-            autoComplete="new-password"
-            minLength={PASSWORD_MIN_LENGTH}
-            required
-            error={fieldErrors.new_password}
-          />
-          <Input
-            id="change-password-confirm"
-            name="new_password_confirmation"
-            type="password"
-            label="Xác nhận mật khẩu mới *"
-            placeholder="Nhập lại mật khẩu mới"
-            autoComplete="new-password"
-            minLength={PASSWORD_MIN_LENGTH}
-            required
-            error={fieldErrors.new_password_confirmation}
-          />
+          <div className="flex-auto overflow-y-auto">
+
+            <Input
+              id="change-password-current"
+              name="current_password"
+              type="password"
+              label="Mật khẩu hiện tại *"
+              placeholder="Nhập mật khẩu hiện tại"
+              autoComplete="off"
+              minLength={PASSWORD_MIN_LENGTH}
+              required
+              error={fieldErrors.current_password}
+            />
+            <Input
+              id="change-password-new"
+              name="new_password"
+              type="password"
+              label="Mật khẩu mới *"
+              placeholder={`Tối thiểu ${PASSWORD_MIN_LENGTH} ký tự`}
+              autoComplete="new-password"
+              minLength={PASSWORD_MIN_LENGTH}
+              required
+              error={fieldErrors.new_password}
+            />
+            <Input
+              id="change-password-confirm"
+              name="new_password_confirmation"
+              type="password"
+              label="Xác nhận mật khẩu mới *"
+              placeholder="Nhập lại mật khẩu mới"
+              autoComplete="new-password"
+              minLength={PASSWORD_MIN_LENGTH}
+              required
+              error={fieldErrors.new_password_confirmation}
+            />
+          </div>
 
           <div className="core_modal__actions">
             <button
               type="button"
               className="core_button core_button--secondary"
-              onClick={onClose}>
+              onClick={onClose}
+            >
               Hủy
             </button>
-            <button
-              type="submit"
-              className="core_button core_button--primary">
+            <button type="submit" className="core_button core_button--primary">
               Xác nhận
             </button>
           </div>
         </form>
+      </Modal>
+
+      <Modal
+        id="change-password-confirm-modal"
+        show={confirmOpen}
+        title="Xác nhận đổi mật khẩu"
+        closeable={saving ? false : "close_button"}
+        width="sm"
+        className="core_modal--stacked"
+        onClose={onCloseConfirm}
+      >
+        <p>Bạn có chắc chắn muốn đổi mật khẩu không?</p>
+        <div className="core_modal__actions">
+          <button
+            type="button"
+            id="change-password-confirm-cancel"
+            className="core_button core_button--secondary"
+            disabled={saving}
+            onClick={onCloseConfirm}
+          >
+            Hủy
+          </button>
+          <button
+            type="button"
+            id="change-password-confirm-submit"
+            className="core_button core_button--primary"
+            disabled={saving}
+            onClick={onConfirm}
+          >
+            {saving ? "Đang lưu..." : "Xác nhận"}
+          </button>
+        </div>
       </Modal>
     </>
   );
