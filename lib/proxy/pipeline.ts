@@ -1,7 +1,7 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
-import { ensureAuthenticated } from "@/lib/auth/authenticate";
+import { ensureAuthenticated } from "@/lib/auth/guard";
 import { applySecurityHeaders } from "@/lib/proxy/secure_header";
 
 const AUTHENTICATED_ROUTES = [
@@ -31,7 +31,7 @@ export async function dispatchRoutePipeline(request: NextRequest) {
   if (pathname === "/login" && request.method === "POST") {
     response = NextResponse.rewrite(new URL("/api/login", request.url));
   } else if (protectedRoute(pathname, AUTHENTICATED_ROUTES)) {
-    response = await ensureAuthenticated(request);
+    response = ensureAuthenticated(request);
   } else {
     response = NextResponse.next();
   }

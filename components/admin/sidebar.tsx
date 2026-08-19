@@ -33,9 +33,7 @@ export function AdminSidebar() {
   return (
     <aside
       id="dash-sidebar"
-      className={["dash-sidebar", collapsed && "toggle", !collapsed && "is-expanded"]
-        .filter(Boolean)
-        .join(" ")}
+      className={["dash-sidebar", collapsed && "toggle", !collapsed && "is-expanded"].filter(Boolean).join(" ")}
       aria-label="Điều hướng chính"
       data-collapsed={String(collapsed)}
     >
