@@ -3,7 +3,7 @@
 import { useState, type FormEvent } from "react";
 
 import type { Department, User } from "@/lib/api/me";
-import { UserAvatar } from "@/server_component/users/user-components";
+import { UserAvatar } from "@/components/user-components";
 import { Icon } from "@/components/icon";
 import { UserStatus, userStatusMeta } from "@/components/users/status";
 import { RequiredLabel, SelectField } from "@/components/users/user-form";
