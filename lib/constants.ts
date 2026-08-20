@@ -66,5 +66,4 @@ export function getLabelStatus(status?: string) {
     }
 
     return UNKNOWN_STATUS;
-}
-  
+} 

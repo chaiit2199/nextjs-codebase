@@ -2,65 +2,55 @@
 
 import { useState } from "react";
 
-import type { Role } from "@/lib/api/me";
 import { Icon } from "@/components/icon";
+import { SAMPLE_PERMISSIONS, type Permission } from "@/lib/mock/permissions";
 
-const PERMISSION_PAGES = [
-  { id: "dashboard", label: "Dashboard" },
-  { id: "products_costs", label: "Quản lý giá vốn" },
-  { id: "products_ingredients", label: "Quản lý thành phần" },
-  { id: "products_packages", label: "Quản lý bao bì" },
-  { id: "products_capital", label: "Quản lý sản phẩm" },
-  { id: "orders", label: "Quản lý đơn hàng" },
-  { id: "agents", label: "Quản lý đại lý" },
-  { id: "employees", label: "Nhân viên" },
-  { id: "departments", label: "Phòng ban" },
-  { id: "permission_groups", label: "Nhóm quyền" },
-  { id: "promotions", label: "Khuyến mãi" },
-  { id: "authorization", label: "Phân quyền" },
-] as const;
-
-const PERMISSION_ACTIONS = [
-  { id: "read", label: "Xem" },
-  { id: "write", label: "Thêm" },
-  { id: "edit", label: "Sửa" },
-  { id: "delete", label: "Xóa" },
-  { id: "import", label: "Import" },
-  { id: "export", label: "Export" },
-] as const;
-
-function permissionCode(page: string, action: string) {
-  return `${page}.${action}`;
-}
+type PermissionGroup = {
+  id: string;
+  name: string;
+  actions: Permission[];
+};
 
 function uniqueSorted(codes: string[]) {
   return [...new Set(codes)].sort();
 }
 
-function pageEnabled(permissions: string[], page: string) {
-  const prefix = `${page}.`;
-  return permissions.some((code) => code.startsWith(prefix));
+function groupPermissions(permissions: Permission[]): PermissionGroup[] {
+  const groups = new Map<string, PermissionGroup>();
+
+  for (const permission of permissions) {
+    const group = groups.get(permission.module_code) ?? {
+      id: permission.module_code,
+      name: permission.module_name,
+      actions: [],
+    };
+    group.actions.push(permission);
+    groups.set(permission.module_code, group);
+  }
+
+  return [...groups.values()];
 }
 
-function grantsToPermissions(role: Role) {
-  return uniqueSorted(role.grants.map((grant) => grant.permission_code.replace(":", ".")));
+function groupEnabled(selected: string[], group: PermissionGroup) {
+  return group.actions.some((action) => selected.includes(action.code));
 }
 
-export function SelectRoles({ role }: { role: Role }) {
-  const [permissions, setPermissions] = useState(() => grantsToPermissions(role));
+export function SelectRoles({ selectedCodes = [] }: { selectedCodes?: string[] }) {
+  const groups = groupPermissions(SAMPLE_PERMISSIONS);
+  const [permissions, setPermissions] = useState(() => uniqueSorted(selectedCodes));
 
-  function togglePage(page: string) {
+  function togglePage(group: PermissionGroup) {
+    const codes = group.actions.map((action) => action.code);
+
     setPermissions((current) => {
-      if (pageEnabled(current, page)) {
-        const prefix = `${page}.`;
-        return current.filter((code) => !code.startsWith(prefix));
+      if (codes.some((code) => current.includes(code))) {
+        return current.filter((code) => !codes.includes(code));
       }
-      return uniqueSorted([...current, permissionCode(page, "read")]);
+      return uniqueSorted([...current, ...codes]);
     });
   }
 
-  function toggleAction(page: string, action: string) {
-    const code = permissionCode(page, action);
+  function toggleAction(code: string) {
     setPermissions((current) => {
       if (current.includes(code)) return current.filter((item) => item !== code);
       return uniqueSorted([...current, code]);
@@ -77,13 +67,13 @@ export function SelectRoles({ role }: { role: Role }) {
       </div>
 
       <div className="auth-permission__list">
-        {PERMISSION_PAGES.map((page) => {
-          const isPageEnabled = pageEnabled(permissions, page.id);
+        {groups.map((group) => {
+          const isPageEnabled = groupEnabled(permissions, group);
 
           return (
             <div
-              key={page.id}
-              id={`permission-page-${page.id}`}
+              key={group.id}
+              id={`permission-page-${group.id}`}
               className={["auth-permission__item", isPageEnabled && "is-enabled"]
                 .filter(Boolean)
                 .join(" ")}
@@ -93,7 +83,7 @@ export function SelectRoles({ role }: { role: Role }) {
                 className={["auth-permission__page", isPageEnabled && "is-checked"]
                   .filter(Boolean)
                   .join(" ")}
-                onClick={() => togglePage(page.id)}
+                onClick={() => togglePage(group)}
               >
                 <span
                   className={["auth-permission__check", isPageEnabled && "is-checked"]
@@ -102,16 +92,16 @@ export function SelectRoles({ role }: { role: Role }) {
                 >
                   {isPageEnabled && <Icon name="hero-check" className="size-3.5" />}
                 </span>
-                <span>{page.label}</span>
+                <span>{group.name}</span>
               </button>
 
               <div className="auth-permission__actions">
-                {PERMISSION_ACTIONS.map((action) => {
-                  const isActionEnabled = permissions.includes(permissionCode(page.id, action.id));
+                {group.actions.map((action) => {
+                  const isActionEnabled = permissions.includes(action.code);
 
                   return (
                     <button
-                      key={action.id}
+                      key={action.code}
                       type="button"
                       className={[
                         "auth-permission__action",
@@ -121,7 +111,7 @@ export function SelectRoles({ role }: { role: Role }) {
                         .filter(Boolean)
                         .join(" ")}
                       disabled={!isPageEnabled}
-                      onClick={() => toggleAction(page.id, action.id)}
+                      onClick={() => toggleAction(action.code)}
                     >
                       <span
                         className={["auth-permission__check", isActionEnabled && "is-checked"]
@@ -130,7 +120,7 @@ export function SelectRoles({ role }: { role: Role }) {
                       >
                         {isActionEnabled && <Icon name="hero-check" className="size-3.5" />}
                       </span>
-                      <span>{action.label}</span>
+                      <span>{action.function_name}</span>
                     </button>
                   );
                 })}

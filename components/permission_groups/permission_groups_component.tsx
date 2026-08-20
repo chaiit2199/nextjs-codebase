@@ -1,39 +1,65 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 
-import type { Role } from "@/lib/api/me";
+import type { Role, ShortRole } from "@/lib/api/me";
 import { Icon } from "@/components/icon";
 import { Input, Modal } from "@/components/core_component";
 import { RequiredLabel } from "@/components/users/user-form";
 import { getLabelStatus } from "@/lib/constants";
+import { subscribeHeaderAction } from "@/lib/dashboard/header-actions";
 import { SelectRoles } from "./select_roles_component";
+import { CreatePermissionGroupComponent } from "./create_permission_group_component";
 
-export function PermissionGroupsComponent({ roles }: { roles: Role[] }) {
+export function PermissionGroupsComponent({ roles, shortRoles }: { roles: Role[], shortRoles: ShortRole[] }) {
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [selectedRole, setSelectedRole] = useState<Role | null>(null);
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [payload, setPayload] = useState<{
+    id?: number;
+    name: string;
+    description: string;
+    permissions: string[];
+  } | null>(null);
 
   function openForm(role: Role) {
     setSelectedRole(role);
+    setPayload(null);
+    setIsConfirmOpen(false);
   }
 
   function closeForm() {
+    setPayload(null);
+    setIsConfirmOpen(false);
     setSelectedRole(null);
   }
 
   function handleFormSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    const formValues = {
+    setPayload({
       id: selectedRole?.id,
       name: String(data.get("name") ?? "").trim(),
       description: String(data.get("description") ?? "").trim(),
       permissions: data.getAll("permissions").map(String),
-    };
-    console.log(formValues);
+    });
+    setIsConfirmOpen(true);
   }
+
+  function confirmUpdate() {
+    console.log(payload);
+    setIsConfirmOpen(false);
+  }
+
+  useEffect(() => {
+    return subscribeHeaderAction("/permission-groups", (detail) => {
+      if (detail.action === "create") setIsCreateOpen(true);
+    });
+  }, []);
 
   return (
     <>
+      {isCreateOpen && <CreatePermissionGroupComponent onClose={() => setIsCreateOpen(false)} shortRoles={shortRoles} />}
       <section className="admin-section" id="admin-permission-groups-section">
         <div className="admin-table-card mb-6">
           <div className="overview-table-wrap">
@@ -77,8 +103,8 @@ export function PermissionGroupsComponent({ roles }: { roles: Role[] }) {
         show={selectedRole !== null}
         title="Chỉnh sửa nhóm quyền"
         subtitle="Đặt tên nhóm và tick quyền phù hợp."
-        closeable="close_button"
-        width="xl"
+        closeable={isConfirmOpen ? false : "close_button"}
+        width="3xl"
         onClose={closeForm}
       >
         {selectedRole && (
@@ -114,7 +140,7 @@ export function PermissionGroupsComponent({ roles }: { roles: Role[] }) {
                 </div>
               </div>
 
-              <SelectRoles role={selectedRole} />
+              <SelectRoles selectedCodes={selectedRole.grants.map((grant) => grant.permission_code)} />
             </div>
 
             <div className="core_modal__actions">
@@ -122,12 +148,34 @@ export function PermissionGroupsComponent({ roles }: { roles: Role[] }) {
                 Hủy
               </button>
               <button type="submit" id="permission-group-submit" className="core_button core_button--primary">
-                <Icon name="hero-check" className="size-4" />
-                Lưu nhóm quyền
+                Xác nhận cập nhật nhóm quyền
               </button>
             </div>
           </form>
         )}
+      </Modal>
+
+      <Modal
+        id="update-permission-group-confirm-modal"
+        show={isConfirmOpen}
+        title="Xác nhận cập nhật nhóm quyền"
+        closeable="close_button"
+        width="md"
+        className="core_modal--stacked"
+        onClose={() => setIsConfirmOpen(false)}
+      >
+        <div className="core_modal__actions">
+          <button
+            type="button"
+            className="core_button core_button--secondary"
+            onClick={() => setIsConfirmOpen(false)}
+          >
+            Hủy
+          </button>
+          <button type="button" className="core_button core_button--primary" onClick={confirmUpdate}>
+            Cập nhật nhóm quyền
+          </button>
+        </div>
       </Modal>
     </>
   );
