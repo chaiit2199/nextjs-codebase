@@ -2,7 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 
-import type { Department, Role } from "@/lib/api/me";
+import type { Department, ShortRole } from "@/lib/api/me";
 import { Input, Modal } from "@/components/core_component";
 import { UserStatus, userStatusMeta } from "@/lib/constants";
 import { RequiredLabel, SelectField } from "@/components/users/user-form";
@@ -46,7 +46,7 @@ export function CreateUserComponent({
   onClose,
 }: {
   departments: Department[];
-  roles: Role[];
+  roles: ShortRole[];
   onClose: () => void;
 }) {
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);

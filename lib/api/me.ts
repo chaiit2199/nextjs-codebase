@@ -48,13 +48,35 @@ type DepartmentsResponse = {
     };
 };
 
+export type RoleGrant = {
+    permission_id: number;
+    permission_code: string;
+};
+
 export type Role = {
     id: number;
+    code: string;
     name: string;
+    status: string;
+    version: number;
+    description: string;
+    is_system: boolean;
+    allowed_scope_types: string[];
+    grants: RoleGrant[];
+    users_count: number;
 };
+
+export type ShortRole = Pick<Role, "id" | "name">;
 
 type RolesResponse = {
     data: Role[];
+    meta?: {
+        trace_id?: string;
+    };
+};
+
+type ShortRolesResponse = {
+    data: ShortRole[];
     meta?: {
         trace_id?: string;
     };
@@ -100,9 +122,9 @@ export const getDepartments = async (): Promise<Department[]> => {
     }
 };
 
-export const getRoles = async (): Promise<Role[]> => {
+export const getShortRoles = async (): Promise<ShortRole[]> => {
     try {
-        const payload = await client.get<RolesResponse>("/api/v1/roles?view=short");
+        const payload = await client.get<ShortRolesResponse>("/api/v1/roles?view=short");
         return payload.data;
     } catch (error) {
         if (error instanceof HttpError && error.status === HttpError.Unauthorized) {
@@ -112,3 +134,17 @@ export const getRoles = async (): Promise<Role[]> => {
         throw error;
     }
 };
+
+export const getRoles = async (): Promise<Role[]> => {
+    try {
+        const payload = await client.get<RolesResponse>("/api/v1/roles");
+        return payload.data;
+    } catch (error) {
+        if (error instanceof HttpError && error.status === HttpError.Unauthorized) {
+            return [];
+        }
+
+        throw error;
+    }
+};
+

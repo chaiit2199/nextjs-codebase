@@ -32,6 +32,7 @@ import {
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 import {
+  CheckIcon,
   CheckCircleIcon,
   ExclamationCircleIcon,
   InformationCircleIcon,
@@ -70,6 +71,7 @@ const ICONS = {
   "hero-user-group": UserGroupIcon,
   "hero-users": UsersIcon,
   "hero-x-mark": XMarkIcon,
+  "hero-check": CheckIcon,
   "hero-x-mark-solid": XMarkSolidIcon,
   "hero-information-circle-mini": InformationCircleIcon,
   "hero-check-circle-mini": CheckCircleIcon,

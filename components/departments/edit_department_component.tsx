@@ -6,7 +6,7 @@ import type { Department } from "@/lib/api/me";
 import { Icon } from "@/components/icon";
 import { Input, Modal } from "@/components/core_component";
 import { RequiredLabel, SelectField } from "@/components/users/user-form";
-import { DepartmentStatus, departmentStatusMeta } from "@/lib/constants";
+import { LabelStatus, getLabelStatus } from "@/lib/constants";
 import { updateDepartment } from "@/lib/api/departments";
 import { putFlash } from "@/lib/flash/flash";
 
@@ -90,7 +90,7 @@ export function EditDepartmentComponent({ departments }: { departments: Departme
               </thead>
               <tbody>
                 {departments.map((department) => {
-                  const meta = departmentStatusMeta(department.status);
+                  const meta = getLabelStatus(department.status);
 
                   return (
                     <tr key={department.id} id={`department-row-${department.id}`}>
@@ -155,10 +155,10 @@ export function EditDepartmentComponent({ departments }: { departments: Departme
                 id="update-department-status"
                 name="status"
                 label={<RequiredLabel>Trạng thái</RequiredLabel>}
-                defaultValue={selectedDepartment.status ?? DepartmentStatus.Active}
+                defaultValue={selectedDepartment.status ?? LabelStatus.Active}
               >
-                <option value={DepartmentStatus.Active}>{departmentStatusMeta(DepartmentStatus.Active).label}</option>
-                <option value={DepartmentStatus.Inactive}>{departmentStatusMeta(DepartmentStatus.Inactive).label}</option>
+                <option value={LabelStatus.Active}>{getLabelStatus(LabelStatus.Active).label}</option>
+                <option value={LabelStatus.Inactive}>{getLabelStatus(LabelStatus.Inactive).label}</option>
               </SelectField>
             </div>
             <div className="core_modal__actions">

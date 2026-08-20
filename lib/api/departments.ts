@@ -36,7 +36,6 @@ export async function updateDepartment(payload: UpdateDepartmentInput) {
     revalidatePath("/departments");
     return { ok: true as const };
   } catch (error) {
-    console.error(error);
     const message =
       error instanceof HttpError ? error.message : "Không thể cập nhật phòng ban";
     return { ok: false as const, message };

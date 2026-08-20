@@ -4,7 +4,7 @@ import { useState, type FormEvent } from "react";
 
 import { Input, Modal } from "@/components/core_component";
 import { RequiredLabel, SelectField } from "@/components/users/user-form";
-import { DepartmentStatus, departmentStatusMeta } from "@/lib/constants";
+import { LabelStatus, getLabelStatus } from "@/lib/constants";
 import { createDepartment, type CreateDepartmentInput } from "@/lib/api/departments";
 import { putFlash } from "@/lib/flash/flash";
 
@@ -84,10 +84,10 @@ export function CreateDepartmentComponent({ onClose }: { onClose: () => void }) 
               id="create-department-status"
               name="status"
               label={<RequiredLabel>Trạng thái</RequiredLabel>}
-              defaultValue={DepartmentStatus.Active}
+              defaultValue={LabelStatus.Active}
             >
-              <option value={DepartmentStatus.Active}>{departmentStatusMeta(DepartmentStatus.Active).label}</option>
-              <option value={DepartmentStatus.Inactive}>{departmentStatusMeta(DepartmentStatus.Inactive).label}</option>
+              <option value={LabelStatus.Active}>{getLabelStatus(LabelStatus.Active).label}</option>
+              <option value={LabelStatus.Inactive}>{getLabelStatus(LabelStatus.Inactive).label}</option>
             </SelectField>
           </div>
           <div className="core_modal__actions">

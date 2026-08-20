@@ -48,21 +48,21 @@ export function userStatusMeta(status?: number) {
     return UNKNOWN_STATUS;
 }
 
-export const DepartmentStatus = {
+export const LabelStatus = {
     Active: "ACTIVE",
     Inactive: "INACTIVE",
 } as const;
 
-export type DepartmentStatusValue = (typeof DepartmentStatus)[keyof typeof DepartmentStatus];
+export type LabelStatusValue = (typeof LabelStatus)[keyof typeof LabelStatus];
 
-const DEPARTMENT_STATUS_MAP = {
-    [DepartmentStatus.Active]: { kind: "active", label: "Đang hoạt động" },
-    [DepartmentStatus.Inactive]: { kind: "paused", label: "Ngưng hoạt động" },
+const LABEL_STATUS_MAP = {
+    [LabelStatus.Active]: { kind: "active", label: "Đang hoạt động" },
+    [LabelStatus.Inactive]: { kind: "paused", label: "Ngưng hoạt động" },
 } as const;
 
-export function departmentStatusMeta(status?: string) {
-    if (status === DepartmentStatus.Active || status === DepartmentStatus.Inactive) {
-        return DEPARTMENT_STATUS_MAP[status];
+export function getLabelStatus(status?: string) {
+    if (status === LabelStatus.Active || status === LabelStatus.Inactive) {
+        return LABEL_STATUS_MAP[status];
     }
 
     return UNKNOWN_STATUS;
