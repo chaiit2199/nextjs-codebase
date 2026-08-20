@@ -16,24 +16,24 @@ export function StaffUsers({
   departments: Department[];
   roles: Role[];
 }) {
-  const [isCreateOpen, setIsCreateOpen] = useState(false);
+    const [isCreateOpen, setIsCreateOpen] = useState(false);
 
-  useEffect(() => {
-    return subscribeHeaderAction("/staff", (detail) => {
-      if (detail.action === "create") setIsCreateOpen(true);
-    });
-  }, []);
+    useEffect(() => {
+        return subscribeHeaderAction("/staff", (detail) => {
+        if (detail.action === "create") setIsCreateOpen(true);
+        });
+    }, []);
 
   return (
     <>
-      <UsersComponent users={users} departments={departments} />
-      {isCreateOpen && (
-        <CreateUserComponent
-          departments={departments}
-          roles={roles}
-          onClose={() => setIsCreateOpen(false)}
-        />
-      )}
+        <UsersComponent users={users} departments={departments} />
+            {isCreateOpen && (
+                <CreateUserComponent
+                departments={departments}
+                roles={roles}
+                onClose={() => setIsCreateOpen(false)}
+            />
+        )}
     </>
   );
 }

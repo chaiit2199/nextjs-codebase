@@ -1,4 +1,4 @@
-import "@/scss/app.scss";
+import "@/styles/app.scss";
 import type { Metadata, Viewport } from "next";
 import { cookies } from "next/headers";
 import { customMetadata, customViewport } from "@/components/custom-metadata";

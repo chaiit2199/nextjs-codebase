@@ -4,7 +4,7 @@ import { useState, type FormEvent } from "react";
 
 import type { Department, Role } from "@/lib/api/me";
 import { Input, Modal } from "@/components/core_component";
-import { UserStatus, userStatusMeta } from "@/components/users/status";
+import { UserStatus, userStatusMeta } from "@/lib/constants";
 import { RequiredLabel, SelectField } from "@/components/users/user-form";
 import { createUser, type CreateUserInput } from "@/lib/api/users";
 import { PASSWORD_MIN_LENGTH } from "@/lib/auth/password";

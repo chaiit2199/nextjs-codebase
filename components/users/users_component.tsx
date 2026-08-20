@@ -5,7 +5,7 @@ import { useState, type FormEvent } from "react";
 import type { Department, User } from "@/lib/api/me";
 import { UserAvatar } from "@/components/user-components";
 import { Icon } from "@/components/icon";
-import { UserStatus, userStatusMeta } from "@/components/users/status";
+import { UserStatus, userStatusMeta } from "@/lib/constants";
 import { RequiredLabel, SelectField } from "@/components/users/user-form";
 import { Input, Modal } from "@/components/core_component";
 import { updateUser } from "@/lib/api/users";

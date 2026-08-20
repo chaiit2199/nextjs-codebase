@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 
 import { Icon } from "@/components/icon";
-import { pageMeta } from "@/lib/dashboard/navbar";
+import { getHeaderConfig } from "@/lib/dashboard/navbar";
 import { emitHeaderAction } from "@/lib/dashboard/header-actions";
 
 
@@ -12,7 +12,7 @@ import { emitHeaderAction } from "@/lib/dashboard/header-actions";
 
 export function DashboardHeader() {
   const pathname = usePathname();
-  const meta = pageMeta(pathname);
+  const meta = getHeaderConfig(pathname);
   const [query, setQuery] = useState("");
 
   return (
@@ -22,41 +22,44 @@ export function DashboardHeader() {
       </div>
 
       <div className="header__actions" id="header-actions">
-        <form
-          id="header-search-form"
-          onSubmit={(event) => {
-            event.preventDefault();
-            emitHeaderAction({ action: "search", page: pathname, query });
-          }}
-        >
-          <div className="header__search">
-            <img src="/icons/header-search.svg" alt="" className="size-5 shrink-0" />
-            <input
-              id="header-search"
-              name="query"
-              type="text"
-              className="header__search-input"
-              placeholder="Search"
-              autoComplete="off"
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-            />
-            {query !== "" && (
-              <button
-                type="button"
-                id="header-search-clear"
-                className="header__search-clear"
-                aria-label="Xóa tìm kiếm"
-                onClick={() => {
-                  setQuery("");
-                  emitHeaderAction({ action: "search", page: pathname, query: "" });
-                }}
-              >
-                <Icon name="hero-x-mark" className="size-4" />
-              </button>
-            )}
-          </div>
-        </form>
+        {meta.search && (
+        
+          <form
+            id="header-search-form"
+            onSubmit={(event) => {
+              event.preventDefault();
+              emitHeaderAction({ action: "search", page: pathname, query });
+            }}
+          >
+            <div className="header__search">
+              <img src="/icons/header-search.svg" alt="" className="size-5 shrink-0" />
+              <input
+                id="header-search"
+                name="query"
+                type="text"
+                className="header__search-input"
+                placeholder="Search"
+                autoComplete="off"
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+              />
+              {query !== "" && (
+                <button
+                  type="button"
+                  id="header-search-clear"
+                  className="header__search-clear"
+                  aria-label="Xóa tìm kiếm"
+                  onClick={() => {
+                    setQuery("");
+                    emitHeaderAction({ action: "search", page: pathname, query: "" });
+                  }}
+                >
+                  <Icon name="hero-x-mark" className="size-4" />
+                </button>
+              )}
+            </div>
+          </form>
+        )}
 
         {meta.authozation && (
           <button type="button" id="header-authozation" className="btn btn--primary">

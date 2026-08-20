@@ -3,20 +3,10 @@ import { NextResponse } from "next/server";
 
 import { ensureAuthenticated } from "@/lib/auth/guard";
 import { applySecurityHeaders } from "@/lib/proxy/secure_header";
+import { MENU } from "@/lib/dashboard/navbar";
 
-const AUTHENTICATED_ROUTES = [
-  "/",
-  "/products",
-  "/orders",
-  "/agents",
-  "/promotions",
-  "/staff",
-  "/departments",
-  "/permission-groups",
-  "/authozation",
-  "/staff",
-  "/settings",
-];
+const PROTECTED_ROUTES = MENU.flatMap((item) => [
+  item.href, ...(item.children?.map((child) => child.href) ?? [])]).filter((href): href is string => Boolean(href));
 
 export async function dispatchRoutePipeline(request: NextRequest) {
   if (request.method === "OPTIONS") {
@@ -30,7 +20,7 @@ export async function dispatchRoutePipeline(request: NextRequest) {
   // Routing & Auth
   if (pathname === "/login" && request.method === "POST") {
     response = NextResponse.rewrite(new URL("/api/login", request.url));
-  } else if (protectedRoute(pathname, AUTHENTICATED_ROUTES)) {
+  } else if (protectedRoute(pathname, PROTECTED_ROUTES)) {
     response = ensureAuthenticated(request);
   } else {
     response = NextResponse.next();

@@ -1,83 +1,80 @@
-export type NavChild = {
+export type HeaderButtons = {
+  create?: boolean;
+  export?: boolean;
+  filter?: boolean;
+  authozation?: boolean;
+  search?: boolean;
+};
+
+export type NavBarItem = {
   id: string;
   label: string;
   href: string;
   icon: string;
-};
+  title?: string;
+} & HeaderButtons;
 
-export type NavItem = {
+export type Navbar = {
   id: string;
   label: string;
   href?: string;
   icon: string;
-  children?: NavChild[];
-};
+  title?: string;
+  children?: NavBarItem[];
+} & HeaderButtons;
 
-export const NAV_ITEMS: NavItem[] = [
-  { id: "home", label: "Dashboard", href: "/", icon: "hero-squares-2x2" },
+export const MENU: Navbar[] = [
+  { id: "home", label: "Dashboard", href: "/", icon: "hero-squares-2x2", title: "Tổng quan" },
   {
     id: "products",
     label: "Sản phẩm",
     icon: "hero-cube",
     children: [
-      { id: "costs", label: "Quản lý giá vốn", href: "/products/costs", icon: "hero-currency-dollar" },
-      { id: "ingredients", label: "Quản lý thành phần", href: "/products/thanh-phan", icon: "hero-beaker" },
-      { id: "packages", label: "Quản lý bao bì", href: "/products/packages", icon: "hero-archive-box" },
-      { id: "capital", label: "Quản lý sản phẩm", href: "/products/capital", icon: "hero-calculator" },
+      { id: "costs", label: "Quản lý giá vốn", href: "/products/costs", icon: "hero-currency-dollar", create: true },
+      { id: "ingredients", label: "Quản lý thành phần", href: "/products/thanh-phan", icon: "hero-beaker", create: true },
+      { id: "packages", label: "Quản lý bao bì", href: "/products/packages", icon: "hero-archive-box", create: true },
+      { id: "capital", label: "Quản lý sản phẩm", href: "/products/capital", icon: "hero-calculator", create: true },
     ],
   },
-  { id: "orders", label: "Quản lý đơn hàng", href: "/orders", icon: "hero-clipboard-document-list" },
-  { id: "agents", label: "Quản lý đại lý", href: "/agents", icon: "hero-users" },
-  { id: "promotions", label: "Khuyến mãi", href: "/promotions", icon: "hero-ticket" },
+  { id: "orders", label: "Quản lý đơn hàng", href: "/orders", icon: "hero-clipboard-document-list", create: true },
+  { id: "agents", label: "Quản lý đại lý", href: "/agents", icon: "hero-users", create: true },
+  { id: "promotions", label: "Khuyến mãi", href: "/promotions", icon: "hero-ticket", create: true },
   {
     id: "management",
     label: "Quản lý",
     icon: "hero-building-office-2",
     children: [
-      { id: "staff", label: "Nhân viên", href: "/staff", icon: "hero-identification" },
-      { id: "departments", label: "Phòng ban", href: "/departments", icon: "hero-user-group" },
-      { id: "permission_groups", label: "Nhóm quyền", href: "/permission-groups", icon: "hero-shield-check" },
+      { id: "staff", label: "Nhân viên", href: "/staff", icon: "hero-identification", create: true, search: true },
+      { id: "departments", label: "Phòng ban", href: "/departments", icon: "hero-user-group", create: true },
+      { id: "permission_groups", label: "Nhóm quyền", href: "/permission-groups", icon: "hero-shield-check", create: true },
       { id: "authozation", label: "Phân quyền", href: "/authozation", icon: "hero-cog-6-tooth" },
     ],
   },
 ];
 
-export type PageMeta = {
-  title: string;
-  create?: boolean;
-  export?: boolean;
-  filter?: boolean;
-  authozation?: boolean;
-};
-
-const PAGE_META: Record<string, PageMeta> = {
-  "/": { title: "Tổng quan" },
-  "/products/costs": { title: "Quản lý giá vốn", create: true },
-  "/products/thanh-phan": { title: "Quản lý thành phần", create: true },
-  "/products/packages": { title: "Quản lý bao bì", create: true },
-  "/products/capital": { title: "Quản lý sản phẩm", create: true },
-  "/orders": { title: "Quản lý đơn hàng", create: true },
-  "/agents": { title: "Quản lý đại lý", create: true },
-  "/promotions": { title: "Khuyến mãi", create: true },
-  "/staff": { title: "Nhân viên", create: true },
-  "/departments": { title: "Phòng ban", create: true },
-  "/permission-groups": { title: "Nhóm quyền", create: true },
-  "/authozation": { title: "Phân quyền" },
-};
-
-export function pageMeta(pathname: string): PageMeta {
-  return PAGE_META[pathname] ?? { title: "USA FARM AGRI" };
-}
-
-export function pageIdFromPath(pathname: string): string {
-  if (pathname === "/") return "home";
-
-  for (const item of NAV_ITEMS) {
-    if (item.href === pathname) return item.id;
+function findMenuItem(pathname: string) {
+  for (const item of MENU) {
+    if (item.href === pathname) return item;
     const child = item.children?.find((entry) => entry.href === pathname);
-    if (child) return child.id;
+    if (child) return child;
   }
-
-  return "";
+  return null;
 }
- 
+
+export type HeaderConfig = { title: string } & Required<HeaderButtons>;
+
+export function getHeaderConfig(pathname: string): HeaderConfig {
+  const item = findMenuItem(pathname);
+  return {
+    title: item?.title ?? "USA FARM AGRI",
+    create: Boolean(item?.create),
+    export: Boolean(item?.export),
+    filter: Boolean(item?.filter),
+    authozation: Boolean(item?.authozation),
+    search: Boolean(item?.search),
+  };
+}
+
+export function getPageId(pathname: string) {
+  return findMenuItem(pathname)?.id ?? "";
+}

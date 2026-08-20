@@ -5,7 +5,8 @@ import { ChartPeriodFilter } from "@/components/charts/chart-period-filter";
 import { OrderPieChart } from "@/components/charts/order-pie-chart";
 import { SalesAreaChart } from "@/components/charts/sales-area-chart";
 import { Icon } from "@/components/icon";
-import { KPIS, ORDER_SERIES, RECENT_ORDERS, SALES_SERIES, TOP_SALES } from "@/lib/mock/overview";
+import { KPIS, RECENT_ORDERS, SALES_SERIES, TOP_SALES } from "@/lib/mock/overview";
+import { ORDER_SERIES } from "@/lib/constants";
 
 export const metadata: Metadata = {
   title: "Tổng quan",

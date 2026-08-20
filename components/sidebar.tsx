@@ -7,13 +7,13 @@ import { useEffect, useState } from "react";
 import { Dropdown } from "@/components/core_component";
 import { Icon } from "@/components/icon";
 import { UserAvatarRow } from "@/components/user-components";
-import { NAV_ITEMS, pageIdFromPath } from "@/lib/dashboard/navbar";
+import { MENU, getPageId } from "@/lib/dashboard/navbar";
 import type { User } from "@/lib/api/me";
 import { ChangePasswordComponent } from "@/components/users/change_password";
 
 export function SidebarComponent({ user }: { user?: User | null }) {
   const pathname = usePathname();
-  const currentPage = pageIdFromPath(pathname);
+  const currentPage = getPageId(pathname);
   const [collapsed, setCollapsed] = useState(false);
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const displayName = user?.full_name || user?.username || "User";
@@ -22,17 +22,17 @@ export function SidebarComponent({ user }: { user?: User | null }) {
   const userId = String(user?.id ?? user?.username ?? "guest");
 
   useEffect(() => {
-    const match = NAV_ITEMS.findIndex((item) =>
+    const match = MENU.findIndex((item) =>
       item.children?.some((child) => child.href === pathname),
     );
     if (match >= 0) setOpenIndex(match);
   }, [pathname]);
 
-  function groupOpen(index: number, item: (typeof NAV_ITEMS)[number]) {
+  function groupOpen(index: number, item: (typeof MENU)[number]) {
     return openIndex === index || Boolean(item.children?.some((child) => child.id === currentPage));
   }
 
-  function groupActive(item: (typeof NAV_ITEMS)[number]) {
+  function groupActive(item: (typeof MENU)[number]) {
     return currentPage === item.id || Boolean(item.children?.some((child) => child.id === currentPage));
   }
 
@@ -61,7 +61,7 @@ export function SidebarComponent({ user }: { user?: User | null }) {
       </div>
 
       <ul className="dash-sidebar__nav">
-        {NAV_ITEMS.map((item, index) => {
+        {MENU.map((item, index) => {
           const isOpen = groupOpen(index, item);
 
           return (
