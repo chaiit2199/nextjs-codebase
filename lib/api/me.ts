@@ -47,6 +47,23 @@ type DepartmentsResponse = {
         trace_id?: string;
     };
 };
+
+export type Role = {
+    id: number;
+    code?: string;
+    name: string;
+    status?: string | number;
+};
+
+type RolesResponse = {
+    data: Role[];
+    meta?: {
+        total: number;
+        page: number;
+        page_size: number;
+        trace_id?: string;
+    };
+};
   
 
 export const getCurrentUser = cache(async (): Promise<User | null> => {
@@ -82,6 +99,19 @@ export const getDepartments = async (): Promise<Department[]> => {
     } catch (error) {
         if (error instanceof HttpError && error.status === HttpError.Unauthorized) {
         return [];
+        }
+
+        throw error;
+    }
+};
+
+export const getRoles = async (): Promise<Role[]> => {
+    try {
+        const payload = await client.get<RolesResponse>("/api/v1/roles");
+        return payload.data;
+    } catch (error) {
+        if (error instanceof HttpError && error.status === HttpError.Unauthorized) {
+            return [];
         }
 
         throw error;

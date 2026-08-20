@@ -1,0 +1,242 @@
+"use client";
+
+import { useState, type FormEvent } from "react";
+
+import type { Department, Role } from "@/lib/api/me";
+import { Input, Modal } from "@/components/core_component";
+import { UserStatus, userStatusMeta } from "@/components/users/status";
+import { RequiredLabel, SelectField } from "@/components/users/user-form";
+import { createUser, type CreateUserInput } from "@/lib/api/users";
+import { PASSWORD_MIN_LENGTH } from "@/lib/auth/password";
+import { putFlash } from "@/lib/flash";
+
+function readCreateDraft(data: FormData): CreateUserInput | null {
+  const text = (name: string) => String(data.get(name) ?? "").trim();
+  const username = text("username");
+  const password = text("password");
+  const fullName = text("full_name");
+
+  if (!username || !password || !fullName) return null;
+
+  const draft: CreateUserInput = {
+    username,
+    password,
+    full_name: fullName,
+  };
+  const phone = text("phone");
+  const email = text("email");
+  const address = text("address");
+  const status = Number(data.get("status"));
+  const roleId = Number(data.get("role_id"));
+  const departmentId = Number(data.get("department_id"));
+
+  if (phone) draft.phone = phone;
+  if (email) draft.email = email;
+  if (address) draft.address = address;
+  if (Number.isFinite(status)) draft.status = status;
+  if (Number.isFinite(roleId) && roleId > 0) draft.role_id = roleId;
+  if (Number.isFinite(departmentId) && departmentId > 0) draft.department_id = departmentId;
+
+  return draft;
+}
+
+export function CreateUserComponent({
+  departments,
+  roles,
+  onClose,
+}: {
+  departments: Department[];
+  roles: Role[];
+  onClose: () => void;
+}) {
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [draft, setDraft] = useState<CreateUserInput | null>(null);
+
+  function closeForm() {
+    if (isSaving) return;
+    onClose();
+  }
+
+  function closeConfirm() {
+    if (isSaving) return;
+    setIsConfirmOpen(false);
+  }
+
+  function handleFormSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const nextDraft = readCreateDraft(new FormData(event.currentTarget));
+    if (!nextDraft) return;
+
+    setDraft(nextDraft);
+    setIsConfirmOpen(true);
+  }
+
+  async function confirmCreate() {
+    if (!draft || isSaving) return;
+
+    setIsSaving(true);
+    const result = await createUser(draft);
+    setIsSaving(false);
+
+    if (!result.ok) {
+      setIsConfirmOpen(false);
+      putFlash("error", result.message, 2000);
+      return;
+    }
+
+    onClose();
+    putFlash("success", "Thêm nhân viên thành công", 2000);
+  }
+
+  return (
+    <>
+      <Modal
+        id="create-user-modal"
+        show
+        title="Thêm nhân viên"
+        closeable={isConfirmOpen ? false : "close_button"}
+        width="lg"
+        onClose={closeForm}
+      >
+        <form
+          id="create-user-form"
+          className="core_modal__form overflow-hidden"
+          autoComplete="off"
+          onSubmit={handleFormSubmit}
+        >
+          <div className="admin-user-form gap-4 overflow-y-auto flex-auto h-full">
+            <Input
+              id="create-user-username"
+              name="username"
+              label={<RequiredLabel>Tên đăng nhập</RequiredLabel>}
+              placeholder="Tên đăng nhập"
+              autoComplete="off"
+              required
+            />
+            <Input
+              id="create-user-password"
+              name="password"
+              type="password"
+              label={<RequiredLabel>Mật khẩu</RequiredLabel>}
+              placeholder={`Tối thiểu ${PASSWORD_MIN_LENGTH} ký tự`}
+              autoComplete="new-password"
+              minLength={PASSWORD_MIN_LENGTH}
+              required
+            />
+            <Input
+              id="create-user-full-name"
+              placeholder="Họ và tên"
+              name="full_name"
+              label={<RequiredLabel>Họ và tên</RequiredLabel>}
+              required
+            />
+            <Input
+              id="create-user-phone"
+              name="phone"
+              placeholder="Số điện thoại"
+              label={<RequiredLabel>Số điện thoại</RequiredLabel>}
+              required
+
+            />
+            <Input
+              id="create-user-email"
+              name="email"
+              type="email"
+              label={<RequiredLabel>Email</RequiredLabel>}
+              placeholder="Email"
+              required
+            />
+            <SelectField
+              id="create-user-status"
+              name="status"
+              label={<RequiredLabel>Trạng thái</RequiredLabel>}
+              defaultValue={String(UserStatus.Active)}
+            >
+              <option value={UserStatus.Active}>{userStatusMeta(UserStatus.Active).label}</option>
+              <option value={UserStatus.Inactive}>{userStatusMeta(UserStatus.Inactive).label}</option>
+            </SelectField>
+            <SelectField
+              id="create-user-role"
+              name="role_id"
+              label={<RequiredLabel>Vai trò</RequiredLabel>}
+              defaultValue=""
+              required
+            >
+              <option value="" disabled>
+                Chọn vai trò
+              </option>
+              {roles.map((role) => (
+                <option key={role.id} value={role.id}>
+                  {role.name}
+                </option>
+              ))}
+            </SelectField>
+            <SelectField
+              id="create-user-department"
+              name="department_id"
+              label={<RequiredLabel>Phòng ban</RequiredLabel>}
+              defaultValue=""
+              required
+            >
+              <option value="" disabled>
+                Chọn phòng ban
+              </option>
+              {departments.map((department) => (
+                <option key={department.id} value={department.id}>
+                  {department.name}
+                </option>
+              ))}
+            </SelectField>
+            <div className="admin-user-form__full">
+              <Input
+                id="create-user-address"
+                name="address"
+                label={<RequiredLabel>Địa chỉ</RequiredLabel>}
+                placeholder="Địa chỉ"
+              />
+            </div>
+          </div>
+
+          <div className="core_modal__actions">
+            <button type="button" className="core_button core_button--secondary" onClick={closeForm}>
+              Hủy
+            </button>
+            <button type="submit" className="core_button core_button--primary">
+              Xác nhận
+            </button>
+          </div>
+        </form>
+      </Modal>
+
+      <Modal
+        id="create-user-confirm-modal"
+        show={isConfirmOpen}
+        title="Xác nhận thêm nhân viên"
+        closeable={isSaving ? false : "close_button"}
+        width="md"
+        className="core_modal--stacked"
+        onClose={closeConfirm}
+      >
+        <div className="core_modal__actions">
+          <button
+            type="button"
+            className="core_button core_button--secondary"
+            disabled={isSaving}
+            onClick={closeConfirm}
+          >
+            Hủy
+          </button>
+          <button
+            type="button"
+            className="core_button core_button--primary"
+            disabled={isSaving}
+            onClick={confirmCreate}
+          >
+            {isSaving ? "Đang lưu..." : "Xác nhận"}
+          </button>
+        </div>
+      </Modal>
+    </>
+  );
+}
