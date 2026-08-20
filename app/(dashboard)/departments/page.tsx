@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import { DashMain } from "@/components/admin/dash-main";
+import { Dashboard } from "@/components/dashboard";
 
 export const metadata: Metadata = { title: "Phòng ban" };
 
 export default function Page() {
-  return <DashMain id="departments-main" />;
+  return <Dashboard id="departments-main" />;
 }

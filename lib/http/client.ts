@@ -234,11 +234,7 @@ function readMessage(value: unknown): string | undefined {
   return undefined;
 }
 
-const apiUrl = process.env.BASE_API_URL;
-
-if (!apiUrl && process.env.NODE_ENV === "production") {
-  console.warn("BASE_API_URL is not defined in environment variables");
-}
+const apiUrl = process.env.BASE_API_URL; 
 
 export const client = new Client({
   baseURL: apiUrl,

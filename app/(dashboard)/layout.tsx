@@ -1,5 +1,5 @@
 import { SidebarComponent } from "@/components/sidebar";
-import { DashboardHeader } from "@/components/admin/header";
+import { DashboardHeader } from "@/components/header";
 import { getCurrentUser } from "@/lib/api/me";
 
 export default async function DashboardLayout({ children }: LayoutProps<"/">) {

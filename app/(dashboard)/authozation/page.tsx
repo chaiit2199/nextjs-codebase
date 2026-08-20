@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import { DashMain } from "@/components/admin/dash-main";
+import { Dashboard } from "@/components/dashboard";
 
 export const metadata: Metadata = { title: "Phân quyền" };
 
 export default function Page() {
-  return <DashMain id="authozation-main" />;
+  return <Dashboard id="authozation-main" />;
 }

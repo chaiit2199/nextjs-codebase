@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { DashMain } from "@/components/admin/dash-main";
+import { Dashboard } from "@/components/dashboard";
 
 export const metadata: Metadata = { title: "Quản lý giá vốn" };
 
@@ -14,7 +14,7 @@ const COSTS = [
 
 export default function CostPricePage() {
   return (
-    <DashMain id="products-main">
+    <Dashboard id="products-main">
       <article className="overview-card">
         <div className="overview-table-wrap">
           <table className="overview-table">
@@ -41,6 +41,6 @@ export default function CostPricePage() {
           </table>
         </div>
       </article>
-    </DashMain>
+    </Dashboard>
   );
 }

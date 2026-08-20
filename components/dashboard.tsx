@@ -1,4 +1,4 @@
-export function DashMain({
+export function Dashboard({
   id,
   children,
 }: {

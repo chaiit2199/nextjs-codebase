@@ -40,8 +40,23 @@ function compactUserUpdate(data: FormData): PendingUserUpdate {
     return payload;
 }
 
-export function UsersTable({ users, departments }: { users: User[]; departments: Department[] }) {
-    console.log(users);
+export function UsersComponent({
+    users,
+    departments,
+    isCreateOpen,
+    isFilterOpen,
+    searchQuery,
+    onCreateClose,
+    onFilterClose,
+}: {
+    users: User[];
+    departments: Department[];
+    isCreateOpen?: boolean;
+    isFilterOpen?: boolean;
+    searchQuery?: string;
+    onCreateClose?: () => void;
+    onFilterClose?: () => void;
+}) {
     const [currentUser, setCurrentUser] = useState<User | null>(null);
     const [modal, setModal] = useState(false);
     const [confirmOpen, setConfirmOpen] = useState(false);
@@ -49,7 +64,6 @@ export function UsersTable({ users, departments }: { users: User[]; departments:
     const [pending, setPending] = useState<PendingUserUpdate | null>(null);
 
     function openUser(user: User) {
-        console.log(user);
         setCurrentUser(user);
         setModal(true);
     }
