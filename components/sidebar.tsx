@@ -8,10 +8,10 @@ import { Dropdown } from "@/components/core_component";
 import { Icon } from "@/components/icon";
 import { UserAvatarRow } from "@/server_component/users/user-components";
 import { NAV_ITEMS, pageIdFromPath } from "@/lib/admin/nav";
-import type { CurrentUser } from "@/lib/api/me";
-import { ChangePasswordComponent } from "@/server_component/users/change_password";
+import type { User } from "@/lib/api/me";
+import { ChangePasswordComponent } from "@/components/users/change_password";
 
-export function SidebarComponent({ user }: { user?: CurrentUser | null }) {
+export function SidebarComponent({ user }: { user?: User | null }) {
   const pathname = usePathname();
   const currentPage = pageIdFromPath(pathname);
   const [collapsed, setCollapsed] = useState(false);

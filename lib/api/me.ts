@@ -29,7 +29,24 @@ type UsersResponse = {
       page_size: number;
       trace_id?: string;
     };
-  };
+};
+
+export type Department = {
+    id: number;
+    code: string;
+    name: string;
+    status: string;
+};
+
+type DepartmentsResponse = {
+    data: Department[];
+    meta?: {
+        total: number;
+        page: number;
+        page_size: number;
+        trace_id?: string;
+    };
+};
   
 
 export const getCurrentUser = cache(async (): Promise<User | null> => {
@@ -48,6 +65,19 @@ export const getCurrentUser = cache(async (): Promise<User | null> => {
 export const getUsers = async (): Promise<User[]> => {
     try {
         const payload = await client.get<UsersResponse>("/api/v1/users");
+        return payload.data;
+    } catch (error) {
+        if (error instanceof HttpError && error.status === HttpError.Unauthorized) {
+        return [];
+        }
+
+        throw error;
+    }
+};
+
+export const getDepartments = async (): Promise<Department[]> => {
+    try {
+        const payload = await client.get<DepartmentsResponse>("/api/v1/departments");
         return payload.data;
     } catch (error) {
         if (error instanceof HttpError && error.status === HttpError.Unauthorized) {

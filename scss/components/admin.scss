@@ -1,5 +1,32 @@
 /* Admin — users & staff table + modal */
 
+.admin-user-form {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 40rem) {
+  .admin-user-form {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .admin-user-form__full {
+    grid-column: 1 / -1;
+  }
+}
+
+.core_label__required {
+  color: #ef4444;
+}
+
+.core_modal__form .admin-user-form .core_label {
+  display: block;
+  flex-direction: row;
+  align-items: baseline;
+  gap: 0.25rem;
+}
+
 .admin-toolbar {
   display: flex;
   flex-wrap: wrap;

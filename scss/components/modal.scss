@@ -147,7 +147,8 @@
   font-weight: 600;
 }
 
-.core_modal__form input {
+.core_modal__form input,
+.core_modal__form select {
   padding: 10px 12px;
   border: 1px solid #e5e7eb;
   border-radius: 10px;
@@ -157,7 +158,8 @@
   outline: none;
 }
 
-.core_modal__form input:focus {
+.core_modal__form input:focus,
+.core_modal__form select:focus {
   border-color: #3b6e4b;
 }
 

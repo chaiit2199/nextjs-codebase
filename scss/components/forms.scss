@@ -23,7 +23,8 @@
   color: #a0aec0;
 }
 
-.core_input:disabled {
+.core_input:disabled,
+.core_input:read-only {
   opacity: 0.6;
   cursor: not-allowed;
   background: var(--theme-primary-border);
