@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 
 import type { Department, Role, User } from "@/lib/api/me";
 import { UsersComponent } from "@/components/users/users_component";
-import { subscribeHeaderAction } from "@/lib/components/header-actions";
+import { subscribeHeaderAction } from "@/lib/dashboard/header-actions";
 import { CreateUserComponent } from "@/components/users/create_user_component";
 
 export function StaffUsers({

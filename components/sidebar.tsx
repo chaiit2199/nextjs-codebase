@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import { Dropdown } from "@/components/core_component";
 import { Icon } from "@/components/icon";
 import { UserAvatarRow } from "@/components/user-components";
-import { NAV_ITEMS, pageIdFromPath } from "@/lib/components/nav";
+import { NAV_ITEMS, pageIdFromPath } from "@/lib/dashboard/navbar";
 import type { User } from "@/lib/api/me";
 import { ChangePasswordComponent } from "@/components/users/change_password";
 

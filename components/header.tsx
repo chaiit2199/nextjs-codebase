@@ -4,8 +4,8 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 
 import { Icon } from "@/components/icon";
-import { pageMeta } from "@/lib/components/nav";
-import { emitHeaderAction } from "@/lib/components/header-actions";
+import { pageMeta } from "@/lib/dashboard/navbar";
+import { emitHeaderAction } from "@/lib/dashboard/header-actions";
 
 
 // assgin meta with header function
