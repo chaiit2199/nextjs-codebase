@@ -10,7 +10,7 @@ const AUTHENTICATED_ROUTES = [
   "/orders",
   "/agents",
   "/promotions",
-  "/admin",
+  "/staff",
   "/departments",
   "/permission-groups",
   "/authozation",

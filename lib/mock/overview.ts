@@ -68,9 +68,4 @@ export const SALES_SERIES = [
   { time: "2024-05-29", value: 1_380_000_000 },
   { time: "2024-05-31", value: 1_600_000_000 },
 ];
-
-export const MOCK_STAFF = [
-  { id: 1, full_name: "Nguyễn Minh Anh", username: "minhanh", phone: "0901 234 567", address: "Hà Nội", department_label: "Kinh doanh", status: { kind: "active", label: "Hoạt động" } },
-  { id: 2, full_name: "Trần Quốc Bảo", username: "quocbao", phone: "0902 345 678", address: "TP.HCM", department_label: "Kinh doanh", status: { kind: "active", label: "Hoạt động" } },
-      { id: 3, full_name: "Lê Thu Hà", username: "thuha", phone: "0903 456 789", address: "Đà Nẵng", department_label: "Kế toán", status: { kind: "paused", label: "Ngưng" } },
-];
+ 

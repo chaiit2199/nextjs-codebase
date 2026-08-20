@@ -34,7 +34,7 @@ export const NAV_ITEMS: NavItem[] = [
     label: "Quản lý",
     icon: "hero-building-office-2",
     children: [
-      { id: "admin", label: "Nhân viên", href: "/admin", icon: "hero-identification" },
+      { id: "staff", label: "Nhân viên", href: "/staff", icon: "hero-identification" },
       { id: "departments", label: "Phòng ban", href: "/departments", icon: "hero-user-group" },
       { id: "permission_groups", label: "Nhóm quyền", href: "/permission-groups", icon: "hero-shield-check" },
       { id: "authozation", label: "Phân quyền", href: "/authozation", icon: "hero-cog-6-tooth" },
@@ -59,7 +59,7 @@ const PAGE_META: Record<string, PageMeta> = {
   "/orders": { title: "Quản lý đơn hàng", create: true },
   "/agents": { title: "Quản lý đại lý", create: true },
   "/promotions": { title: "Khuyến mãi", create: true },
-  "/admin": { title: "Nhân viên", create: true },
+  "/staff": { title: "Nhân viên", create: true },
   "/departments": { title: "Phòng ban", create: true },
   "/permission-groups": { title: "Nhóm quyền", create: true },
   "/authozation": { title: "Phân quyền" },

@@ -2,12 +2,16 @@ import type { Metadata } from "next";
 
 import { DashMain } from "@/components/admin/dash-main";
 import { Icon } from "@/components/icon";
+
+import { getUsers } from "@/lib/api/me";
+import { userStatusMeta } from "@/components/users/status";
 import { UserAvatar } from "@/server_component/users/user-components";
-import { MOCK_STAFF } from "@/lib/mock/overview";
 
 export const metadata: Metadata = { title: "Nhân viên" };
 
-export default function AdminPage() {
+export default async function AdminPage() {
+  const users = await getUsers();
+
   return (
     <DashMain id="admin-main">
       <section className="admin-section" id="admin-users-section">
@@ -26,7 +30,7 @@ export default function AdminPage() {
                 </tr>
               </thead>
               <tbody>
-                {MOCK_STAFF.map((user) => (
+                {users.map((user) => (
                   <tr key={user.id} id={`user-row-${user.id}`}>
                     <td>
                       <div className="admin-user">
@@ -37,11 +41,9 @@ export default function AdminPage() {
                     <td className="overview-table__muted">{user.username}</td>
                     <td className="overview-table__muted">{user.phone}</td>
                     <td className="overview-table__muted">{user.address}</td>
-                    <td className="overview-table__muted">{user.department_label}</td>
+                    <td className="overview-table__muted">{user.department ?? "—"}</td>
                     <td>
-                      <span className={`admin-status admin-status--${user.status.kind}`}>
-                        {user.status.label}
-                      </span>
+                      <UserStatusBadge status={user.status} />
                     </td>
                     <td className="actions">
                       <div className="admin-actions">
@@ -58,5 +60,15 @@ export default function AdminPage() {
         </div>
       </section>
     </DashMain>
+  );
+}
+
+function UserStatusBadge({ status }: { status?: number }) {
+  const meta = userStatusMeta(status);
+
+  return (
+    <span className={`admin-status admin-status--${meta.kind}`}>
+      {meta.label}
+    </span>
   );
 }

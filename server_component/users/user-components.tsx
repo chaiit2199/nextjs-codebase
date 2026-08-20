@@ -1,4 +1,4 @@
-import { getColor, getInitials, roleLabel } from "@/lib/users/avatar";
+import { getColor, getInitials, roleLabel } from "@/components/users/avatar";
 
 export type UserAvatarSize = "sm" | "md" | "lg";
 

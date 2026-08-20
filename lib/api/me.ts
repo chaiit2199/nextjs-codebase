@@ -2,7 +2,7 @@ import { cache } from "react";
 
 import { client, HttpError } from "@/lib/http/client";
 
-export type CurrentUser = {
+export type User = {
     id?: number | string;
     code?: string;
     username: string;
@@ -12,17 +12,29 @@ export type CurrentUser = {
     address?: string;
     role?: string | number;
     status?: number;
+    department?: string | null;
 };
 
-type UserResponse = {
+type CurrentUser = {
     data: {
-        user: CurrentUser;
+      user: User;
     };
 };
 
-export const getCurrentUser = cache(async (): Promise<CurrentUser | null> => {
+type UsersResponse = {
+    data: User[];
+    meta?: {
+      total: number;
+      page: number;
+      page_size: number;
+      trace_id?: string;
+    };
+  };
+  
+
+export const getCurrentUser = cache(async (): Promise<User | null> => {
     try {
-        const payload = await client.get<UserResponse>("/api/v1/me");
+        const payload = await client.get<CurrentUser>("/api/v1/me");
         return payload.data.user;
     } catch (error) {
         if (error instanceof HttpError && error.status === HttpError.Unauthorized) {
@@ -32,3 +44,16 @@ export const getCurrentUser = cache(async (): Promise<CurrentUser | null> => {
         throw error;
     }
 });
+
+export const getUsers = async (): Promise<User[]> => {
+    try {
+        const payload = await client.get<UsersResponse>("/api/v1/users");
+        return payload.data;
+    } catch (error) {
+        if (error instanceof HttpError && error.status === HttpError.Unauthorized) {
+        return [];
+        }
+
+        throw error;
+    }
+};
