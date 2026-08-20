@@ -47,4 +47,24 @@ export function userStatusMeta(status?: number) {
   
     return UNKNOWN_STATUS;
 }
+
+export const DepartmentStatus = {
+    Active: "ACTIVE",
+    Inactive: "INACTIVE",
+} as const;
+
+export type DepartmentStatusValue = (typeof DepartmentStatus)[keyof typeof DepartmentStatus];
+
+const DEPARTMENT_STATUS_MAP = {
+    [DepartmentStatus.Active]: { kind: "active", label: "Đang hoạt động" },
+    [DepartmentStatus.Inactive]: { kind: "paused", label: "Ngưng hoạt động" },
+} as const;
+
+export function departmentStatusMeta(status?: string) {
+    if (status === DepartmentStatus.Active || status === DepartmentStatus.Inactive) {
+        return DEPARTMENT_STATUS_MAP[status];
+    }
+
+    return UNKNOWN_STATUS;
+}
   

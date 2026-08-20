@@ -93,7 +93,9 @@ export function Modal({
         id={`${modalId}-bg`}
         className="core_modal__backdrop"
         aria-hidden="true"
-        onClick={canClickAway ? onClose : undefined}
+        onClick={() => {
+          onClose?.();
+        }}
       />
       <div
         className="core_modal__position"
