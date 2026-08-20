@@ -45,7 +45,6 @@ export function UsersComponent({ users, departments }: { users: User[]; departme
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [isConfirmOpen, setIsConfirmOpen] = useState(false);
-    const [isSaving, setIsSaving] = useState(false);
     const [draft, setDraft] = useState<UpdateUserEntity | null>(null);
 
     function openEditForm(user: User) {
@@ -63,12 +62,10 @@ export function UsersComponent({ users, departments }: { users: User[]; departme
     }
 
     function closeForm() {
-        if (isSaving) return;
         resetForm();
     }
 
     function closeConfirm() {
-        if (isSaving) return;
         setIsConfirmOpen(false);
     }
 
@@ -79,14 +76,12 @@ export function UsersComponent({ users, departments }: { users: User[]; departme
     }
 
     async function confirmUpdate() {
-        if (!draft || !selectedUser?.id || isSaving) return;
+        if (!draft || !selectedUser?.id) return;
 
-        setIsSaving(true);
-            const result = await updateUser({
+        const result = await updateUser({
             id: Number(selectedUser.id),
             ...draft,
         });
-        setIsSaving(false);
 
         if (!result.ok) {
             setIsConfirmOpen(false);
@@ -96,7 +91,7 @@ export function UsersComponent({ users, departments }: { users: User[]; departme
 
         resetForm();
         putFlash("success", "Cập nhật nhân viên thành công", 2000);
-  }
+    }
 
     return (
         <>
@@ -127,7 +122,7 @@ export function UsersComponent({ users, departments }: { users: User[]; departme
                                     <td className="overview-table__muted">{user.username}</td>
                                     <td className="overview-table__muted">{user.phone}</td>
                                     <td className="overview-table__muted">{user.address}</td>
-                                    <td className="overview-table__muted">{user.department ?? "—"}</td>
+                                    <td className="overview-table__muted">{user.department?.name ?? "—"}</td>
                                     <td>
                                         <UserStatusBadge status={user.status} />
                                     </td>
@@ -208,7 +203,7 @@ export function UsersComponent({ users, departments }: { users: User[]; departme
                         id="update-user-department"
                         name="department_id"
                         label={<RequiredLabel>Phòng ban</RequiredLabel>}
-                        defaultValue={departmentOptionValue(selectedUser.department, departments)}
+                        defaultValue={departmentOptionValue(selectedUser.department)}
                     >
                         <option value="" disabled>
                         Chọn phòng ban
@@ -246,7 +241,7 @@ export function UsersComponent({ users, departments }: { users: User[]; departme
                 id="update-user-confirm-modal"
                 show={isConfirmOpen}
                 title="Xác nhận cập nhật nhân viên"
-                closeable={isSaving ? false : "close_button"}
+                closeable="close_button"
                 width="md"
                 className="core_modal--stacked"
                 onClose={closeConfirm}
@@ -255,7 +250,6 @@ export function UsersComponent({ users, departments }: { users: User[]; departme
                 <button
                     type="button"
                     className="core_button core_button--secondary"
-                    disabled={isSaving}
                     onClick={closeConfirm}
                 >
                     Hủy
@@ -263,10 +257,9 @@ export function UsersComponent({ users, departments }: { users: User[]; departme
                 <button
                     type="button"
                     className="core_button core_button--primary"
-                    disabled={isSaving}
                     onClick={confirmUpdate}
                 >
-                    {isSaving ? "Đang lưu..." : "Xác nhận"}
+                    Xác nhận
                 </button>
                 </div>
             </Modal>
@@ -274,14 +267,8 @@ export function UsersComponent({ users, departments }: { users: User[]; departme
     );
 }
 
-function departmentOptionValue(department: User["department"], departments: Department[]) {
-    if (department == null || department === "") return "";
-
-    const matched = departments.find(
-        (item) => item.name === department || String(item.id) === String(department) || item.code === department,
-    );
-
-    return matched ? String(matched.id) : "";
+function departmentOptionValue(department: User["department"]) {
+    return department?.id != null ? String(department.id) : "";
 }
 
 function UserStatusBadge({ status }: { status?: number }) {

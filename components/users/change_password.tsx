@@ -22,12 +22,10 @@ export function ChangePasswordComponent() {
   const formRef = useRef<HTMLFormElement>(null);
   const [open, setOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
-  const [saving, setSaving] = useState(false);
   const [pending, setPending] = useState<PendingPassword | null>(null);
   const [fieldErrors, setFieldErrors] = useState<ReturnType<typeof validateChangePassword>>({});
 
   function onClose() {
-    if (saving) return;
     setFieldErrors({});
     setPending(null);
     setConfirmOpen(false);
@@ -35,7 +33,6 @@ export function ChangePasswordComponent() {
   }
 
   function onCloseConfirm() {
-    if (saving) return;
     setConfirmOpen(false);
   }
 
@@ -62,11 +59,9 @@ export function ChangePasswordComponent() {
   }
 
   async function onConfirm() {
-    if (!pending || saving) return;
+    if (!pending) return;
 
-    setSaving(true);
     const result = await changePassword(pending);
-    setSaving(false);
 
     if (!result.ok) {
       setConfirmOpen(false);
@@ -170,7 +165,7 @@ export function ChangePasswordComponent() {
         id="change-password-confirm-modal"
         show={confirmOpen}
         title="Xác nhận đổi mật khẩu"
-        closeable={saving ? false : "close_button"}
+        closeable="close_button"
         width="sm"
         className="core_modal--stacked"
         onClose={onCloseConfirm}
@@ -181,7 +176,6 @@ export function ChangePasswordComponent() {
             type="button"
             id="change-password-confirm-cancel"
             className="core_button core_button--secondary"
-            disabled={saving}
             onClick={onCloseConfirm}
           >
             Hủy
@@ -190,10 +184,9 @@ export function ChangePasswordComponent() {
             type="button"
             id="change-password-confirm-submit"
             className="core_button core_button--primary"
-            disabled={saving}
             onClick={onConfirm}
           >
-            {saving ? "Đang lưu..." : "Xác nhận"}
+            Xác nhận
           </button>
         </div>
       </Modal>

@@ -50,16 +50,13 @@ export function CreateUserComponent({
   onClose: () => void;
 }) {
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
   const [draft, setDraft] = useState<CreateUserInput | null>(null);
 
   function closeForm() {
-    if (isSaving) return;
     onClose();
   }
 
   function closeConfirm() {
-    if (isSaving) return;
     setIsConfirmOpen(false);
   }
 
@@ -73,11 +70,9 @@ export function CreateUserComponent({
   }
 
   async function confirmCreate() {
-    if (!draft || isSaving) return;
+    if (!draft) return;
 
-    setIsSaving(true);
     const result = await createUser(draft);
-    setIsSaving(false);
 
     if (!result.ok) {
       setIsConfirmOpen(false);
@@ -213,7 +208,7 @@ export function CreateUserComponent({
         id="create-user-confirm-modal"
         show={isConfirmOpen}
         title="Xác nhận thêm nhân viên"
-        closeable={isSaving ? false : "close_button"}
+        closeable="close_button"
         width="md"
         className="core_modal--stacked"
         onClose={closeConfirm}
@@ -222,7 +217,6 @@ export function CreateUserComponent({
           <button
             type="button"
             className="core_button core_button--secondary"
-            disabled={isSaving}
             onClick={closeConfirm}
           >
             Hủy
@@ -230,10 +224,9 @@ export function CreateUserComponent({
           <button
             type="button"
             className="core_button core_button--primary"
-            disabled={isSaving}
             onClick={confirmCreate}
           >
-            {isSaving ? "Đang lưu..." : "Xác nhận"}
+            Xác nhận
           </button>
         </div>
       </Modal>

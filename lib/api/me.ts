@@ -12,7 +12,7 @@ export type User = {
     address?: string;
     role?: string | number;
     status?: number;
-    department?: string | null;
+    department?: Department | null;
 };
 
 type CurrentUser = {
@@ -50,17 +50,12 @@ type DepartmentsResponse = {
 
 export type Role = {
     id: number;
-    code?: string;
     name: string;
-    status?: string | number;
 };
 
 type RolesResponse = {
     data: Role[];
     meta?: {
-        total: number;
-        page: number;
-        page_size: number;
         trace_id?: string;
     };
 };
@@ -107,7 +102,7 @@ export const getDepartments = async (): Promise<Department[]> => {
 
 export const getRoles = async (): Promise<Role[]> => {
     try {
-        const payload = await client.get<RolesResponse>("/api/v1/roles");
+        const payload = await client.get<RolesResponse>("/api/v1/roles?view=short");
         return payload.data;
     } catch (error) {
         if (error instanceof HttpError && error.status === HttpError.Unauthorized) {
