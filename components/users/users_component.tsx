@@ -9,7 +9,7 @@ import { UserStatus, userStatusMeta } from "@/components/users/status";
 import { RequiredLabel, SelectField } from "@/components/users/user-form";
 import { Input, Modal } from "@/components/core_component";
 import { updateUser } from "@/lib/api/users";
-import { putFlash } from "@/lib/flash";
+import { putFlash } from "@/lib/flash/flash";
 
 type UpdateUserEntity = {
     full_name?: string;
@@ -20,8 +20,8 @@ type UpdateUserEntity = {
     address?: string;
 };
 
-function handleValidate(data: FormData): UpdateUserEntity {
-    const draft: UpdateUserEntity = {};
+function readUpdateForm(data: FormData): UpdateUserEntity {
+    const formValues: UpdateUserEntity = {};
     const text = (name: string) => String(data.get(name) ?? "").trim();
 
     const fullName = text("full_name");
@@ -31,56 +31,48 @@ function handleValidate(data: FormData): UpdateUserEntity {
     const status = Number(data.get("status"));
     const departmentId = Number(data.get("department_id"));
 
-    if (fullName) draft.full_name = fullName;
-    if (phone) draft.phone = phone;
-    if (email) draft.email = email;
-    if (address) draft.address = address;
-    if (Number.isFinite(status)) draft.status = status;
-    if (Number.isFinite(departmentId) && departmentId > 0) draft.department_id = departmentId;
+    if (fullName) formValues.full_name = fullName;
+    if (phone) formValues.phone = phone;
+    if (email) formValues.email = email;
+    if (address) formValues.address = address;
+    if (Number.isFinite(status)) formValues.status = status;
+    if (Number.isFinite(departmentId) && departmentId > 0) formValues.department_id = departmentId;
 
-    return draft;
+    return formValues;
 }
 
 export function UsersComponent({ users, departments }: { users: User[]; departments: Department[]}) {
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [isConfirmOpen, setIsConfirmOpen] = useState(false);
-    const [draft, setDraft] = useState<UpdateUserEntity | null>(null);
+    const [payload, setPayload] = useState<UpdateUserEntity | null>(null);
 
     function openEditForm(user: User) {
         setSelectedUser(user);
-        setDraft(null);
+        setPayload(null);
         setIsConfirmOpen(false);
         setIsFormOpen(true);
     }
 
     function resetForm() {
-        setDraft(null);
+        setPayload(null);
         setIsConfirmOpen(false);
         setIsFormOpen(false);
         setSelectedUser(null);
     }
 
-    function closeForm() {
-        resetForm();
-    }
-
-    function closeConfirm() {
-        setIsConfirmOpen(false);
-    }
-
     function handleFormSubmit(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
-        setDraft(handleValidate(new FormData(event.currentTarget)));
+        setPayload(readUpdateForm(new FormData(event.currentTarget)));
         setIsConfirmOpen(true);
     }
 
     async function confirmUpdate() {
-        if (!draft || !selectedUser?.id) return;
+        if (!payload || !selectedUser?.id) return;
 
         const result = await updateUser({
             id: Number(selectedUser.id),
-            ...draft,
+            ...payload,
         });
 
         if (!result.ok) {
@@ -152,7 +144,7 @@ export function UsersComponent({ users, departments }: { users: User[]; departme
                 title="Chi tiết nhân viên"
                 closeable={isConfirmOpen ? false : "close_button"}
                 width="lg"
-                onClose={closeForm}
+                onClose={resetForm}
             >
                 {selectedUser && (
                 <form
@@ -226,7 +218,7 @@ export function UsersComponent({ users, departments }: { users: User[]; departme
                     </div>
 
                     <div className="core_modal__actions">
-                    <button type="button" className="core_button core_button--secondary" onClick={closeForm}>
+                    <button type="button" className="core_button core_button--secondary" onClick={resetForm}>
                         Hủy
                     </button>
                     <button type="submit" className="core_button core_button--primary">
@@ -244,13 +236,13 @@ export function UsersComponent({ users, departments }: { users: User[]; departme
                 closeable="close_button"
                 width="md"
                 className="core_modal--stacked"
-                onClose={closeConfirm}
+                onClose={() => setIsConfirmOpen(false)}
             >
                 <div className="core_modal__actions">
                 <button
                     type="button"
                     className="core_button core_button--secondary"
-                    onClick={closeConfirm}
+                    onClick={() => setIsConfirmOpen(false)}
                 >
                     Hủy
                 </button>

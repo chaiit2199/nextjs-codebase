@@ -5,7 +5,7 @@ import { useRef, useState } from "react";
 import { Icon } from "@/components/icon";
 import { Input, Modal, useDropdownClose } from "@/components/core_component";
 import { changePassword } from "@/lib/api/users";
-import { putFlash } from "@/lib/flash";
+import { putFlash } from "@/lib/flash/flash";
 import {
   PASSWORD_MIN_LENGTH,
   hasPasswordErrors,

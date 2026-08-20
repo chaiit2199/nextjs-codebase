@@ -3,7 +3,7 @@ import type { Metadata, Viewport } from "next";
 import { cookies } from "next/headers";
 import { customMetadata, customViewport } from "@/components/custom-metadata";
 import { FlashProvider } from "@/components/flash";
-import { FLASH_COOKIE, decodeFlash } from "@/lib/flash";
+import { FLASH_COOKIE, decodeFlash } from "@/lib/flash/flash";
 import { Inter } from "next/font/google";
 
 const inter = Inter({

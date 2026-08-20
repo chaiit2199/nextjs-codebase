@@ -9,7 +9,7 @@ import {
   consumeFlashCookie,
   type FlashKind,
   type FlashPayload,
-} from "@/lib/flash";
+} from "@/lib/flash/flash";
 
 const SLIDE_MS = 300;
 
@@ -24,7 +24,7 @@ type FlashProviderProps = {
   initialFlash?: FlashPayload | null;
 };
 
-export { putFlash } from "@/lib/flash";
+export { putFlash } from "@/lib/flash/flash";
 
 export function FlashProvider({ children, initialFlash = null }: FlashProviderProps) {
   const [items, setItems] = useState<FlashPayload[]>(initialFlash ? [initialFlash] : []);

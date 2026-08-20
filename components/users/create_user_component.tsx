@@ -8,9 +8,9 @@ import { UserStatus, userStatusMeta } from "@/components/users/status";
 import { RequiredLabel, SelectField } from "@/components/users/user-form";
 import { createUser, type CreateUserInput } from "@/lib/api/users";
 import { PASSWORD_MIN_LENGTH } from "@/lib/auth/password";
-import { putFlash } from "@/lib/flash";
+import { putFlash } from "@/lib/flash/flash";
 
-function readCreateDraft(data: FormData): CreateUserInput | null {
+function readCreateForm(data: FormData): CreateUserInput | null {
   const text = (name: string) => String(data.get(name) ?? "").trim();
   const username = text("username");
   const password = text("password");
@@ -18,7 +18,7 @@ function readCreateDraft(data: FormData): CreateUserInput | null {
 
   if (!username || !password || !fullName) return null;
 
-  const draft: CreateUserInput = {
+  const formValues: CreateUserInput = {
     username,
     password,
     full_name: fullName,
@@ -30,14 +30,14 @@ function readCreateDraft(data: FormData): CreateUserInput | null {
   const roleId = Number(data.get("role_id"));
   const departmentId = Number(data.get("department_id"));
 
-  if (phone) draft.phone = phone;
-  if (email) draft.email = email;
-  if (address) draft.address = address;
-  if (Number.isFinite(status)) draft.status = status;
-  if (Number.isFinite(roleId) && roleId > 0) draft.role_id = roleId;
-  if (Number.isFinite(departmentId) && departmentId > 0) draft.department_id = departmentId;
+  if (phone) formValues.phone = phone;
+  if (email) formValues.email = email;
+  if (address) formValues.address = address;
+  if (Number.isFinite(status)) formValues.status = status;
+  if (Number.isFinite(roleId) && roleId > 0) formValues.role_id = roleId;
+  if (Number.isFinite(departmentId) && departmentId > 0) formValues.department_id = departmentId;
 
-  return draft;
+  return formValues;
 }
 
 export function CreateUserComponent({
@@ -50,29 +50,21 @@ export function CreateUserComponent({
   onClose: () => void;
 }) {
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
-  const [draft, setDraft] = useState<CreateUserInput | null>(null);
-
-  function closeForm() {
-    onClose();
-  }
-
-  function closeConfirm() {
-    setIsConfirmOpen(false);
-  }
+  const [payload, setPayload] = useState<CreateUserInput | null>(null);
 
   function handleFormSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const nextDraft = readCreateDraft(new FormData(event.currentTarget));
-    if (!nextDraft) return;
+    const formValues = readCreateForm(new FormData(event.currentTarget));
+    if (!formValues) return;
 
-    setDraft(nextDraft);
+    setPayload(formValues);
     setIsConfirmOpen(true);
   }
 
   async function confirmCreate() {
-    if (!draft) return;
+    if (!payload) return;
 
-    const result = await createUser(draft);
+    const result = await createUser(payload);
 
     if (!result.ok) {
       setIsConfirmOpen(false);
@@ -92,7 +84,7 @@ export function CreateUserComponent({
         title="Thêm nhân viên"
         closeable={isConfirmOpen ? false : "close_button"}
         width="lg"
-        onClose={closeForm}
+        onClose={onClose}
       >
         <form
           id="create-user-form"
@@ -132,7 +124,6 @@ export function CreateUserComponent({
               placeholder="Số điện thoại"
               label={<RequiredLabel>Số điện thoại</RequiredLabel>}
               required
-
             />
             <Input
               id="create-user-email"
@@ -194,7 +185,7 @@ export function CreateUserComponent({
           </div>
 
           <div className="core_modal__actions">
-            <button type="button" className="core_button core_button--secondary" onClick={closeForm}>
+            <button type="button" className="core_button core_button--secondary" onClick={onClose}>
               Hủy
             </button>
             <button type="submit" className="core_button core_button--primary">
@@ -211,13 +202,13 @@ export function CreateUserComponent({
         closeable="close_button"
         width="md"
         className="core_modal--stacked"
-        onClose={closeConfirm}
+        onClose={() => setIsConfirmOpen(false)}
       >
         <div className="core_modal__actions">
           <button
             type="button"
             className="core_button core_button--secondary"
-            onClick={closeConfirm}
+            onClick={() => setIsConfirmOpen(false)}
           >
             Hủy
           </button>

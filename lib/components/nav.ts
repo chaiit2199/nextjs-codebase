@@ -80,11 +80,4 @@ export function pageIdFromPath(pathname: string): string {
 
   return "";
 }
-
-export const MOCK_USER = {
-  id: "1",
-  full_name: "Trần Mạnh Hùng",
-  username: "hung",
-  email: "hung@usafarm-agri.com",
-  role: "1001",
-};
+ 

@@ -6,7 +6,7 @@ import {
   createFlashPayload,
   encodeFlash,
   type FlashKind,
-} from "@/lib/flash";
+} from "@/lib/flash/flash";
 
 export function withFlash(
   response: NextResponse,

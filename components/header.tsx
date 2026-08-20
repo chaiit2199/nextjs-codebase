@@ -5,7 +5,7 @@ import { useState } from "react";
 
 import { Icon } from "@/components/icon";
 import { pageMeta } from "@/lib/components/nav";
-import { emitHeaderAction } from "@/lib/components/header-events";
+import { emitHeaderAction } from "@/lib/components/header-actions";
 
 
 // assgin meta with header function
