@@ -2,8 +2,19 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { SESSION_KEY, SESSION_COOKIE_OPTIONS, decodeSession } from "@/lib/auth/session";
 
+export function getBaseUrl(request: NextRequest) {
+  const host =
+    request.headers.get("x-forwarded-host")?.split(",")[0]?.trim() ||
+    request.headers.get("host") ||
+    request.nextUrl.host;
+  const protocol =
+    request.headers.get("x-forwarded-proto")?.split(",")[0]?.trim() || "http";
+
+  return `${protocol}://${host}`;
+}
+
 export function redirectToLogin(request: NextRequest) {
-  const response = NextResponse.redirect(new URL("/login", request.nextUrl), 303);
+  const response = NextResponse.redirect(new URL("/login", getBaseUrl(request)), 303);
 
   response.cookies.delete({
     name: SESSION_KEY,
