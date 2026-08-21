@@ -19,7 +19,7 @@ export async function dispatchRoutePipeline(request: NextRequest) {
 
   // Routing & Auth
   if (pathname === "/login" && request.method === "POST") {
-    response = NextResponse.rewrite(new URL("/api/login", request.url));
+    response = NextResponse.rewrite(new URL("/api/login", request.nextUrl));
   } else if (protectedRoute(pathname, PROTECTED_ROUTES)) {
     response = ensureAuthenticated(request);
   } else {

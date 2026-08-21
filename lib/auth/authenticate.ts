@@ -12,7 +12,7 @@ export async function login(request: NextRequest) {
 
   if (!username || !password) {
     return withFlash(
-      NextResponse.redirect(new URL("/login", request.url), 303),
+      NextResponse.redirect(new URL("/login", request.nextUrl), 303),
       "error",
       "Thiếu tên đăng nhập hoặc mật khẩu",
     );
@@ -20,7 +20,7 @@ export async function login(request: NextRequest) {
 
   try {
     const payload = await client.post<AuthTokenResponse>("/api/v1/auth/login", { username, password });
-    const response = NextResponse.redirect(new URL("/", request.url), 303);
+    const response = NextResponse.redirect(new URL("/", request.nextUrl), 303);
 
     response.cookies.set(
       SESSION_KEY,
@@ -39,7 +39,7 @@ export async function login(request: NextRequest) {
         : "Không thể đăng nhập";
 
     return withFlash(
-      NextResponse.redirect(new URL("/login", request.url), 303),
+      NextResponse.redirect(new URL("/login", request.nextUrl), 303),
       "error",
       message,
       2000,
