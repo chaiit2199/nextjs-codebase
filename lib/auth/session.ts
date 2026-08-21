@@ -7,7 +7,7 @@ export const SESSION_COOKIE_OPTIONS = {
   httpOnly: true,
   sameSite: "lax",
   path: "/",
-  secure: process.env.NODE_ENV === "production",
+  secure: process.env.NEXT_PUBLIC_APP_URL?.startsWith("https") ?? false,
 } as const;
 
 export type Session = {

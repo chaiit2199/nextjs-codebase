@@ -21,7 +21,7 @@ export const FLASH_COOKIE_OPTIONS = {
   httpOnly: false,
   sameSite: "lax" as const,
   path: "/",
-  secure: process.env.NODE_ENV === "production",
+  secure: process.env.NEXT_PUBLIC_APP_URL?.startsWith("https") ?? false,
 };
 
 export function createFlashPayload(
