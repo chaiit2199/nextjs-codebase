@@ -2,18 +2,18 @@ import { NextRequest, NextResponse } from "next/server";
 import { client, HttpError, type AuthTokenResponse } from "@/lib/http/client";
 
 import { SESSION_KEY, SESSION_COOKIE_OPTIONS, encodeSession } from "@/lib/auth/session";
-import { getBaseUrl, redirectToLogin } from "@/lib/auth/guard";
+import { redirectToLogin } from "@/lib/auth/guard";
 import { withFlash } from "@/lib/flash/cookie";
 
 export async function login(request: NextRequest) {
-  const baseUrl = getBaseUrl(request);
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL;
   const formData = await request.formData();
   const username = String(formData.get("username") ?? "");
   const password = String(formData.get("password") ?? "");
 
   if (!username || !password) {
     return withFlash(
-      NextResponse.redirect(new URL("/login", baseUrl), 303),
+      NextResponse.redirect(new URL("/login", appUrl), 303),
       "error",
       "Thiếu tên đăng nhập hoặc mật khẩu",
     );
@@ -21,7 +21,7 @@ export async function login(request: NextRequest) {
 
   try {
     const payload = await client.post<AuthTokenResponse>("/api/v1/auth/login", { username, password });
-    const response = NextResponse.redirect(new URL("/", baseUrl), 303);
+    const response = NextResponse.redirect(new URL("/", appUrl), 303);
 
     response.cookies.set(
       SESSION_KEY,
@@ -40,7 +40,7 @@ export async function login(request: NextRequest) {
         : "Không thể đăng nhập";
 
     return withFlash(
-      NextResponse.redirect(new URL("/login", baseUrl), 303),
+      NextResponse.redirect(new URL("/login", appUrl), 303),
       "error",
       message,
       2000,
@@ -48,6 +48,6 @@ export async function login(request: NextRequest) {
   }
 }
 
-export async function logout(request: NextRequest) {
-  return redirectToLogin(request);
+export async function logout() {
+  return redirectToLogin();
 }
