@@ -77,7 +77,7 @@ export class Client {
   private async readSession(): Promise<Session> {
     try {
       const cookieStore = await cookies();
-      return decodeSession(cookieStore.get(SESSION_KEY)?.value);
+      return await decodeSession(cookieStore.get(SESSION_KEY)?.value);
     } catch {
       return {};
     }
@@ -86,7 +86,7 @@ export class Client {
   private async writeSession(session: Session): Promise<void> {
     try {
       const cookieStore = await cookies();
-      cookieStore.set(SESSION_KEY, encodeSession(session), SESSION_COOKIE_OPTIONS);
+      cookieStore.set(SESSION_KEY, await encodeSession(session), SESSION_COOKIE_OPTIONS);
     } catch {
       // Server Components / Middleware không được phép ghi cookie
     }

@@ -3,8 +3,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { SESSION_KEY, SESSION_COOKIE_OPTIONS, decodeSession } from "@/lib/auth/session";
 
 
-export function redirectToLogin() {
-  const response = NextResponse.redirect(new URL("/login", process.env.NEXT_PUBLIC_APP_URL), 303);
+export function redirectToLogin(request: NextRequest) {
+  const response = NextResponse.redirect(new URL("/login", request.url), 303);
 
   response.cookies.delete({
     name: SESSION_KEY,
@@ -14,11 +14,11 @@ export function redirectToLogin() {
   return response;
 }
 
-export function ensureAuthenticated(request: NextRequest) {
-  const session = decodeSession(request.cookies.get(SESSION_KEY)?.value);
+export async function ensureAuthenticated(request: NextRequest) {
+  const session = await decodeSession(request.cookies.get(SESSION_KEY)?.value);
 
   if (!session.access_token || !session.refresh_token) {
-    return redirectToLogin();
+    return redirectToLogin(request);
   }
 
   return NextResponse.next();

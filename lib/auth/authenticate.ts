@@ -6,14 +6,14 @@ import { redirectToLogin } from "@/lib/auth/guard";
 import { withFlash } from "@/lib/flash/cookie";
 
 export async function login(request: NextRequest) {
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL;
+  const origin = request.url;
   const formData = await request.formData();
   const username = String(formData.get("username") ?? "");
   const password = String(formData.get("password") ?? "");
 
   if (!username || !password) {
     return withFlash(
-      NextResponse.redirect(new URL("/login", appUrl), 303),
+      NextResponse.redirect(new URL("/login", origin), 303),
       "error",
       "Thiếu tên đăng nhập hoặc mật khẩu",
     );
@@ -21,11 +21,11 @@ export async function login(request: NextRequest) {
 
   try {
     const payload = await client.post<AuthTokenResponse>("/api/v1/auth/login", { username, password });
-    const response = NextResponse.redirect(new URL("/", appUrl), 303);
+    const response = NextResponse.redirect(new URL("/", origin), 303);
 
     response.cookies.set(
       SESSION_KEY,
-      encodeSession({
+      await encodeSession({
         access_token: payload.data.access_token,
         refresh_token: payload.data.refresh_token,
       }),
@@ -40,7 +40,7 @@ export async function login(request: NextRequest) {
         : "Không thể đăng nhập";
 
     return withFlash(
-      NextResponse.redirect(new URL("/login", appUrl), 303),
+      NextResponse.redirect(new URL("/login", origin), 303),
       "error",
       message,
       2000,
@@ -48,6 +48,6 @@ export async function login(request: NextRequest) {
   }
 }
 
-export async function logout() {
-  return redirectToLogin();
+export async function logout(request: NextRequest) {
+  return redirectToLogin(request);
 }
