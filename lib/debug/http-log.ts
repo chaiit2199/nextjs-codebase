@@ -1,7 +1,12 @@
 import "server-only";
 
-/** Bật log HTTP phía server (terminal). Set DEBUG_HTTP_LOG=1 trong env. */
-const enabled = process.env.DEBUG_HTTP_LOG === "1";
+/**
+ * HTTP debug log — chỉ chạy khi `npm run dev` (NODE_ENV=development).
+ * Production luôn tắt, kể cả khi set DEBUG_HTTP_LOG=1.
+ * Trong dev, set DEBUG_HTTP_LOG=0 để tắt tạm.
+ */
+const enabled =
+  process.env.NODE_ENV === "development" && process.env.DEBUG_HTTP_LOG !== "0";
 
 export function isHttpDebugEnabled() {
   return enabled;
