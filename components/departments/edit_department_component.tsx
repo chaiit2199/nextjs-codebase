@@ -8,14 +8,10 @@ import { Input, Modal } from "@/components/core_component";
 import { FormSubmitButton } from "@/components/form-submit-button";
 import { RequiredLabel, SelectField } from "@/components/form-fields";
 import { LabelStatus, getLabelStatus } from "@/lib/constants";
-import { updateDepartment } from "@/lib/api/departments";
+import { updateDepartment, type UpdateDepartmentInput } from "@/lib/api/departments";
 import { putFlash } from "@/lib/flash/flash";
 
-type UpdateDepartmentForm = {
-  code?: string;
-  name?: string;
-  status?: string;
-};
+type UpdateDepartmentForm = Pick<UpdateDepartmentInput, "code" | "name" | "status">;
 
 function readUpdateForm(data: FormData): UpdateDepartmentForm {
   const text = (name: string) => String(data.get(name) ?? "").trim();
@@ -26,7 +22,9 @@ function readUpdateForm(data: FormData): UpdateDepartmentForm {
 
   if (code) formValues.code = code;
   if (name) formValues.name = name;
-  if (status) formValues.status = status;
+  if (status === LabelStatus.Active || status === LabelStatus.Inactive) {
+    formValues.status = status;
+  }
 
   return formValues;
 }

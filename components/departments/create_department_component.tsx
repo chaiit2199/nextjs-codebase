@@ -18,7 +18,9 @@ function readCreateForm(data: FormData): CreateDepartmentInput | null {
   if (!code || !name) return null;
 
   const formValues: CreateDepartmentInput = { code, name };
-  if (status) formValues.status = status;
+  if (status === LabelStatus.Active || status === LabelStatus.Inactive) {
+    formValues.status = status;
+  }
   return formValues;
 }
 

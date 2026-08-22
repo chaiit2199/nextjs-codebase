@@ -1,67 +1,40 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { client, HttpError } from "@/lib/http/client";
 
-export type CreateUserInput = {
-  username: string;
-  password: string;
-  full_name: string;
-  phone?: string;
-  address?: string;
-  email?: string;
-  status?: number;
-  role_id?: number;
-  department_id?: number;
-};
+import {
+  changePasswordSchema,
+  createUserSchema,
+  updateUserSchema,
+  type ChangePasswordInput,
+  type CreateUserInput,
+  type UpdateUserInput,
+} from "@/lib/actions/validate-payload";
+import { runServerAction } from "@/lib/actions/secure-action";
+import { client } from "@/lib/http/client";
+
+export type { CreateUserInput, UpdateUserInput, ChangePasswordInput };
 
 export async function createUser(payload: CreateUserInput) {
-  try {
-    await client.post("/api/v1/users", payload);
+  return runServerAction(createUserSchema, payload, "Không thể tạo nhân viên", async (input) => {
+    await client.post("/api/v1/users", input);
     revalidatePath("/users");
     return { ok: true as const };
-  } catch (error) {
-    const message =
-      error instanceof HttpError ? error.message : "Không thể tạo nhân viên";
-    return { ok: false as const, message };
-  }
+  });
 }
 
-export async function changePassword(payload: {
-  current_password: string;
-  new_password: string;
-}) {
-  
-  try {
-    await client.post("/api/v1/me/change-password", payload);
+export async function changePassword(payload: ChangePasswordInput) {
+  return runServerAction(changePasswordSchema, payload, "Không thể đổi mật khẩu", async (input) => {
+    await client.post("/api/v1/me/change-password", input);
     return { ok: true as const };
-  } catch (error) {
-    const message =
-      error instanceof HttpError ? error.message : "Không thể đổi mật khẩu";
-    return { ok: false as const, message };
-  }
+  });
 }
-
-export type UpdateUserInput = {
-  id: number;
-  full_name?: string;
-  phone?: string;
-  address?: string;
-  email?: string;
-  status?: number;
-  department_id?: number;
-};
 
 export async function updateUser(payload: UpdateUserInput) {
-  const { id, ...body } = payload; 
-
-  try {
+  return runServerAction(updateUserSchema, payload, "Không thể cập nhật nhân viên", async (input) => {
+    const { id, ...body } = input;
     await client.patch(`/api/v1/users/${id}`, body);
     revalidatePath("/users");
     return { ok: true as const };
-  } catch (error) {
-    const message =
-      error instanceof HttpError ? error.message : "Không thể cập nhật nhân viên";
-    return { ok: false as const, message };
-  }
+  });
 }

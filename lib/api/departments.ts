@@ -1,43 +1,31 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { client, HttpError } from "@/lib/http/client";
 
-export type CreateDepartmentInput = {
-  code: string;
-  name: string;
-  status?: string;
-};
+import {
+  createDepartmentSchema,
+  updateDepartmentSchema,
+  type CreateDepartmentInput,
+  type UpdateDepartmentInput,
+} from "@/lib/actions/validate-payload";
+import { runServerAction } from "@/lib/actions/secure-action";
+import { client } from "@/lib/http/client";
+
+export type { CreateDepartmentInput, UpdateDepartmentInput };
 
 export async function createDepartment(payload: CreateDepartmentInput) {
-  try {
-    await client.post("/api/v1/departments", payload);
+  return runServerAction(createDepartmentSchema, payload, "Không thể tạo phòng ban", async (input) => {
+    await client.post("/api/v1/departments", input);
     revalidatePath("/departments");
     return { ok: true as const };
-  } catch (error) {
-    const message =
-      error instanceof HttpError ? error.message : "Không thể tạo phòng ban";
-    return { ok: false as const, message };
-  }
+  });
 }
 
-export type UpdateDepartmentInput = {
-  id: number;
-  code?: string;
-  name?: string;
-  status?: string;
-};
-
 export async function updateDepartment(payload: UpdateDepartmentInput) {
-  const { id, ...body } = payload;
-
-  try {
+  return runServerAction(updateDepartmentSchema, payload, "Không thể cập nhật phòng ban", async (input) => {
+    const { id, ...body } = input;
     await client.put(`/api/v1/departments/${id}`, body);
     revalidatePath("/departments");
     return { ok: true as const };
-  } catch (error) {
-    const message =
-      error instanceof HttpError ? error.message : "Không thể cập nhật phòng ban";
-    return { ok: false as const, message };
-  }
+  });
 }
