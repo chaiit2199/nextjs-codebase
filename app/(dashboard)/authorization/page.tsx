@@ -4,5 +4,5 @@ import { Dashboard } from "@/components/dashboard";
 export const metadata: Metadata = { title: "Phân quyền" };
 
 export default function Page() {
-  return <Dashboard id="authozation-main" />;
+  return <Dashboard id="authorization-main" />;
 }

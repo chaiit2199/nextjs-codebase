@@ -61,8 +61,8 @@ export function DashboardHeader() {
           </form>
         )}
 
-        {meta.authozation && (
-          <button type="button" id="header-authozation" className="btn btn--primary">
+        {meta.authorization && (
+          <button type="button" id="header-authorization" className="btn btn--primary">
             <Icon name="hero-shield-check" className="size-4" />
             Phân quyền
           </button>

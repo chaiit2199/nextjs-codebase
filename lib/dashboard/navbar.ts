@@ -2,7 +2,7 @@ export type HeaderButtons = {
   create?: boolean;
   export?: boolean;
   filter?: boolean;
-  authozation?: boolean;
+  authorization?: boolean;
   search?: boolean;
 };
 
@@ -47,7 +47,7 @@ export const MENU: Navbar[] = [
       { id: "staff", label: "Nhân viên", href: "/staff", icon: "hero-identification", create: true, search: true },
       { id: "departments", label: "Phòng ban", href: "/departments", icon: "hero-user-group", create: true },
       { id: "permission_groups", label: "Nhóm quyền", href: "/permission-groups", icon: "hero-shield-check", create: true },
-      { id: "authozation", label: "Phân quyền", href: "/authozation", icon: "hero-cog-6-tooth" },
+      { id: "authorization", label: "Phân quyền", href: "/authorization", icon: "hero-cog-6-tooth" },
     ],
   },
 ];
@@ -70,7 +70,7 @@ export function getHeaderConfig(pathname: string): HeaderConfig {
     create: Boolean(item?.create),
     export: Boolean(item?.export),
     filter: Boolean(item?.filter),
-    authozation: Boolean(item?.authozation),
+    authorization: Boolean(item?.authorization),
     search: Boolean(item?.search),
   };
 }
