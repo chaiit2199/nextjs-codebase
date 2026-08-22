@@ -6,6 +6,14 @@ import { createPortal } from "react-dom";
 export { Input, type InputProps } from "@/components/input";
 
 export type ModalCloseable = true | false | "close_button";
+
+function modalDismissOptions(closeable: ModalCloseable) {
+  return {
+    backdrop: closeable === true,
+    escape: closeable === true,
+    closeButton: closeable !== false,
+  };
+}
 export type ModalWidth = "sm" | "md" | "lg" | "xl" | "2xl" | "3xl";
 export type ModalHeight = "base" | "full";
 
@@ -59,8 +67,7 @@ export function Modal({
   const modalId = id ?? generatedId;
   const containerRef = useRef<HTMLDivElement>(null);
   const sizer = size ?? width;
-  const canClickAway = closeable === true;
-  const canClose = closeable !== false;
+  const dismiss = modalDismissOptions(closeable);
   const hasFooter = Boolean(footer) || Boolean(actions?.length);
 
   useEffect(() => {
@@ -70,7 +77,7 @@ export function Modal({
     document.body.style.overflow = "hidden";
 
     function onKeyDown(event: KeyboardEvent) {
-      if (event.key !== "Escape" || !canClose) return;
+      if (event.key !== "Escape" || !dismiss.escape) return;
       event.preventDefault();
       event.stopPropagation();
       onClose?.();
@@ -83,7 +90,7 @@ export function Modal({
       document.body.style.overflow = previousOverflow;
       window.removeEventListener("keydown", onKeyDown, true);
     };
-  }, [show, canClose, onClose]);
+  }, [show, dismiss.escape, onClose]);
 
   if (!show || typeof document === "undefined") return null;
 
@@ -94,7 +101,7 @@ export function Modal({
         className="core_modal__backdrop"
         aria-hidden="true"
         onClick={() => {
-          onClose?.();
+          if (dismiss.backdrop) onClose?.();
         }}
       />
       <div
@@ -131,7 +138,7 @@ export function Modal({
                   </div>
                   <div className="core_modal__title--right">
                     {status && <div className="core_modal__status">{status}</div>}
-                    {showCloseIcon && canClose && (
+                    {showCloseIcon && dismiss.closeButton && (
                       <button
                         type="button"
                         tabIndex={-1}
