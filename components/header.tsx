@@ -1,19 +1,24 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Icon } from "@/components/icon";
 import { getHeaderConfig } from "@/lib/dashboard/navbar";
 import { emitHeaderAction } from "@/lib/dashboard/header-actions";
 
-
-// assgin meta with header function
-
 export function DashboardHeader() {
   const pathname = usePathname();
   const meta = getHeaderConfig(pathname);
   const [query, setQuery] = useState("");
+
+  useEffect(() => {
+    setQuery("");
+  }, [pathname]);
+
+  function submitSearch() {
+    emitHeaderAction({ action: "search", page: pathname, query });
+  }
 
   return (
     <header className="header" id="header">
@@ -23,16 +28,14 @@ export function DashboardHeader() {
 
       <div className="header__actions" id="header-actions">
         {meta.search && (
-        
           <form
             id="header-search-form"
             onSubmit={(event) => {
               event.preventDefault();
-              emitHeaderAction({ action: "search", page: pathname, query });
+              submitSearch();
             }}
           >
             <div className="header__search">
-              <img src="/icons/header-search.svg" alt="" className="size-5 shrink-0" />
               <input
                 id="header-search"
                 name="query"
@@ -47,7 +50,7 @@ export function DashboardHeader() {
                 <button
                   type="button"
                   id="header-search-clear"
-                  className="header__search-clear"
+                  className="header__search-clear absolute right-11"
                   aria-label="Xóa tìm kiếm"
                   onClick={() => {
                     setQuery("");
@@ -57,6 +60,9 @@ export function DashboardHeader() {
                   <Icon name="hero-x-mark" className="size-4" />
                 </button>
               )}
+              <button type="submit" id="header-search-submit" className="header__search-submit">
+                <Icon name="hero-magnifying-glass" className="size-5" />
+              </button>
             </div>
           </form>
         )}
