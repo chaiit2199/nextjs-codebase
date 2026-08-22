@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 
-import { Dashboard } from "@/components/dashboard";
+import { Dashboard, TableSkeleton } from "@/components/dashboard";
 import { getDepartments, getShortRoles, getUsers } from "@/lib/api/me";
 import { StaffUsers } from "./staff-users";
 
@@ -10,7 +10,7 @@ export const metadata: Metadata = { title: "Nhân viên" };
 export default function StaffPage() {
   return (
     <Dashboard id="admin-main">
-      <Suspense>
+      <Suspense fallback={<TableSkeleton />}>
         <StaffData />
       </Suspense>
     </Dashboard>

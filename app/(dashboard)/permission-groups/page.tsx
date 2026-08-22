@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 
-import { Dashboard } from "@/components/dashboard";
+import { Dashboard, TableSkeleton } from "@/components/dashboard";
 import { getRoles, getShortRoles } from "@/lib/api/me";
 import { PermissionGroupsComponent } from "@/components/permission_groups/permission_groups_component";
 
@@ -10,7 +10,7 @@ export const metadata: Metadata = { title: "Nhóm quyền" };
 export default function PermissionGroupsPage() {
   return (
     <Dashboard id="permission-groups-main">
-      <Suspense>
+      <Suspense fallback={<TableSkeleton />}>
         <RolesData />
       </Suspense>
     </Dashboard>
