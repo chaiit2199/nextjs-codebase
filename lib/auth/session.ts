@@ -3,16 +3,17 @@ import { createHash, createSecretKey, type KeyObject } from "node:crypto";
 import { EncryptJWT, jwtDecrypt } from "jose";
 
 export const SESSION_KEY = "_next_project_key";
+export const SESSION_COOKIE_PATH = "/";
 
-export const SESSION_COOKIE_OPTIONS = {
-  maxAge: 60 * 60 * 24 * 30,
-  httpOnly: true,
-  sameSite: "lax" as const,
-  path: "/",
-  secure:
-    process.env.NODE_ENV === "production" ||
-    (process.env.NEXT_PUBLIC_APP_URL?.startsWith("https") ?? false),
-};
+export function sessionCookieOptions(secure: boolean) {
+  return {
+    maxAge: 60 * 60 * 24 * 30,
+    httpOnly: true,
+    sameSite: "lax" as const,
+    path: SESSION_COOKIE_PATH,
+    secure,
+  };
+}
 
 export type Session = {
   access_token?: string;

@@ -5,9 +5,9 @@ import { cookies } from "next/headers";
 import { refreshSession } from "@/lib/auth/refresh";
 import {
   SESSION_KEY,
-  SESSION_COOKIE_OPTIONS,
   encodeSession,
   decodeSession,
+  sessionCookieOptions,
   type Session,
 } from "@/lib/auth/session";
 
@@ -57,7 +57,11 @@ export class Client {
   private async writeSession(session: Session): Promise<boolean> {
     try {
       const cookieStore = await cookies();
-      cookieStore.set(SESSION_KEY, await encodeSession(session), SESSION_COOKIE_OPTIONS);
+      cookieStore.set(
+        SESSION_KEY,
+        await encodeSession(session),
+        sessionCookieOptions(process.env.NODE_ENV === "production"),
+      );
       return true;
     } catch {
       // Server Components cannot mutate cookies — proxy persists refreshed tokens.

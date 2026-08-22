@@ -2,19 +2,20 @@ import { NextRequest, NextResponse } from "next/server";
 import { client, HttpError } from "@/lib/http/client";
 import type { AuthTokenResponse } from "@/lib/auth/tokens";
 import { sessionFromAuthData } from "@/lib/auth/refresh";
-import { SESSION_KEY, SESSION_COOKIE_OPTIONS, encodeSession } from "@/lib/auth/session";
+import { SESSION_KEY, encodeSession, sessionCookieOptions } from "@/lib/auth/session";
 import { redirectToLogin } from "@/lib/auth/guard";
 import { withFlash } from "@/lib/flash/cookie";
+import { isSecureRequest, getPublicOrigin } from "@/lib/http/request-origin";
 
 export async function login(request: NextRequest) {
-  const origin = request.url;
   const formData = await request.formData();
   const username = String(formData.get("username") ?? "");
   const password = String(formData.get("password") ?? "");
 
   if (!username || !password) {
     return withFlash(
-      NextResponse.redirect(new URL("/login", origin), 303),
+      NextResponse.redirect(new URL("/login", getPublicOrigin(request)), 303),
+      request,
       "error",
       "Thiếu tên đăng nhập hoặc mật khẩu",
     );
@@ -22,15 +23,15 @@ export async function login(request: NextRequest) {
 
   try {
     const payload = await client.post<AuthTokenResponse>("/api/v1/auth/login", { username, password });
-    const response = NextResponse.redirect(new URL("/", origin), 303);
+    const response = NextResponse.redirect(new URL("/", getPublicOrigin(request)), 303);
 
     response.cookies.set(
       SESSION_KEY,
       await encodeSession(sessionFromAuthData(payload.data)),
-      SESSION_COOKIE_OPTIONS,
+      sessionCookieOptions(isSecureRequest(request)),
     );
 
-    return withFlash(response, "success", "Đăng nhập thành công", 2000);
+    return withFlash(response, request, "success", "Đăng nhập thành công", 2000);
   } catch (error) {
     const message =
       error instanceof HttpError && error.status === 401
@@ -38,7 +39,8 @@ export async function login(request: NextRequest) {
         : "Không thể đăng nhập";
 
     return withFlash(
-      NextResponse.redirect(new URL("/login", origin), 303),
+      NextResponse.redirect(new URL("/login", getPublicOrigin(request)), 303),
+      request,
       "error",
       message,
       2000,

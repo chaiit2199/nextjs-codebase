@@ -16,13 +16,17 @@ export const FLASH_TITLES: Record<FlashKind, string> = {
   error: "Lỗi",
 };
 
-export const FLASH_COOKIE_OPTIONS = {
-  maxAge: 30,
-  httpOnly: false,
-  sameSite: "lax" as const,
-  path: "/",
-  secure: process.env.NEXT_PUBLIC_APP_URL?.startsWith("https") ?? false,
-};
+export const FLASH_COOKIE_PATH = "/";
+
+export function flashCookieOptions(secure: boolean) {
+  return {
+    maxAge: 30,
+    httpOnly: false,
+    sameSite: "lax" as const,
+    path: FLASH_COOKIE_PATH,
+    secure,
+  };
+}
 
 export function createFlashPayload(
   kind: FlashKind,

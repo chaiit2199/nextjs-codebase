@@ -5,7 +5,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Icon } from "@/components/icon";
 import {
   FLASH_COOKIE,
-  FLASH_COOKIE_OPTIONS,
+  FLASH_COOKIE_PATH,
   FLASH_EVENT,
   FLASH_TITLES,
   type FlashKind,
@@ -28,7 +28,7 @@ type FlashProviderProps = {
 export { putFlash } from "@/lib/flash/flash";
 
 function clearFlashCookie() {
-  const expired = `${FLASH_COOKIE}=; Max-Age=0; Path=${FLASH_COOKIE_OPTIONS.path}; SameSite=Lax`;
+  const expired = `${FLASH_COOKIE}=; Max-Age=0; Path=${FLASH_COOKIE_PATH}; SameSite=Lax`;
   document.cookie = expired;
   document.cookie = `${expired}; Secure`;
 }
