@@ -30,11 +30,11 @@ export const MENU: Navbar[] = [
     label: "Sản phẩm",
     icon: "hero-cube",
     children: [
-      { id: "costs", label: "Quản lý giá vốn", href: "/products/costs", icon: "hero-currency-dollar", create: true },
-      { id: "ingredients", label: "Quản lý thành phần", href: "/products/thanh-phan", icon: "hero-beaker", create: true },
-      { id: "packages", label: "Quản lý bao bì", href: "/products/packages", icon: "hero-archive-box", create: true },
-      { id: "capital", label: "Quản lý sản phẩm", href: "/products/capital", icon: "hero-calculator", create: true },
-    ],
+      { id: "costs", label: "Quản lý giá vốn", href: "/products/cost-management", icon: "hero-currency-dollar", create: true },
+      { id: "ingredients", label: "Quản lý thành phần", href: "/products/ingredients", icon: "hero-beaker", create: true },
+      { id: "packages", label: "Quản lý bao bì", href: "/products/packaging", icon: "hero-archive-box", create: true },
+      { id: "finished-goods", label: "Quản lý thành phẩm", href: "/products/finished-goods", icon: "hero-calculator", create: true },
+    ]
   },
   { id: "orders", label: "Quản lý đơn hàng", href: "/orders", icon: "hero-clipboard-document-list", create: true },
   { id: "agents", label: "Quản lý đại lý", href: "/agents", icon: "hero-users", create: true },
