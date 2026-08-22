@@ -7,7 +7,7 @@ import { UserAvatar } from "@/components/user-components";
 import { Icon } from "@/components/icon";
 import { UserStatus, userStatusMeta } from "@/lib/constants";
 import { FormSubmitButton } from "@/components/form-submit-button";
-import { RequiredLabel, SelectField } from "@/components/users/user-form";
+import { RequiredLabel, SelectField } from "@/components/form-fields";
 import { Input, Modal } from "@/components/core_component";
 import { updateUser } from "@/lib/api/users";
 import { putFlash } from "@/lib/flash/flash";

@@ -16,6 +16,14 @@ export function ComingSoon() {
   return <h2>Tính năng đang phát triển</h2>;
 }
 
+export function WipPage({ id }: { id: string }) {
+  return (
+    <Dashboard id={id}>
+      <ComingSoon />
+    </Dashboard>
+  );
+}
+
 export function TableSkeleton() {
   return (
     <section className="admin-section">

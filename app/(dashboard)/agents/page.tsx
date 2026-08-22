@@ -1,13 +1,9 @@
 import type { Metadata } from "next";
 
-import { ComingSoon, Dashboard } from "@/components/dashboard";
+import { WipPage } from "@/components/dashboard";
 
 export const metadata: Metadata = { title: "Quản lý đại lý" };
 
 export default function Page() {
-  return (
-    <Dashboard id="agents-main">
-      <ComingSoon />
-    </Dashboard>
-  );
+  return <WipPage id="agents-main" />;
 }

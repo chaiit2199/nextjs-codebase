@@ -9,7 +9,7 @@ export const metadata: Metadata = { title: "Nhân viên" };
 
 export default function StaffPage() {
   return (
-    <Dashboard id="admin-main">
+    <Dashboard id="staff-main">
       <Suspense fallback={<TableSkeleton />}>
         <StaffData />
       </Suspense>

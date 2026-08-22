@@ -1,87 +1,25 @@
 import { cache } from "react";
 
 import { client, HttpError } from "@/lib/http/client";
+import type {
+  CurrentUserResponse,
+  DepartmentsResponse,
+  RolesResponse,
+  ShortRolesResponse,
+  User,
+  Department,
+  Role,
+  ShortRole,
+  UsersResponse,
+} from "@/lib/api/types";
 
-export type User = {
-    id?: number | string;
-    code?: string;
-    username: string;
-    full_name: string;
-    email?: string;
-    phone?: string;
-    address?: string;
-    role?: string | number;
-    status?: number;
-    department?: Department | null;
-};
-
-type CurrentUser = {
-    data: {
-      user: User;
-    };
-};
-
-type UsersResponse = {
-    data: User[];
-    meta?: {
-      total: number;
-      page: number;
-      page_size: number;
-      trace_id?: string;
-    };
-};
-
-export type Department = {
-    id: number;
-    code: string;
-    name: string;
-    status: string;
-};
-
-type DepartmentsResponse = {
-    data: Department[];
-    meta?: {
-        total: number;
-        page: number;
-        page_size: number;
-        trace_id?: string;
-    };
-};
-
-export type RoleGrant = {
-    permission_id: number;
-    permission_code: string;
-};
-
-export type Role = {
-    id: number;
-    code: string;
-    name: string;
-    status: string;
-    version: number;
-    description: string;
-    is_system: boolean;
-    allowed_scope_types: string[];
-    grants: RoleGrant[];
-    users_count: number;
-};
-
-export type ShortRole = Pick<Role, "id" | "name">;
-
-type RolesResponse = {
-    data: Role[];
-    meta?: {
-        trace_id?: string;
-    };
-};
-
-type ShortRolesResponse = {
-    data: ShortRole[];
-    meta?: {
-        trace_id?: string;
-    };
-};
-  
+export type {
+  User,
+  Department,
+  Role,
+  RoleGrant,
+  ShortRole,
+} from "@/lib/api/types";
 
 async function orEmpty<T>(load: () => Promise<T>, fallback: T): Promise<T> {
   try {
@@ -96,22 +34,21 @@ async function orEmpty<T>(load: () => Promise<T>, fallback: T): Promise<T> {
 }
 
 export const getCurrentUser = cache(() =>
-  orEmpty(async () => (await client.get<CurrentUser>("/api/v1/me")).data.user, null),
+  orEmpty(async () => (await client.get<CurrentUserResponse>("/api/v1/me")).data.user, null),
 );
 
 export const getUsers = cache(() =>
-  orEmpty(async () => (await client.get<UsersResponse>("/api/v1/users")).data, []),
+  orEmpty(async () => (await client.get<UsersResponse>("/api/v1/users")).data, [] as User[]),
 );
 
 export const getDepartments = cache(() =>
-  orEmpty(async () => (await client.get<DepartmentsResponse>("/api/v1/departments")).data, []),
+  orEmpty(async () => (await client.get<DepartmentsResponse>("/api/v1/departments")).data, [] as Department[]),
 );
 
 export const getShortRoles = cache(() =>
-  orEmpty(async () => (await client.get<ShortRolesResponse>("/api/v1/roles?view=short")).data, []),
+  orEmpty(async () => (await client.get<ShortRolesResponse>("/api/v1/roles?view=short")).data, [] as ShortRole[]),
 );
 
 export const getRoles = cache(() =>
-  orEmpty(async () => (await client.get<RolesResponse>("/api/v1/roles")).data, []),
+  orEmpty(async () => (await client.get<RolesResponse>("/api/v1/roles")).data, [] as Role[]),
 );
-

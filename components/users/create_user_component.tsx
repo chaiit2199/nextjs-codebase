@@ -6,7 +6,7 @@ import type { Department, ShortRole } from "@/lib/api/me";
 import { Input, Modal } from "@/components/core_component";
 import { UserStatus, userStatusMeta } from "@/lib/constants";
 import { FormSubmitButton } from "@/components/form-submit-button";
-import { RequiredLabel, SelectField } from "@/components/users/user-form";
+import { RequiredLabel, SelectField } from "@/components/form-fields";
 import { createUser, type CreateUserInput } from "@/lib/api/users";
 import { PASSWORD_MIN_LENGTH } from "@/lib/auth/password";
 import { putFlash } from "@/lib/flash/flash";

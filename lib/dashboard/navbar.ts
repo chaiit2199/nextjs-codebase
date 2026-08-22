@@ -30,9 +30,9 @@ export const MENU: Navbar[] = [
     label: "Sản phẩm",
     icon: "hero-cube",
     children: [
-      { id: "costs", label: "Quản lý giá vốn", href: "/products/cost-management", icon: "hero-currency-dollar", create: true },
+      { id: "cost-management", label: "Quản lý giá vốn", href: "/products/cost-management", icon: "hero-currency-dollar", create: true },
       { id: "ingredients", label: "Quản lý thành phần", href: "/products/ingredients", icon: "hero-beaker", create: true },
-      { id: "packages", label: "Quản lý bao bì", href: "/products/packaging", icon: "hero-archive-box", create: true },
+      { id: "packaging", label: "Quản lý bao bì", href: "/products/packaging", icon: "hero-archive-box", create: true },
       { id: "finished-goods", label: "Quản lý thành phẩm", href: "/products/finished-goods", icon: "hero-calculator", create: true },
     ]
   },
@@ -46,7 +46,7 @@ export const MENU: Navbar[] = [
     children: [
       { id: "staff", label: "Nhân viên", href: "/staff", icon: "hero-identification", create: true, search: true },
       { id: "departments", label: "Phòng ban", href: "/departments", icon: "hero-user-group", create: true },
-      { id: "permission_groups", label: "Nhóm quyền", href: "/permission-groups", icon: "hero-shield-check", create: true },
+      { id: "permission-groups", label: "Nhóm quyền", href: "/permission-groups", icon: "hero-shield-check", create: true },
       { id: "authorization", label: "Phân quyền", href: "/authorization", icon: "hero-cog-6-tooth" },
     ],
   },

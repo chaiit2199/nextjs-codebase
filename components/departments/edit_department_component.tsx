@@ -6,7 +6,7 @@ import type { Department } from "@/lib/api/me";
 import { Icon } from "@/components/icon";
 import { Input, Modal } from "@/components/core_component";
 import { FormSubmitButton } from "@/components/form-submit-button";
-import { RequiredLabel, SelectField } from "@/components/users/user-form";
+import { RequiredLabel, SelectField } from "@/components/form-fields";
 import { LabelStatus, getLabelStatus } from "@/lib/constants";
 import { updateDepartment } from "@/lib/api/departments";
 import { putFlash } from "@/lib/flash/flash";

@@ -2,25 +2,29 @@
 
 import { useEffect, useState, type FormEvent } from "react";
 
-import type { Role, ShortRole } from "@/lib/api/me";
-import { Icon } from "@/components/icon";
 import { Input, Modal } from "@/components/core_component";
-import { RequiredLabel } from "@/components/users/user-form";
+import { FormSubmitButton } from "@/components/form-submit-button";
+import { RequiredLabel } from "@/components/form-fields";
+import { Icon } from "@/components/icon";
+import { updateRole, type UpdateRoleInput } from "@/lib/api/roles";
+import type { Role, ShortRole } from "@/lib/api/types";
 import { getLabelStatus } from "@/lib/constants";
 import { subscribeHeaderAction } from "@/lib/dashboard/header-actions";
+import { putFlash } from "@/lib/flash/flash";
 import { SelectRoles } from "./select_roles_component";
 import { CreatePermissionGroupComponent } from "./create_permission_group_component";
 
-export function PermissionGroupsComponent({ roles, shortRoles }: { roles: Role[], shortRoles: ShortRole[] }) {
+export function PermissionGroupsComponent({
+  roles,
+  shortRoles,
+}: {
+  roles: Role[];
+  shortRoles: ShortRole[];
+}) {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [selectedRole, setSelectedRole] = useState<Role | null>(null);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
-  const [payload, setPayload] = useState<{
-    id?: number;
-    name: string;
-    description: string;
-    permissions: string[];
-  } | null>(null);
+  const [payload, setPayload] = useState<UpdateRoleInput | null>(null);
 
   function openForm(role: Role) {
     setSelectedRole(role);
@@ -36,19 +40,34 @@ export function PermissionGroupsComponent({ roles, shortRoles }: { roles: Role[]
 
   function handleFormSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (!selectedRole) return;
+
     const data = new FormData(event.currentTarget);
+    const name = String(data.get("name") ?? "").trim();
+    if (!name) return;
+
     setPayload({
-      id: selectedRole?.id,
-      name: String(data.get("name") ?? "").trim(),
+      id: selectedRole.id,
+      name,
       description: String(data.get("description") ?? "").trim(),
-      permissions: data.getAll("permissions").map(String),
+      permission_codes: data.getAll("permissions").map(String),
     });
     setIsConfirmOpen(true);
   }
 
-  function confirmUpdate() {
-    console.log(payload);
-    setIsConfirmOpen(false);
+  async function confirmUpdate() {
+    if (!payload) return;
+
+    const result = await updateRole(payload);
+
+    if (!result.ok) {
+      setIsConfirmOpen(false);
+      putFlash("error", result.message, 2000);
+      return;
+    }
+
+    closeForm();
+    putFlash("success", "Cập nhật nhóm quyền thành công", 2000);
   }
 
   useEffect(() => {
@@ -59,7 +78,9 @@ export function PermissionGroupsComponent({ roles, shortRoles }: { roles: Role[]
 
   return (
     <>
-      {isCreateOpen && <CreatePermissionGroupComponent onClose={() => setIsCreateOpen(false)} shortRoles={shortRoles} />}
+      {isCreateOpen && (
+        <CreatePermissionGroupComponent onClose={() => setIsCreateOpen(false)} shortRoles={shortRoles} />
+      )}
       <section className="admin-section" id="admin-permission-groups-section">
         <div className="admin-table-card mb-6">
           <div className="overview-table-wrap">
@@ -164,7 +185,7 @@ export function PermissionGroupsComponent({ roles, shortRoles }: { roles: Role[]
         className="core_modal--stacked"
         onClose={() => setIsConfirmOpen(false)}
       >
-        <div className="core_modal__actions">
+        <form className="core_modal__actions" action={confirmUpdate}>
           <button
             type="button"
             className="core_button core_button--secondary"
@@ -172,10 +193,8 @@ export function PermissionGroupsComponent({ roles, shortRoles }: { roles: Role[]
           >
             Hủy
           </button>
-          <button type="button" className="core_button core_button--primary" onClick={confirmUpdate}>
-            Cập nhật nhóm quyền
-          </button>
-        </div>
+          <FormSubmitButton>Cập nhật nhóm quyền</FormSubmitButton>
+        </form>
       </Modal>
     </>
   );

@@ -3,9 +3,12 @@
 import { useState, type FormEvent } from "react";
 
 import { Input, Modal } from "@/components/core_component";
+import { FormSubmitButton } from "@/components/form-submit-button";
+import { RequiredLabel } from "@/components/form-fields";
 import { Icon } from "@/components/icon";
-import { RequiredLabel } from "@/components/users/user-form";
-import type { ShortRole } from "@/lib/api/me";
+import { createRole, type CreateRoleInput } from "@/lib/api/roles";
+import type { ShortRole } from "@/lib/api/types";
+import { putFlash } from "@/lib/flash/flash";
 import { SelectRoles } from "./select_roles_component";
 
 type CreateRoleProfile = {
@@ -26,11 +29,17 @@ export function suggestRoleCode(name: string) {
     .replace(/^_+|_+$/g, "");
 }
 
-export function CreatePermissionGroupComponent({ onClose, shortRoles }: { onClose: () => void, shortRoles: ShortRole[] }) {
+export function CreatePermissionGroupComponent({
+  onClose,
+  shortRoles,
+}: {
+  onClose: () => void;
+  shortRoles: ShortRole[];
+}) {
   const [step, setStep] = useState<"profile" | "permissions">("profile");
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [profile, setProfile] = useState<CreateRoleProfile | null>(null);
-  const [payload, setPayload] = useState<(CreateRoleProfile & { permissions: string[] }) | null>(null);
+  const [payload, setPayload] = useState<CreateRoleInput | null>(null);
   const [scopes, setScopes] = useState<number[]>([]);
   const [name, setName] = useState("");
   const [code, setCode] = useState("");
@@ -72,16 +81,28 @@ export function CreatePermissionGroupComponent({ onClose, shortRoles }: { onClos
     event.preventDefault();
     if (!profile) return;
 
-    setPayload({
+    const formValues: CreateRoleInput = {
       ...profile,
-      permissions: new FormData(event.currentTarget).getAll("permissions").map(String),
-    });
+      permission_codes: new FormData(event.currentTarget).getAll("permissions").map(String),
+    };
+
+    setPayload(formValues);
     setIsConfirmOpen(true);
   }
 
-  function confirmCreate() {
-    console.log(payload);
-    setIsConfirmOpen(false);
+  async function confirmCreate() {
+    if (!payload) return;
+
+    const result = await createRole(payload);
+
+    if (!result.ok) {
+      setIsConfirmOpen(false);
+      putFlash("error", result.message, 2000);
+      return;
+    }
+
+    onClose();
+    putFlash("success", "Thêm nhóm quyền thành công", 2000);
   }
 
   return (
@@ -216,7 +237,7 @@ export function CreatePermissionGroupComponent({ onClose, shortRoles }: { onClos
         className="core_modal--stacked"
         onClose={() => setIsConfirmOpen(false)}
       >
-        <div className="core_modal__actions">
+        <form className="core_modal__actions" action={confirmCreate}>
           <button
             type="button"
             className="core_button core_button--secondary"
@@ -224,10 +245,8 @@ export function CreatePermissionGroupComponent({ onClose, shortRoles }: { onClos
           >
             Hủy
           </button>
-          <button type="button" className="core_button core_button--primary" onClick={confirmCreate}>
-            Thêm nhóm quyền
-          </button>
-        </div>
+          <FormSubmitButton>Thêm nhóm quyền</FormSubmitButton>
+        </form>
       </Modal>
     </>
   );

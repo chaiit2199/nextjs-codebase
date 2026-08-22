@@ -4,7 +4,7 @@ import { useState, type FormEvent } from "react";
 
 import { Input, Modal } from "@/components/core_component";
 import { FormSubmitButton } from "@/components/form-submit-button";
-import { RequiredLabel, SelectField } from "@/components/users/user-form";
+import { RequiredLabel, SelectField } from "@/components/form-fields";
 import { LabelStatus, getLabelStatus } from "@/lib/constants";
 import { createDepartment, type CreateDepartmentInput } from "@/lib/api/departments";
 import { putFlash } from "@/lib/flash/flash";
