@@ -5,6 +5,7 @@ import { useState, type FormEvent } from "react";
 import type { Department, ShortRole } from "@/lib/api/me";
 import { Input, Modal } from "@/components/core_component";
 import { UserStatus, userStatusMeta } from "@/lib/constants";
+import { FormSubmitButton } from "@/components/form-submit-button";
 import { RequiredLabel, SelectField } from "@/components/users/user-form";
 import { createUser, type CreateUserInput } from "@/lib/api/users";
 import { PASSWORD_MIN_LENGTH } from "@/lib/auth/password";
@@ -204,7 +205,7 @@ export function CreateUserComponent({
         className="core_modal--stacked"
         onClose={() => setIsConfirmOpen(false)}
       >
-        <div className="core_modal__actions">
+        <form className="core_modal__actions" action={confirmCreate}>
           <button
             type="button"
             className="core_button core_button--secondary"
@@ -212,14 +213,8 @@ export function CreateUserComponent({
           >
             Hủy
           </button>
-          <button
-            type="button"
-            className="core_button core_button--primary"
-            onClick={confirmCreate}
-          >
-            Xác nhận
-          </button>
-        </div>
+          <FormSubmitButton>Xác nhận</FormSubmitButton>
+        </form>
       </Modal>
     </>
   );

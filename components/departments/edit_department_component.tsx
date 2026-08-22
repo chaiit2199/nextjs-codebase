@@ -5,6 +5,7 @@ import { useState, type FormEvent } from "react";
 import type { Department } from "@/lib/api/me";
 import { Icon } from "@/components/icon";
 import { Input, Modal } from "@/components/core_component";
+import { FormSubmitButton } from "@/components/form-submit-button";
 import { RequiredLabel, SelectField } from "@/components/users/user-form";
 import { LabelStatus, getLabelStatus } from "@/lib/constants";
 import { updateDepartment } from "@/lib/api/departments";
@@ -182,7 +183,7 @@ export function EditDepartmentComponent({ departments }: { departments: Departme
         className="core_modal--stacked"
         onClose={() => setIsConfirmOpen(false)}
       >
-        <div className="core_modal__actions">
+        <form className="core_modal__actions" action={confirmUpdate}>
           <button
             type="button"
             className="core_button core_button--secondary"
@@ -190,10 +191,8 @@ export function EditDepartmentComponent({ departments }: { departments: Departme
           >
             Hủy
           </button>
-          <button type="button" className="core_button core_button--primary" onClick={confirmUpdate}>
-            Xác nhận
-          </button>
-        </div>
+          <FormSubmitButton>Xác nhận</FormSubmitButton>
+        </form>
       </Modal>
     </>
   );

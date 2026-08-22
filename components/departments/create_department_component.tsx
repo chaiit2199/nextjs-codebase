@@ -3,6 +3,7 @@
 import { useState, type FormEvent } from "react";
 
 import { Input, Modal } from "@/components/core_component";
+import { FormSubmitButton } from "@/components/form-submit-button";
 import { RequiredLabel, SelectField } from "@/components/users/user-form";
 import { LabelStatus, getLabelStatus } from "@/lib/constants";
 import { createDepartment, type CreateDepartmentInput } from "@/lib/api/departments";
@@ -110,7 +111,7 @@ export function CreateDepartmentComponent({ onClose }: { onClose: () => void }) 
         className="core_modal--stacked"
         onClose={() => setIsConfirmOpen(false)}
       >
-        <div className="core_modal__actions">
+        <form className="core_modal__actions" action={confirmCreate}>
           <button
             type="button"
             className="core_button core_button--secondary"
@@ -118,10 +119,8 @@ export function CreateDepartmentComponent({ onClose }: { onClose: () => void }) 
           >
             Hủy
           </button>
-          <button type="button" className="core_button core_button--primary" onClick={confirmCreate}>
-            Xác nhận
-          </button>
-        </div>
+          <FormSubmitButton>Xác nhận</FormSubmitButton>
+        </form>
       </Modal>
     </>
   );

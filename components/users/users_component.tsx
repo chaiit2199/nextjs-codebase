@@ -6,6 +6,7 @@ import type { Department, User } from "@/lib/api/me";
 import { UserAvatar } from "@/components/user-components";
 import { Icon } from "@/components/icon";
 import { UserStatus, userStatusMeta } from "@/lib/constants";
+import { FormSubmitButton } from "@/components/form-submit-button";
 import { RequiredLabel, SelectField } from "@/components/users/user-form";
 import { Input, Modal } from "@/components/core_component";
 import { updateUser } from "@/lib/api/users";
@@ -238,7 +239,7 @@ export function UsersComponent({ users, departments }: { users: User[]; departme
                 className="core_modal--stacked"
                 onClose={() => setIsConfirmOpen(false)}
             >
-                <div className="core_modal__actions">
+                <form className="core_modal__actions" action={confirmUpdate}>
                 <button
                     type="button"
                     className="core_button core_button--secondary"
@@ -246,14 +247,8 @@ export function UsersComponent({ users, departments }: { users: User[]; departme
                 >
                     Hủy
                 </button>
-                <button
-                    type="button"
-                    className="core_button core_button--primary"
-                    onClick={confirmUpdate}
-                >
-                    Xác nhận
-                </button>
-                </div>
+                <FormSubmitButton>Xác nhận</FormSubmitButton>
+                </form>
             </Modal>
         </>
     );

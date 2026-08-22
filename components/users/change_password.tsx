@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 
+import { FormSubmitButton } from "@/components/form-submit-button";
 import { Icon } from "@/components/icon";
 import { Input, Modal, useDropdownClose } from "@/components/core_component";
 import { changePassword } from "@/lib/api/users";
@@ -171,7 +172,7 @@ export function ChangePasswordComponent() {
         onClose={onCloseConfirm}
       >
         <p>Bạn có chắc chắn muốn đổi mật khẩu không?</p>
-        <div className="core_modal__actions">
+        <form className="core_modal__actions" action={onConfirm}>
           <button
             type="button"
             id="change-password-confirm-cancel"
@@ -180,15 +181,8 @@ export function ChangePasswordComponent() {
           >
             Hủy
           </button>
-          <button
-            type="button"
-            id="change-password-confirm-submit"
-            className="core_button core_button--primary"
-            onClick={onConfirm}
-          >
-            Xác nhận
-          </button>
-        </div>
+          <FormSubmitButton>Xác nhận</FormSubmitButton>
+        </form>
       </Modal>
     </>
   );
