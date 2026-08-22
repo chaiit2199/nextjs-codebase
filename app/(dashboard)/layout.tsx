@@ -1,14 +1,21 @@
+import { Suspense } from "react";
+
 import { SidebarComponent } from "@/components/sidebar";
 import { DashboardHeader } from "@/components/header";
 import { getCurrentUser } from "@/lib/api/me";
 
-export default async function DashboardLayout({ children }: LayoutProps<"/">) {
+async function SidebarUser() {
   const user = await getCurrentUser();
+  return <SidebarComponent user={user} />;
+}
 
+export default function DashboardLayout({ children }: LayoutProps<"/">) {
   return (
     <div className="dashboard-layout">
       <div className="dashboard" id="dashboard">
-        <SidebarComponent user={user} />
+        <Suspense fallback={<SidebarComponent />}>
+          <SidebarUser />
+        </Suspense>
         <div className="dashboard__container">
           <DashboardHeader />
           {children}
