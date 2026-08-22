@@ -1,4 +1,4 @@
-import { Input } from "@/components/core_component";
+import { Input } from "@/components/input";
 
 export default function LoginPage() {
   return (
