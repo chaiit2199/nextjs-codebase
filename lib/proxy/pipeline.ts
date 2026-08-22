@@ -2,7 +2,6 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
 import { ensureAuthenticated } from "@/lib/auth/guard";
-import { applySecurityHeaders } from "@/lib/proxy/secure_header"; 
 
 const PROTECTED_ROUTES = [
   "/",
@@ -21,24 +20,17 @@ const PROTECTED_ROUTES = [
 ];
 
 export async function dispatchRoutePipeline(request: NextRequest) {
-  if (request.method === "OPTIONS") {
-    const preflightResponse = new NextResponse(null, { status: 200 });
-    return applySecurityHeaders(request, preflightResponse);
-  }
-
   const pathname = request.nextUrl.pathname;
-  let response: NextResponse;
 
-  // Routing & Auth
   if (pathname === "/login" && request.method === "POST") {
-    response = NextResponse.rewrite(new URL("/api/login", request.nextUrl));
-  } else if (protectedRoute(pathname, PROTECTED_ROUTES)) {
-    response = await ensureAuthenticated(request);
-  } else {
-    response = NextResponse.next();
+    return NextResponse.rewrite(new URL("/api/login", request.nextUrl));
   }
 
-  return applySecurityHeaders(request, response);
+  if (protectedRoute(pathname, PROTECTED_ROUTES)) {
+    return ensureAuthenticated(request);
+  }
+
+  return NextResponse.next();
 }
 
 function protectedRoute(pathname: string, routes: readonly string[]): boolean {
