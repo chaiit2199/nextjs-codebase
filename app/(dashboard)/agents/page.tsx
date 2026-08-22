@@ -1,8 +1,13 @@
 import type { Metadata } from "next";
-import { Dashboard } from "@/components/dashboard";
+
+import { ComingSoon, Dashboard } from "@/components/dashboard";
 
 export const metadata: Metadata = { title: "Quản lý đại lý" };
 
 export default function Page() {
-  return <Dashboard id="agents-main" />;
+  return (
+    <Dashboard id="agents-main">
+      <ComingSoon />
+    </Dashboard>
+  );
 }

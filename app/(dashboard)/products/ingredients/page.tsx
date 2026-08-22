@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
-import { Dashboard } from "@/components/dashboard";
+
+import { ComingSoon, Dashboard } from "@/components/dashboard";
 
 export const metadata: Metadata = { title: "Quản lý thành phần" };
 
 export default function Page() {
   return (
     <Dashboard id="products-main">
-      <h2>Tính năng đang phát triển</h2>
+      <ComingSoon />
     </Dashboard>
   );
 }

@@ -1,8 +1,13 @@
 import type { Metadata } from "next";
-import { Dashboard } from "@/components/dashboard";
+
+import { ComingSoon, Dashboard } from "@/components/dashboard";
 
 export const metadata: Metadata = { title: "Phân quyền" };
 
 export default function Page() {
-  return <Dashboard id="authorization-main" />;
+  return (
+    <Dashboard id="authorization-main">
+      <ComingSoon />
+    </Dashboard>
+  );
 }

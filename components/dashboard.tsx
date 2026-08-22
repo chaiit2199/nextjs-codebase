@@ -11,3 +11,7 @@ export function Dashboard({
     </main>
   );
 }
+
+export function ComingSoon() {
+  return <h2>Tính năng đang phát triển</h2>;
+}
