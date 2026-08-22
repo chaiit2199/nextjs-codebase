@@ -3,6 +3,7 @@ import axios, { type AxiosInstance, type AxiosRequestConfig } from "axios";
 import { cookies } from "next/headers";
 
 import { refreshSession } from "@/lib/auth/refresh";
+import { startHttpDebugLog } from "@/lib/debug/http-log";
 import {
   SESSION_KEY,
   encodeSession,
@@ -96,6 +97,11 @@ export class Client {
       ? undefined
       : (explicitToken ?? (await this.readSession()).access_token);
 
+    const methodLabel = String(method ?? "GET").toUpperCase();
+    const retryLabel = isRetry ? " (retry)" : "";
+
+    const endDebug = startHttpDebugLog(methodLabel, `${url}${retryLabel}`);
+
     try {
       const response = await this.instance.request<TResponse>({
         ...requestConfig,
@@ -108,9 +114,11 @@ export class Client {
         },
       });
 
+      endDebug(response.status);
       return response.data;
     } catch (error) {
       const httpError = toHttpError(error);
+      endDebug(httpError.status ?? "error");
 
       if (
         !isRetry &&

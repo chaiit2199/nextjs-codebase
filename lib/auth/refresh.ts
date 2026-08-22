@@ -1,5 +1,6 @@
 import axios from "axios";
 
+import { startHttpDebugLog } from "@/lib/debug/http-log";
 import type { AuthTokenResponse } from "@/lib/auth/tokens";
 import type { Session } from "@/lib/auth/session";
 
@@ -25,9 +26,14 @@ export async function refreshSession(refreshToken: string): Promise<Session | nu
   const apiUrl = process.env.BASE_API_URL;
   if (!apiUrl) return null;
 
+  const path = "/api/v1/auth/refresh-token";
+  const url = `${apiUrl}${path}`;
+
+  const endDebug = startHttpDebugLog("POST", path);
+
   try {
     const response = await axios.post<AuthTokenResponse>(
-      `${apiUrl}/api/v1/auth/refresh-token`,
+      url,
       { refresh_token: refreshToken },
       {
         timeout: 5_000,
@@ -38,6 +44,8 @@ export async function refreshSession(refreshToken: string): Promise<Session | nu
       },
     );
 
+    endDebug(response.status);
+
     const data = response.data?.data;
     if (!data?.access_token) return null;
 
@@ -45,7 +53,13 @@ export async function refreshSession(refreshToken: string): Promise<Session | nu
       ...data,
       refresh_token: data.refresh_token ?? refreshToken,
     });
-  } catch {
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      endDebug(error.response?.status ?? "error");
+    } else {
+      endDebug("error");
+    }
+
     return null;
   }
 }
