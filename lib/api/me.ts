@@ -1,4 +1,5 @@
 import { cache } from "react";
+import { redirect } from "next/navigation";
 
 import { client, HttpError } from "@/lib/http/client";
 import type {
@@ -6,10 +7,6 @@ import type {
   DepartmentsResponse,
   RolesResponse,
   ShortRolesResponse,
-  User,
-  Department,
-  Role,
-  ShortRole,
   UsersResponse,
 } from "@/lib/api/types";
 
@@ -21,12 +18,12 @@ export type {
   ShortRole,
 } from "@/lib/api/types";
 
-async function orEmpty<T>(load: () => Promise<T>, fallback: T): Promise<T> {
+async function redirectOnUnauthorized<T>(load: () => Promise<T>): Promise<T> {
   try {
     return await load();
   } catch (error) {
     if (error instanceof HttpError && error.status === HttpError.Unauthorized) {
-      return fallback;
+      redirect("/login");
     }
 
     throw error;
@@ -34,21 +31,29 @@ async function orEmpty<T>(load: () => Promise<T>, fallback: T): Promise<T> {
 }
 
 export const getCurrentUser = cache(() =>
-  orEmpty(async () => (await client.get<CurrentUserResponse>("/api/v1/me")).data.user, null),
+  redirectOnUnauthorized(async () => (await client.get<CurrentUserResponse>("/api/v1/me")).data.user),
 );
 
+export const requireCurrentUser = cache(async () => {
+  const user = await getCurrentUser();
+  if (!user) redirect("/login");
+  return user;
+});
+
 export const getUsers = cache(() =>
-  orEmpty(async () => (await client.get<UsersResponse>("/api/v1/users")).data, [] as User[]),
+  redirectOnUnauthorized(async () => (await client.get<UsersResponse>("/api/v1/users")).data),
 );
 
 export const getDepartments = cache(() =>
-  orEmpty(async () => (await client.get<DepartmentsResponse>("/api/v1/departments")).data, [] as Department[]),
+  redirectOnUnauthorized(async () => (await client.get<DepartmentsResponse>("/api/v1/departments")).data),
 );
 
 export const getShortRoles = cache(() =>
-  orEmpty(async () => (await client.get<ShortRolesResponse>("/api/v1/roles?view=short")).data, [] as ShortRole[]),
+  redirectOnUnauthorized(async () =>
+    (await client.get<ShortRolesResponse>("/api/v1/roles?view=short")).data,
+  ),
 );
 
 export const getRoles = cache(() =>
-  orEmpty(async () => (await client.get<RolesResponse>("/api/v1/roles")).data, [] as Role[]),
+  redirectOnUnauthorized(async () => (await client.get<RolesResponse>("/api/v1/roles")).data),
 );
