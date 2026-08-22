@@ -18,7 +18,7 @@ export type CreateUserInput = {
 export async function createUser(payload: CreateUserInput) {
   try {
     await client.post("/api/v1/users", payload);
-    revalidatePath("/staff");
+    revalidatePath("/users");
     return { ok: true as const };
   } catch (error) {
     const message =
@@ -57,7 +57,7 @@ export async function updateUser(payload: UpdateUserInput) {
 
   try {
     await client.patch(`/api/v1/users/${id}`, body);
-    revalidatePath("/staff");
+    revalidatePath("/users");
     return { ok: true as const };
   } catch (error) {
     const message =

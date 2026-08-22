@@ -19,7 +19,7 @@ export function StaffUsers({
     const [isCreateOpen, setIsCreateOpen] = useState(false);
 
     useEffect(() => {
-        return subscribeHeaderAction("/staff", (detail) => {
+        return subscribeHeaderAction("/users", (detail) => {
         if (detail.action === "create") setIsCreateOpen(true);
         });
     }, []);

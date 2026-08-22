@@ -13,7 +13,7 @@ const PROTECTED_ROUTES = [
   "/orders",
   "/agents",
   "/promotions",
-  "/staff",
+  "/users",
   "/departments",
   "/permission-groups",
   "/authorization",

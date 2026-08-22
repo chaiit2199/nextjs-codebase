@@ -44,7 +44,7 @@ export const MENU: Navbar[] = [
     label: "Quản lý",
     icon: "hero-building-office-2",
     children: [
-      { id: "staff", label: "Nhân viên", href: "/staff", icon: "hero-identification", create: true, search: true },
+      { id: "users", label: "Nhân viên", href: "/users", icon: "hero-identification", create: true, search: true },
       { id: "departments", label: "Phòng ban", href: "/departments", icon: "hero-user-group", create: true },
       { id: "permission-groups", label: "Nhóm quyền", href: "/permission-groups", icon: "hero-shield-check", create: true },
       { id: "authorization", label: "Phân quyền", href: "/authorization", icon: "hero-cog-6-tooth" },
