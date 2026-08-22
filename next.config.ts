@@ -18,12 +18,12 @@ const nextConfig: NextConfig = {
   },
 
   // DEV ONLY
-  allowedDevOrigins: ["10.161.68.41"],
+  allowedDevOrigins: ["usafarm-agri.com"],
 
   // PROD — whitelist origin cho Server Actions
   experimental: {
     serverActions: {
-      allowedOrigins: ["yourdomain.com", "www.yourdomain.com"],
+      allowedOrigins: ["usafarm-agri.com", "www.usafarm-agri.com"],
     },
   },
 };
