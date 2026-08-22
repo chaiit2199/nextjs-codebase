@@ -242,5 +242,6 @@ export const client = new Client({
   headers: {
     Accept: "application/json",
     "Content-Type": "application/json",
+    "Cache-Control": "no-store",
   },
 });

@@ -83,68 +83,35 @@ type ShortRolesResponse = {
 };
   
 
-export const getCurrentUser = cache(async (): Promise<User | null> => {
-    try {
-        const payload = await client.get<CurrentUser>("/api/v1/me");
-        return payload.data.user;
-    } catch (error) {
-        if (error instanceof HttpError && error.status === HttpError.Unauthorized) {
-        return null;
-        }
-
-        throw error;
+async function orEmpty<T>(load: () => Promise<T>, fallback: T): Promise<T> {
+  try {
+    return await load();
+  } catch (error) {
+    if (error instanceof HttpError && error.status === HttpError.Unauthorized) {
+      return fallback;
     }
-});
 
-export const getUsers = async (): Promise<User[]> => {
-    try {
-        const payload = await client.get<UsersResponse>("/api/v1/users");
-        return payload.data;
-    } catch (error) {
-        if (error instanceof HttpError && error.status === HttpError.Unauthorized) {
-        return [];
-        }
+    throw error;
+  }
+}
 
-        throw error;
-    }
-};
+export const getCurrentUser = cache(() =>
+  orEmpty(async () => (await client.get<CurrentUser>("/api/v1/me")).data.user, null),
+);
 
-export const getDepartments = async (): Promise<Department[]> => {
-    try {
-        const payload = await client.get<DepartmentsResponse>("/api/v1/departments");
-        return payload.data;
-    } catch (error) {
-        if (error instanceof HttpError && error.status === HttpError.Unauthorized) {
-        return [];
-        }
+export const getUsers = cache(() =>
+  orEmpty(async () => (await client.get<UsersResponse>("/api/v1/users")).data, []),
+);
 
-        throw error;
-    }
-};
+export const getDepartments = cache(() =>
+  orEmpty(async () => (await client.get<DepartmentsResponse>("/api/v1/departments")).data, []),
+);
 
-export const getShortRoles = async (): Promise<ShortRole[]> => {
-    try {
-        const payload = await client.get<ShortRolesResponse>("/api/v1/roles?view=short");
-        return payload.data;
-    } catch (error) {
-        if (error instanceof HttpError && error.status === HttpError.Unauthorized) {
-            return [];
-        }
+export const getShortRoles = cache(() =>
+  orEmpty(async () => (await client.get<ShortRolesResponse>("/api/v1/roles?view=short")).data, []),
+);
 
-        throw error;
-    }
-};
-
-export const getRoles = async (): Promise<Role[]> => {
-    try {
-        const payload = await client.get<RolesResponse>("/api/v1/roles");
-        return payload.data;
-    } catch (error) {
-        if (error instanceof HttpError && error.status === HttpError.Unauthorized) {
-            return [];
-        }
-
-        throw error;
-    }
-};
+export const getRoles = cache(() =>
+  orEmpty(async () => (await client.get<RolesResponse>("/api/v1/roles")).data, []),
+);
 

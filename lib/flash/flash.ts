@@ -57,13 +57,6 @@ export function decodeFlash(raw: string | undefined): FlashPayload | null {
   }
 }
 
-export function consumeFlashCookie() {
-  if (typeof document === "undefined") return;
-
-  const secure = location.protocol === "https:" ? "; Secure" : "";
-  document.cookie = `${FLASH_COOKIE}=; Max-Age=0; Path=/; SameSite=Lax${secure}`;
-}
- 
 export function putFlash(kind: FlashKind, message: string, duration?: number | null) {
   if (typeof window === "undefined") return;
 
