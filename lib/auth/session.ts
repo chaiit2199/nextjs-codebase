@@ -17,6 +17,7 @@ export const SESSION_COOKIE_OPTIONS = {
 export type Session = {
   access_token?: string;
   refresh_token?: string;
+  access_expires_at?: number;
 };
 
 let sessionKey: KeyObject | undefined;
@@ -37,6 +38,7 @@ export async function encodeSession(session: Session): Promise<string> {
     return new EncryptJWT({
         access_token: session.access_token,
         refresh_token: session.refresh_token,
+        access_expires_at: session.access_expires_at,
     })
     .setProtectedHeader({ alg: "dir", enc: "A256GCM" })
     .setIssuedAt()
@@ -53,6 +55,8 @@ export async function decodeSession(raw: string | undefined): Promise<Session> {
     return {
       access_token: typeof payload.access_token === "string" ? payload.access_token : undefined,
       refresh_token: typeof payload.refresh_token === "string" ? payload.refresh_token : undefined,
+      access_expires_at:
+        typeof payload.access_expires_at === "number" ? payload.access_expires_at : undefined,
     };
   } catch {
     return {};

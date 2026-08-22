@@ -2,6 +2,7 @@ import "server-only";
 import axios, { type AxiosInstance, type AxiosRequestConfig } from "axios";
 import { cookies } from "next/headers";
 
+import { refreshSession } from "@/lib/auth/refresh";
 import {
   SESSION_KEY,
   SESSION_COOKIE_OPTIONS,
@@ -10,43 +11,13 @@ import {
   type Session,
 } from "@/lib/auth/session";
 
+export type { AuthTokenData, AuthTokenResponse } from "@/lib/auth/tokens";
+
 export type HttpRequestOptions = Omit<AxiosRequestConfig, "url" | "method" | "data"> & {
   accessToken?: string;
 };
 
-export type AuthTokenData = {
-  via?: string;
-  access_token: string;
-  expires_in?: number;
-  refresh_token: string;
-  token_type?: string;
-};
-
-export type AuthTokenResponse = {
-  data: AuthTokenData;
-  meta?: {
-    trace_id?: string;
-  };
-};
-
-type SessionTokens = {
-  access_token: string;
-  refresh_token: string;
-};
-
 const AUTH_SKIP_REFRESH = ["/api/v1/auth/login", "/api/v1/auth/refresh-token"];
-
-function unwrapTokens(
-  body: AuthTokenResponse | undefined,
-  fallbackRefresh?: string,
-): SessionTokens | null {
-  const access_token = body?.data?.access_token;
-  const refresh_token = body?.data?.refresh_token ?? fallbackRefresh;
-
-  if (!access_token || !refresh_token) return null;
-
-  return { access_token, refresh_token };
-}
 
 function isAuthSkipRefresh(url?: string) {
   return AUTH_SKIP_REFRESH.some((path) => url?.includes(path));
@@ -83,12 +54,14 @@ export class Client {
     }
   }
 
-  private async writeSession(session: Session): Promise<void> {
+  private async writeSession(session: Session): Promise<boolean> {
     try {
       const cookieStore = await cookies();
       cookieStore.set(SESSION_KEY, await encodeSession(session), SESSION_COOKIE_OPTIONS);
+      return true;
     } catch {
-      // Server Components / Middleware không được phép ghi cookie
+      // Server Components cannot mutate cookies — proxy persists refreshed tokens.
+      return false;
     }
   }
 
@@ -98,27 +71,11 @@ export class Client {
 
     if (!refreshToken) return null;
 
-    try {
-      const response = await axios.post<AuthTokenResponse>(
-        `${this.instance.defaults.baseURL}/api/v1/auth/refresh-token`,
-        { refresh_token: refreshToken },
-        {
-          timeout: 5_000,
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-        },
-      );
+    const tokens = await refreshSession(refreshToken);
+    if (!tokens) return null;
 
-      const tokens = unwrapTokens(response.data, refreshToken);
-      if (!tokens) return null;
-
-      await this.writeSession(tokens);
-      return tokens.access_token;
-    } catch {
-      return null;
-    }
+    await this.writeSession(tokens);
+    return tokens.access_token ?? null;
   }
 
   private async request<TResponse, TBody = unknown>(
@@ -234,7 +191,7 @@ function readMessage(value: unknown): string | undefined {
   return undefined;
 }
 
-const apiUrl = process.env.BASE_API_URL; 
+const apiUrl = process.env.BASE_API_URL;
 
 export const client = new Client({
   baseURL: apiUrl,

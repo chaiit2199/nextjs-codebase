@@ -14,6 +14,7 @@ const PROTECTED_ROUTES = [
   "/agents",
   "/promotions",
   "/users",
+  "/staff",
   "/departments",
   "/permission-groups",
   "/authorization",

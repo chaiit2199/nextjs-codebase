@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { client, HttpError, type AuthTokenResponse } from "@/lib/http/client";
-
+import { client, HttpError } from "@/lib/http/client";
+import type { AuthTokenResponse } from "@/lib/auth/tokens";
+import { sessionFromAuthData } from "@/lib/auth/refresh";
 import { SESSION_KEY, SESSION_COOKIE_OPTIONS, encodeSession } from "@/lib/auth/session";
 import { redirectToLogin } from "@/lib/auth/guard";
 import { withFlash } from "@/lib/flash/cookie";
@@ -25,10 +26,7 @@ export async function login(request: NextRequest) {
 
     response.cookies.set(
       SESSION_KEY,
-      await encodeSession({
-        access_token: payload.data.access_token,
-        refresh_token: payload.data.refresh_token,
-      }),
+      await encodeSession(sessionFromAuthData(payload.data)),
       SESSION_COOKIE_OPTIONS,
     );
 
