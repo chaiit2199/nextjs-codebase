@@ -124,7 +124,7 @@ export function PermissionGroupsComponent({
         show={selectedRole !== null}
         title="Chỉnh sửa nhóm quyền"
         subtitle="Đặt tên nhóm và tick quyền phù hợp."
-        closeable={isConfirmOpen ? false : "close_button"}
+        closeable={!isConfirmOpen}
         width="3xl"
         onClose={closeForm}
       >
@@ -180,7 +180,6 @@ export function PermissionGroupsComponent({
         id="update-permission-group-confirm-modal"
         show={isConfirmOpen}
         title="Xác nhận cập nhật nhóm quyền"
-        closeable="close_button"
         width="md"
         className="core_modal--stacked"
         onClose={() => setIsConfirmOpen(false)}

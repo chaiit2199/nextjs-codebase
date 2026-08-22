@@ -123,7 +123,7 @@ export function EditDepartmentComponent({ departments }: { departments: Departme
         id="update-department-modal"
         show={isFormOpen && selectedDepartment !== null}
         title="Chi tiết phòng ban"
-        closeable={isConfirmOpen ? false : "close_button"}
+        closeable={!isConfirmOpen}
         width="lg"
         onClose={resetForm}
       >
@@ -176,7 +176,6 @@ export function EditDepartmentComponent({ departments }: { departments: Departme
         id="update-department-confirm-modal"
         show={isConfirmOpen}
         title="Xác nhận cập nhật phòng ban"
-        closeable="close_button"
         width="md"
         className="core_modal--stacked"
         onClose={() => setIsConfirmOpen(false)}

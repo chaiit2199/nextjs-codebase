@@ -7,10 +7,11 @@ export { Input, type InputProps } from "@/components/input";
 
 export type ModalCloseable = true | false | "close_button";
 
+/** false — chặn đóng; "close_button" — Esc + nút X; true — Esc + backdrop + nút X */
 function modalDismissOptions(closeable: ModalCloseable) {
   return {
     backdrop: closeable === true,
-    escape: closeable === true,
+    escape: closeable !== false,
     closeButton: closeable !== false,
   };
 }
@@ -49,7 +50,7 @@ export function Modal({
   show = false,
   icon,
   onClose,
-  closeable = "close_button",
+  closeable = true,
   width = "md",
   height = "base",
   size,

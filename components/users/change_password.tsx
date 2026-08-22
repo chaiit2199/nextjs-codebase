@@ -99,7 +99,7 @@ export function ChangePasswordComponent() {
         show={open}
         title="Đổi mật khẩu"
         subtitle="Đặt lại mật khẩu mới để bảo mật tài khoản của bạn."
-        closeable={confirmOpen ? false : "close_button"}
+        closeable={!confirmOpen}
         width="md"
         onClose={onClose}
       >
@@ -166,7 +166,6 @@ export function ChangePasswordComponent() {
         id="change-password-confirm-modal"
         show={confirmOpen}
         title="Xác nhận đổi mật khẩu"
-        closeable="close_button"
         width="sm"
         className="core_modal--stacked"
         onClose={onCloseConfirm}

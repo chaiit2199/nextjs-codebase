@@ -97,7 +97,6 @@ export function UsersComponent({ users, departments }: { users: User[]; departme
                                 <th>Tên</th>
                                 <th>Tên đăng nhập</th>
                                 <th>Số điện thoại</th>
-                                <th>Địa chỉ</th>
                                 <th>Phòng ban</th>
                                 <th>Trạng thái</th>
                                 <th className="actions" />
@@ -114,7 +113,6 @@ export function UsersComponent({ users, departments }: { users: User[]; departme
                                     </td>
                                     <td className="overview-table__muted">{user.username}</td>
                                     <td className="overview-table__muted">{user.phone}</td>
-                                    <td className="overview-table__muted">{user.address}</td>
                                     <td className="overview-table__muted">{user.department?.name ?? "—"}</td>
                                     <td>
                                         <UserStatusBadge status={user.status} />
@@ -143,7 +141,7 @@ export function UsersComponent({ users, departments }: { users: User[]; departme
                 id="update-user-modal"
                 show={isFormOpen && selectedUser !== null}
                 title="Chi tiết nhân viên"
-                closeable={isConfirmOpen ? false : "close_button"}
+                closeable={!isConfirmOpen}
                 width="lg"
                 onClose={resetForm}
             >
@@ -234,7 +232,6 @@ export function UsersComponent({ users, departments }: { users: User[]; departme
                 id="update-user-confirm-modal"
                 show={isConfirmOpen}
                 title="Xác nhận cập nhật nhân viên"
-                closeable="close_button"
                 width="md"
                 className="core_modal--stacked"
                 onClose={() => setIsConfirmOpen(false)}

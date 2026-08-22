@@ -58,7 +58,7 @@ export function CreateDepartmentComponent({ onClose }: { onClose: () => void }) 
         id="create-department-modal"
         show
         title="Thêm phòng ban"
-        closeable={isConfirmOpen ? false : "close_button"}
+        closeable={!isConfirmOpen}
         width="md"
         onClose={onClose}
       >
@@ -108,7 +108,6 @@ export function CreateDepartmentComponent({ onClose }: { onClose: () => void }) 
         id="create-department-confirm-modal"
         show={isConfirmOpen}
         title="Xác nhận thêm phòng ban"
-        closeable="close_button"
         width="md"
         className="core_modal--stacked"
         onClose={() => setIsConfirmOpen(false)}

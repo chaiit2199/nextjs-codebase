@@ -116,7 +116,7 @@ export function CreatePermissionGroupComponent({
             ? "Đặt tên vai trò và chọn phạm vi dữ liệu được phép."
             : "Tick quyền phù hợp cho nhóm quyền."
         }
-        closeable={isConfirmOpen ? false : "close_button"}
+        closeable={!isConfirmOpen}
         width="3xl"
         onClose={onClose}
       >
@@ -232,7 +232,6 @@ export function CreatePermissionGroupComponent({
         id="create-permission-group-confirm-modal"
         show={isConfirmOpen}
         title="Xác nhận thêm nhóm quyền"
-        closeable="close_button"
         width="md"
         className="core_modal--stacked"
         onClose={() => setIsConfirmOpen(false)}

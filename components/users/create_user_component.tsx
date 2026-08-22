@@ -83,7 +83,7 @@ export function CreateUserComponent({
         id="create-user-modal"
         show
         title="Thêm nhân viên"
-        closeable={isConfirmOpen ? false : "close_button"}
+        closeable={!isConfirmOpen}
         width="lg"
         onClose={onClose}
       >
@@ -200,7 +200,6 @@ export function CreateUserComponent({
         id="create-user-confirm-modal"
         show={isConfirmOpen}
         title="Xác nhận thêm nhân viên"
-        closeable="close_button"
         width="md"
         className="core_modal--stacked"
         onClose={() => setIsConfirmOpen(false)}

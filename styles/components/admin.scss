@@ -104,7 +104,7 @@
 }
 
 .admin-table-card {
-  @apply overflow-hidden rounded-4xl bg-white p-8 drop-shadow-xs;
+  @apply overflow-hidden rounded-4xl bg-white px-8 py-6 drop-shadow-xs;
 } 
 
 .admin-user {
