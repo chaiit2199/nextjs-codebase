@@ -2,11 +2,22 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
 import { ensureAuthenticated } from "@/lib/auth/guard";
-import { applySecurityHeaders } from "@/lib/proxy/secure_header";
-import { MENU } from "@/lib/dashboard/navbar";
+import { applySecurityHeaders } from "@/lib/proxy/secure_header"; 
 
-const PROTECTED_ROUTES = MENU.flatMap((item) => [
-  item.href, ...(item.children?.map((child) => child.href) ?? [])]).filter((href): href is string => Boolean(href));
+const PROTECTED_ROUTES = [
+  "/",
+  "/products/cost-management",
+  "/products/ingredients",
+  "/products/packaging",
+  "/products/finished-goods",
+  "/orders",
+  "/agents",
+  "/promotions",
+  "/staff",
+  "/departments",
+  "/permission-groups",
+  "/authorization",
+];
 
 export async function dispatchRoutePipeline(request: NextRequest) {
   if (request.method === "OPTIONS") {
