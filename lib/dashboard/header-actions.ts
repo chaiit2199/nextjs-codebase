@@ -1,6 +1,6 @@
 export const HEADER_EVENT = "dashboard:header";
 
-export type HeaderAction = "create" | "filter" | "search" | "export";
+export type HeaderAction = "create" | "filter" | "search" | "export" | "authorization";
 
 export type HeaderEventDetail = {
     action: HeaderAction;

@@ -68,7 +68,12 @@ export function DashboardHeader() {
         )}
 
         {meta.authorization && (
-          <button type="button" id="header-authorization" className="btn btn--primary">
+          <button
+            type="button"
+            id="header-authorization"
+            className="btn btn--primary"
+            onClick={() => emitHeaderAction({ action: "authorization", page: pathname })}
+          >
             <Icon name="hero-shield-check" className="size-4" />
             Phân quyền
           </button>

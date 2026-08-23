@@ -126,6 +126,7 @@ export const MENU: Navbar[] = [
         href: "/authorization",
         icon: "hero-cog-6-tooth",
         title: "Phân quyền",
+        authorization: true,
       },
     ],
   },

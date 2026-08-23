@@ -1,10 +1,15 @@
 import type { Metadata } from "next";
 
-import { WipPage } from "@/components/dashboard";
+import { AuthorizationComponent } from "@/components/authorization/authorization_component";
+import { Dashboard } from "@/components/dashboard";
 import { pageMetadata } from "@/lib/dashboard/navbar";
 
 export const metadata: Metadata = pageMetadata("/authorization");
 
-export default function Page() {
-  return <WipPage id="authorization-main" />;
+export default function AuthorizationPage() {
+  return (
+    <Dashboard id="authorization-main">
+      <AuthorizationComponent />
+    </Dashboard>
+  );
 }
