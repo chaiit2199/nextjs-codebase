@@ -16,8 +16,8 @@ export default function DepartmentsPage() {
     </Dashboard>
   );
 }
-
 async function DepartmentsData() {
   const departments = await getDepartments();
   return <DepartmentsComponent departments={departments} />;
 }
+

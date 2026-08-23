@@ -95,17 +95,16 @@ export function PermissionGroupsComponent({
               </thead>
               <tbody>
                 {roles.map((role) => (
-                  <tr key={role.id} id={`permission-group-row-${role.id}`}>
+                  <tr key={role.id} id={`permission-group-row-${role.id}`} onClick={() => openForm(role)} className="cursor-pointer">
                     <td>{role.name}</td>
                     <td>{role.description}</td>
                     <td>{getLabelStatus(role.status).label}</td>
-                    <td className="actions">
+                    <td className="actions bg-transparent">
                       <div className="admin-actions">
                         <button
                           type="button"
                           className="admin-actions__btn"
                           aria-label="Chỉnh sửa"
-                          onClick={() => openForm(role)}
                         >
                           <Icon name="hero-pencil-square" className="size-4" />
                         </button>

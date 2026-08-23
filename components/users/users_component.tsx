@@ -104,7 +104,7 @@ export function UsersComponent({ users, departments }: { users: User[]; departme
                         </thead>
                         <tbody>
                             {users.map((user) => (
-                                <tr key={user.id} id={`user-row-${user.id}`}>
+                                <tr key={user.id} id={`user-row-${user.id}`} onClick={() => openEditForm(user)} className="cursor-pointer">
                                     <td>
                                     <div className="admin-user">
                                         <UserAvatar fullname={user.full_name} />
@@ -117,13 +117,12 @@ export function UsersComponent({ users, departments }: { users: User[]; departme
                                     <td>
                                         <UserStatusBadge status={user.status} />
                                     </td>
-                                    <td className="actions">
+                                    <td className="actions bg-transparent">
                                         <div className="admin-actions">
                                             <button
                                             type="button"
                                             className="admin-actions__btn"
                                             aria-label="Chỉnh sửa"
-                                            onClick={() => openEditForm(user)}
                                             >
                                             <Icon name="hero-pencil-square" className="size-4" />
                                             </button>

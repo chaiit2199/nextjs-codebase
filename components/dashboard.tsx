@@ -23,7 +23,6 @@ export function WipPage({ id }: { id: string }) {
     </Dashboard>
   );
 }
-
 export function TableSkeleton() {
   return (
     <section className="admin-section">
@@ -39,3 +38,4 @@ export function TableSkeleton() {
     </section>
   );
 }
+

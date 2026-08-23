@@ -92,19 +92,18 @@ export function EditDepartmentComponent({ departments }: { departments: Departme
                   const meta = getLabelStatus(department.status);
 
                   return (
-                    <tr key={department.id} id={`department-row-${department.id}`}>
+                    <tr key={department.id} id={`department-row-${department.id}`} onClick={() => openEditForm(department)} className="cursor-pointer">
                       <td className="overview-table__muted">{department.code}</td>
                       <td>{department.name}</td>
                       <td>
                         <span className={`admin-status admin-status--${meta.kind}`}>{meta.label}</span>
                       </td>
-                      <td className="actions">
+                      <td className="actions bg-transparent">
                         <div className="admin-actions">
                           <button
                             type="button"
                             className="admin-actions__btn"
                             aria-label="Chỉnh sửa"
-                            onClick={() => openEditForm(department)}
                           >
                             <Icon name="hero-pencil-square" className="size-4" />
                           </button>

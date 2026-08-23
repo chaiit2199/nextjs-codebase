@@ -24,6 +24,7 @@ export async function createDepartment(payload: CreateDepartmentInput) {
 export async function updateDepartment(payload: UpdateDepartmentInput) {
   return runServerAction(updateDepartmentSchema, payload, "Không thể cập nhật phòng ban", async (input) => {
     const { id, ...body } = input;
+    console.log(id, body, payload);
     await client.put(`/api/v1/departments/${id}`, body);
     revalidatePath("/departments");
     return { ok: true as const };

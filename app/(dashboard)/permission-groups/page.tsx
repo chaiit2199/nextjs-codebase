@@ -16,8 +16,8 @@ export default function PermissionGroupsPage() {
     </Dashboard>
   );
 }
-
 async function RolesData() {
   const [roles, shortRoles] = await Promise.all([getRoles(), getShortRoles()]);
   return <PermissionGroupsComponent roles={roles} shortRoles={shortRoles} />;
 }
+
