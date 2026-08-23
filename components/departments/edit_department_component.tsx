@@ -65,12 +65,12 @@ export function EditDepartmentComponent({ departments }: { departments: Departme
 
     if (!result.ok) {
       setIsConfirmOpen(false);
-      putFlash("error", result.message, 2000);
+      putFlash("error", result.message, 1500);
       return;
     }
 
     resetForm();
-    putFlash("success", "Cập nhật phòng ban thành công", 2000);
+    putFlash("success", "Cập nhật phòng ban thành công", 1500);
   }
 
   return (

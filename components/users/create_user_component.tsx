@@ -69,12 +69,12 @@ export function CreateUserComponent({
 
     if (!result.ok) {
       setIsConfirmOpen(false);
-      putFlash("error", result.message, 2000);
+      putFlash("error", result.message, 1500);
       return;
     }
 
     onClose();
-    putFlash("success", "Thêm nhân viên thành công", 2000);
+    putFlash("success", "Thêm nhân viên thành công", 1500);
   }
 
   return (

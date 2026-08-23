@@ -7,10 +7,9 @@ import { SalesAreaChart } from "@/components/charts/sales-area-chart";
 import { Icon } from "@/components/icon";
 import { KPIS, RECENT_ORDERS, SALES_SERIES, TOP_SALES } from "@/lib/mock/overview";
 import { ORDER_SERIES } from "@/lib/constants";
+import { pageMetadata } from "@/lib/dashboard/navbar";
 
-export const metadata: Metadata = {
-  title: "Tổng quan",
-};
+export const metadata: Metadata = pageMetadata("/");
 
 export default function DashboardPage() {
   return (

@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 
 import { WipPage } from "@/components/dashboard";
+import { pageMetadata } from "@/lib/dashboard/navbar";
 
-export const metadata: Metadata = { title: "Quản lý đại lý" };
+export const metadata: Metadata = pageMetadata("/agents");
 
 export default function Page() {
   return <WipPage id="agents-main" />;

@@ -44,12 +44,12 @@ export function CreateDepartmentComponent({ onClose }: { onClose: () => void }) 
 
     if (!result.ok) {
       setIsConfirmOpen(false);
-      putFlash("error", result.message, 2000);
+      putFlash("error", result.message, 1500);
       return;
     }
 
     onClose();
-    putFlash("success", "Thêm phòng ban thành công", 2000);
+    putFlash("success", "Thêm phòng ban thành công", 1500);
   }
 
   return (

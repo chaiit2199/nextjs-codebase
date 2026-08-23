@@ -66,7 +66,7 @@ export function ChangePasswordComponent() {
 
     if (!result.ok) {
       setConfirmOpen(false);
-      putFlash("error", result.message, 2000);
+      putFlash("error", result.message, 1500);
       return;
     }
 
@@ -75,7 +75,7 @@ export function ChangePasswordComponent() {
     setPending(null);
     setConfirmOpen(false);
     setOpen(false);
-    putFlash("success", "Đổi mật khẩu thành công", 2000);
+    putFlash("success", "Đổi mật khẩu thành công", 1500);
   }
 
   return (

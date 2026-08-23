@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 
 import { Dashboard } from "@/components/dashboard";
+import { pageMetadata } from "@/lib/dashboard/navbar";
 
-export const metadata: Metadata = { title: "Quản lý giá vốn" };
+export const metadata: Metadata = pageMetadata("/products/cost-management");
 
 const COSTS = [
   { sku: "USA-R01", name: "Gạo ST25 túi 5kg", unit: "Túi", cost: "86.000đ", updated: "18/03/2026" },

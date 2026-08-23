@@ -62,12 +62,12 @@ export function PermissionGroupsComponent({
 
     if (!result.ok) {
       setIsConfirmOpen(false);
-      putFlash("error", result.message, 2000);
+      putFlash("error", result.message, 1500);
       return;
     }
 
     closeForm();
-    putFlash("success", "Cập nhật nhóm quyền thành công", 2000);
+    putFlash("success", "Cập nhật nhóm quyền thành công", 1500);
   }
 
   useEffect(() => {

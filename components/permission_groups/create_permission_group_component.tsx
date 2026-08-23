@@ -120,12 +120,12 @@ export function CreatePermissionGroupComponent({
 
     if (!result.ok) {
       setIsConfirmOpen(false);
-      putFlash("error", result.message, 2000);
+      putFlash("error", result.message, 1500);
       return;
     }
 
     onClose();
-    putFlash("success", "Tạo mới nhóm quyền thành công.", 2000);
+    putFlash("success", "Tạo mới nhóm quyền thành công.", 1500);
   }
 
   return (

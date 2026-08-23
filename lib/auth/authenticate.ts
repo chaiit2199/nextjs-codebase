@@ -31,7 +31,7 @@ export async function login(request: NextRequest) {
       sessionCookieOptions(isSecureRequest(request)),
     );
 
-    return withFlash(response, request, "success", "Đăng nhập thành công", 2000);
+    return withFlash(response, request, "success", "Đăng nhập thành công", 1500);
   } catch (error) {
     const message =
       error instanceof HttpError && error.status === 401
