@@ -6,8 +6,8 @@ import { Input, Modal } from "@/components/core_component";
 import { FormSubmitButton } from "@/components/form-submit-button";
 import { RequiredLabel } from "@/components/form-fields";
 import { Icon } from "@/components/icon";
-import { updateRole, type UpdateRoleInput } from "@/lib/api/roles";
-import type { Role, ScopeType } from "@/lib/api/types";
+import { fetchRolePermissions, updateRole, type UpdateRoleInput } from "@/lib/api/roles";
+import type { Permission, Role, ScopeType } from "@/lib/api/types";
 import { roleStatusMeta } from "@/lib/constants";
 import { subscribeHeaderAction } from "@/lib/dashboard/header-actions";
 import { putFlash } from "@/lib/flash/flash";
@@ -26,16 +26,33 @@ export function PermissionGroupsComponent({
   const [selectedRole, setSelectedRole] = useState<Role | null>(null);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [payload, setPayload] = useState<UpdateRoleInput | null>(null);
+  const [permissions, setPermissions] = useState<Permission[] | null>(null);
+  const [isPermissionsLoading, setIsPermissionsLoading] = useState(false);
 
-  function openForm(role: Role) {
+  async function openForm(role: Role) {
     setSelectedRole(role);
     setPayload(null);
     setIsConfirmOpen(false);
+    setPermissions(null);
+    setIsPermissionsLoading(true);
+
+    try {
+      const userPermissions = await fetchRolePermissions(role.id);
+      console.log("nextPermissions", userPermissions.permissions);
+      setPermissions(userPermissions.permissions);
+    } catch (error) {
+      setSelectedRole(null);
+      putFlash("error", error instanceof Error ? error.message : "Không tải được danh sách quyền", 1500);
+    } finally {
+      setIsPermissionsLoading(false);
+    }
   }
 
   function closeForm() {
     setPayload(null);
     setIsConfirmOpen(false);
+    setPermissions(null);
+    setIsPermissionsLoading(false);
     setSelectedRole(null);
   }
 
@@ -155,9 +172,14 @@ export function PermissionGroupsComponent({
                 </div>
               </div>
 
-              <SelectRoles
-                selectedPermissionIds={selectedRole.grants.map((grant) => grant.permission_id)}
-              />
+              {isPermissionsLoading ? (
+                <p className="text-sm text-slate-500">Đang tải danh sách quyền...</p>
+              ) : permissions ? (
+                <SelectRoles
+                  permissions={permissions}
+                  selectedPermissionIds={selectedRole.grants.map((grant) => grant.permission_id)}
+                />
+              ) : null}
             </div>
 
             <div className="core_modal__actions">

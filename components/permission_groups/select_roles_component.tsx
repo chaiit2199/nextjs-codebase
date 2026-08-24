@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 import { Icon } from "@/components/icon";
-import { SAMPLE_PERMISSIONS, type Permission } from "@/lib/mock/permissions";
+import type { Permission } from "@/lib/api/types";
 
 type PermissionGroup = {
   id: string;
@@ -35,8 +35,14 @@ function groupEnabled(selectedIds: number[], group: PermissionGroup) {
   return group.actions.some((action) => selectedIds.includes(action.id));
 }
 
-export function SelectRoles({ selectedPermissionIds = [] }: { selectedPermissionIds?: number[] }) {
-  const groups = groupPermissions(SAMPLE_PERMISSIONS);
+export function SelectRoles({
+  permissions,
+  selectedPermissionIds = [],
+}: {
+  permissions: Permission[];
+  selectedPermissionIds?: number[];
+}) {
+  const groups = groupPermissions(permissions);
   const [permissionIds, setPermissionIds] = useState(() => uniqueSortedIds(selectedPermissionIds));
 
   function togglePage(group: PermissionGroup) {

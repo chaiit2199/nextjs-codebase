@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 
+import { requireCurrentUser } from "@/lib/api/me";
 import {
   createRoleSchema,
   updateRoleSchema,
@@ -10,6 +11,7 @@ import {
 } from "@/lib/validate/roles";
 import { runServerAction } from "@/lib/server-actions";
 import { client } from "@/lib/http/client";
+import type { PermissionsResponse } from "@/lib/api/types";
 
 export type { CreateRoleInput, UpdateRoleInput };
 
@@ -35,4 +37,11 @@ export async function updateRole(payload: UpdateRoleInput) {
     revalidatePath("/permission-groups");
     return { ok: true as const };
   });
+}
+
+export async function fetchRolePermissions(roleId: number) {
+  await requireCurrentUser();
+  const test = await client.get<PermissionsResponse>(`/api/v1/roles/${roleId}/permissions`);
+  console.log("test", test);
+  return (await client.get<PermissionsResponse>(`/api/v1/roles/${roleId}/permissions`)).data;
 }

@@ -76,6 +76,30 @@ export type ScopeTypesResponse = {
   meta?: ApiListMeta;
 };
 
+export type Permission = {
+  id: number;
+  code: string;
+  module_code: string;
+  module_name: string;
+  function_name: string;
+};
+
+export type PermissionsResponse = {
+  data: {
+    permissions: Permission[];
+    role: {
+      code: string;
+      id: number;
+      name: string;
+      status: number;
+      version: number;
+      is_system: boolean;
+      allowed_scope_types: string[];
+    };
+  };
+  meta?: ApiListMeta;
+};
+
 export type ScopeType = {
   code: string;
   name: string;
