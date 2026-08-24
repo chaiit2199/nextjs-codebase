@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { LabelStatus, UserStatus } from "@/lib/constants";
+import { UserStatus } from "@/lib/constants";
 import { PASSWORD_MIN_LENGTH } from "@/lib/auth/password";
 
 const trimmed = z.string().trim();
@@ -15,6 +15,11 @@ const optionalText = (max: number) =>
 
 const positiveInt = z.coerce.number().int().positive();
 
+const recordStatusSchema = z.coerce
+  .number()
+  .int()
+  .refine((value) => value === UserStatus.Active || value === UserStatus.Inactive);
+
 export const createUserSchema = z.object({
   username: trimmed.min(1, "Thiếu tên đăng nhập").max(64),
   password: passwordSchema,
@@ -22,7 +27,7 @@ export const createUserSchema = z.object({
   phone: optionalText(32),
   address: optionalText(500),
   email: trimmed.email("Email không hợp lệ").max(255).optional().or(z.literal("").transform(() => undefined)),
-  status: z.coerce.number().int().refine((v) => v === UserStatus.Active || v === UserStatus.Inactive).optional(),
+  status: recordStatusSchema.optional(),
   role_id: positiveInt.optional(),
   department_id: positiveInt.optional(),
 });
@@ -34,7 +39,7 @@ export const updateUserSchema = z
     phone: optionalText(32),
     address: optionalText(500),
     email: trimmed.email("Email không hợp lệ").max(255).optional().or(z.literal("").transform(() => undefined)),
-    status: z.coerce.number().int().refine((v) => v === UserStatus.Active || v === UserStatus.Inactive).optional(),
+    status: recordStatusSchema.optional(),
     department_id: positiveInt.optional(),
   })
   .refine(
@@ -58,12 +63,10 @@ export const changePasswordSchema = z
     path: ["new_password"],
   });
 
-const departmentStatusSchema = z.enum([LabelStatus.Active, LabelStatus.Inactive]);
-
 export const createDepartmentSchema = z.object({
   code: trimmed.min(1, "Thiếu mã phòng ban").max(32),
   name: trimmed.min(1, "Thiếu tên phòng ban").max(255),
-  status: departmentStatusSchema.optional(),
+  status: recordStatusSchema.optional(),
 });
 
 export const updateDepartmentSchema = z
@@ -71,7 +74,7 @@ export const updateDepartmentSchema = z
     id: positiveInt,
     code: trimmed.min(1).max(32).optional(),
     name: trimmed.min(1).max(255).optional(),
-    status: departmentStatusSchema.optional(),
+    status: recordStatusSchema.optional(),
   })
   .refine(
     (value) => value.code !== undefined || value.name !== undefined || value.status !== undefined,

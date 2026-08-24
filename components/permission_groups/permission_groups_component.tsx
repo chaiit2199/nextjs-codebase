@@ -8,7 +8,7 @@ import { RequiredLabel } from "@/components/form-fields";
 import { Icon } from "@/components/icon";
 import { updateRole, type UpdateRoleInput } from "@/lib/api/roles";
 import type { Role, ShortRole } from "@/lib/api/types";
-import { getLabelStatus } from "@/lib/constants";
+import { roleStatusMeta } from "@/lib/constants";
 import { subscribeHeaderAction } from "@/lib/dashboard/header-actions";
 import { putFlash } from "@/lib/flash/flash";
 import { SelectRoles } from "./select_roles_component";
@@ -98,7 +98,7 @@ export function PermissionGroupsComponent({
                   <tr key={role.id} id={`permission-group-row-${role.id}`} onClick={() => openForm(role)} className="cursor-pointer">
                     <td>{role.name}</td>
                     <td>{role.description}</td>
-                    <td>{getLabelStatus(role.status).label}</td>
+                    <td>{roleStatusMeta(role.status).label}</td>
                     <td className="actions bg-transparent">
                       <div className="admin-actions">
                         <button

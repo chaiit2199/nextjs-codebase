@@ -4,9 +4,9 @@ import { useState, type FormEvent } from "react";
 
 import type { Department, ShortRole } from "@/lib/api/me";
 import { Input, Modal } from "@/components/core_component";
-import { UserStatus, userStatusMeta } from "@/lib/constants";
+import { readFormStatus, UserStatus } from "@/lib/constants";
 import { FormSubmitButton } from "@/components/form-submit-button";
-import { RequiredLabel, SelectField } from "@/components/form-fields";
+import { RequiredLabel, RecordStatusSelectField, SelectField } from "@/components/form-fields";
 import { createUser, type CreateUserInput } from "@/lib/api/users";
 import { PASSWORD_MIN_LENGTH } from "@/lib/auth/password";
 import { putFlash } from "@/lib/flash/flash";
@@ -27,14 +27,14 @@ function readCreateForm(data: FormData): CreateUserInput | null {
   const phone = text("phone");
   const email = text("email");
   const address = text("address");
-  const status = Number(data.get("status"));
+  const status = readFormStatus(data);
   const roleId = Number(data.get("role_id"));
   const departmentId = Number(data.get("department_id"));
 
   if (phone) formValues.phone = phone;
   if (email) formValues.email = email;
   if (address) formValues.address = address;
-  if (Number.isFinite(status)) formValues.status = status;
+  if (status !== undefined) formValues.status = status;
   if (Number.isFinite(roleId) && roleId > 0) formValues.role_id = roleId;
   if (Number.isFinite(departmentId) && departmentId > 0) formValues.department_id = departmentId;
 
@@ -134,15 +134,11 @@ export function CreateUserComponent({
               placeholder="Email"
               required
             />
-            <SelectField
+            <RecordStatusSelectField
               id="create-user-status"
-              name="status"
               label={<RequiredLabel>Trạng thái</RequiredLabel>}
-              defaultValue={String(UserStatus.Active)}
-            >
-              <option value={UserStatus.Active}>{userStatusMeta(UserStatus.Active).label}</option>
-              <option value={UserStatus.Inactive}>{userStatusMeta(UserStatus.Inactive).label}</option>
-            </SelectField>
+              defaultValue={UserStatus.Active}
+            />
             <SelectField
               id="create-user-role"
               name="role_id"

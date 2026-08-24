@@ -1,5 +1,7 @@
 import type { ReactNode } from "react";
 
+import { RECORD_STATUS_OPTIONS, UserStatus } from "@/lib/constants";
+
 export function RequiredLabel({ children }: { children: string }) {
   return (
     <>
@@ -38,5 +40,35 @@ export function SelectField({
         {children}
       </select>
     </div>
+  );
+}
+
+export function RecordStatusSelectField({
+  id,
+  name = "status",
+  label,
+  defaultValue = UserStatus.Active,
+  required = true,
+}: {
+  id: string;
+  name?: string;
+  label: ReactNode;
+  defaultValue?: number;
+  required?: boolean;
+}) {
+  return (
+    <SelectField
+      id={id}
+      name={name}
+      label={label}
+      defaultValue={String(defaultValue)}
+      required={required}
+    >
+      {RECORD_STATUS_OPTIONS.map((option) => (
+        <option key={option.value} value={option.value}>
+          {option.label}
+        </option>
+      ))}
+    </SelectField>
   );
 }

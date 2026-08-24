@@ -4,8 +4,8 @@ import { useState, type FormEvent } from "react";
 
 import { Input, Modal } from "@/components/core_component";
 import { FormSubmitButton } from "@/components/form-submit-button";
-import { RequiredLabel, SelectField } from "@/components/form-fields";
-import { LabelStatus, getLabelStatus } from "@/lib/constants";
+import { RequiredLabel, RecordStatusSelectField } from "@/components/form-fields";
+import { readFormStatus, UserStatus } from "@/lib/constants";
 import { createDepartment, type CreateDepartmentInput } from "@/lib/api/departments";
 import { putFlash } from "@/lib/flash/flash";
 
@@ -13,14 +13,13 @@ function readCreateForm(data: FormData): CreateDepartmentInput | null {
   const text = (name: string) => String(data.get(name) ?? "").trim();
   const code = text("code");
   const name = text("name");
-  const status = text("status");
 
   if (!code || !name) return null;
 
   const formValues: CreateDepartmentInput = { code, name };
-  if (status === LabelStatus.Active || status === LabelStatus.Inactive) {
-    formValues.status = status;
-  }
+  const status = readFormStatus(data);
+  if (status !== undefined) formValues.status = status;
+
   return formValues;
 }
 
@@ -83,15 +82,11 @@ export function CreateDepartmentComponent({ onClose }: { onClose: () => void }) 
               placeholder="Phòng kinh doanh"
               required
             />
-            <SelectField
+            <RecordStatusSelectField
               id="create-department-status"
-              name="status"
               label={<RequiredLabel>Trạng thái</RequiredLabel>}
-              defaultValue={LabelStatus.Active}
-            >
-              <option value={LabelStatus.Active}>{getLabelStatus(LabelStatus.Active).label}</option>
-              <option value={LabelStatus.Inactive}>{getLabelStatus(LabelStatus.Inactive).label}</option>
-            </SelectField>
+              defaultValue={UserStatus.Active}
+            />
           </div>
           <div className="core_modal__actions">
             <button type="button" className="core_button core_button--secondary" onClick={onClose}>

@@ -6,8 +6,8 @@ import type { Department } from "@/lib/api/me";
 import { Icon } from "@/components/icon";
 import { Input, Modal } from "@/components/core_component";
 import { FormSubmitButton } from "@/components/form-submit-button";
-import { RequiredLabel, SelectField } from "@/components/form-fields";
-import { LabelStatus, getLabelStatus } from "@/lib/constants";
+import { RequiredLabel, RecordStatusSelectField } from "@/components/form-fields";
+import { readFormStatus, recordStatusMeta, UserStatus } from "@/lib/constants";
 import { updateDepartment, type UpdateDepartmentInput } from "@/lib/api/departments";
 import { putFlash } from "@/lib/flash/flash";
 
@@ -18,13 +18,11 @@ function readUpdateForm(data: FormData): UpdateDepartmentForm {
   const formValues: UpdateDepartmentForm = {};
   const code = text("code");
   const name = text("name");
-  const status = text("status");
+  const status = readFormStatus(data);
 
   if (code) formValues.code = code;
   if (name) formValues.name = name;
-  if (status === LabelStatus.Active || status === LabelStatus.Inactive) {
-    formValues.status = status;
-  }
+  if (status !== undefined) formValues.status = status;
 
   return formValues;
 }
@@ -89,10 +87,15 @@ export function EditDepartmentComponent({ departments }: { departments: Departme
               </thead>
               <tbody>
                 {departments.map((department) => {
-                  const meta = getLabelStatus(department.status);
+                  const meta = recordStatusMeta(department.status);
 
                   return (
-                    <tr key={department.id} id={`department-row-${department.id}`} onClick={() => openEditForm(department)} className="cursor-pointer">
+                    <tr
+                      key={department.id}
+                      id={`department-row-${department.id}`}
+                      onClick={() => openEditForm(department)}
+                      className="cursor-pointer"
+                    >
                       <td className="overview-table__muted">{department.code}</td>
                       <td>{department.name}</td>
                       <td>
@@ -100,11 +103,7 @@ export function EditDepartmentComponent({ departments }: { departments: Departme
                       </td>
                       <td className="actions bg-transparent">
                         <div className="admin-actions">
-                          <button
-                            type="button"
-                            className="admin-actions__btn"
-                            aria-label="Chỉnh sửa"
-                          >
+                          <button type="button" className="admin-actions__btn" aria-label="Chỉnh sửa">
                             <Icon name="hero-pencil-square" className="size-4" />
                           </button>
                         </div>
@@ -149,15 +148,11 @@ export function EditDepartmentComponent({ departments }: { departments: Departme
                 placeholder="Phòng kinh doanh"
                 defaultValue={selectedDepartment.name}
               />
-              <SelectField
+              <RecordStatusSelectField
                 id="update-department-status"
-                name="status"
                 label={<RequiredLabel>Trạng thái</RequiredLabel>}
-                defaultValue={selectedDepartment.status ?? LabelStatus.Active}
-              >
-                <option value={LabelStatus.Active}>{getLabelStatus(LabelStatus.Active).label}</option>
-                <option value={LabelStatus.Inactive}>{getLabelStatus(LabelStatus.Inactive).label}</option>
-              </SelectField>
+                defaultValue={selectedDepartment.status ?? UserStatus.Active}
+              />
             </div>
             <div className="core_modal__actions">
               <button type="button" className="core_button core_button--secondary" onClick={resetForm}>

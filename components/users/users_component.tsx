@@ -5,9 +5,9 @@ import { useState, type FormEvent } from "react";
 import type { Department, User } from "@/lib/api/me";
 import { UserAvatar } from "@/components/user-components";
 import { Icon } from "@/components/icon";
-import { UserStatus, userStatusMeta } from "@/lib/constants";
+import { UserStatus, readFormStatus, userStatusMeta } from "@/lib/constants";
 import { FormSubmitButton } from "@/components/form-submit-button";
-import { RequiredLabel, SelectField } from "@/components/form-fields";
+import { RequiredLabel, RecordStatusSelectField, SelectField } from "@/components/form-fields";
 import { Input, Modal } from "@/components/core_component";
 import { updateUser } from "@/lib/api/users";
 import { putFlash } from "@/lib/flash/flash";
@@ -29,14 +29,14 @@ function readUpdateForm(data: FormData): UpdateUserEntity {
     const phone = text("phone");
     const email = text("email");
     const address = text("address");
-    const status = Number(data.get("status"));
+    const status = readFormStatus(data);
     const departmentId = Number(data.get("department_id"));
 
     if (fullName) formValues.full_name = fullName;
     if (phone) formValues.phone = phone;
     if (email) formValues.email = email;
     if (address) formValues.address = address;
-    if (Number.isFinite(status)) formValues.status = status;
+    if (status !== undefined) formValues.status = status;
     if (Number.isFinite(departmentId) && departmentId > 0) formValues.department_id = departmentId;
 
     return formValues;
@@ -180,15 +180,11 @@ export function UsersComponent({ users, departments }: { users: User[]; departme
                         placeholder="Email"
                         defaultValue={selectedUser.email ?? ""}
                     />
-                    <SelectField
+                    <RecordStatusSelectField
                         id="update-user-status"
-                        name="status"
                         label={<RequiredLabel>Trạng thái</RequiredLabel>}
-                        defaultValue={String(selectedUser.status ?? UserStatus.Active)}
-                    >
-                        <option value={UserStatus.Active}>{userStatusMeta(UserStatus.Active).label}</option>
-                        <option value={UserStatus.Inactive}>{userStatusMeta(UserStatus.Inactive).label}</option>
-                    </SelectField>
+                        defaultValue={selectedUser.status ?? UserStatus.Active}
+                    />
                     <SelectField
                         id="update-user-department"
                         name="department_id"

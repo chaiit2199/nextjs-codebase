@@ -22,7 +22,7 @@ export type Department = {
   id: number;
   code: string;
   name: string;
-  status: string;
+  status?: number;
 };
 
 export type RoleGrant = {
