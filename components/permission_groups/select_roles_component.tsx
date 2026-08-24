@@ -31,30 +31,21 @@ function groupPermissions(permissions: Permission[]): PermissionGroup[] {
   return [...groups.values()];
 }
 
-function groupEnabled(selectedIds: number[], group: PermissionGroup) {
-  return group.actions.some((action) => selectedIds.includes(action.id));
+function matchesScope(permission: Permission, scopes: string[]) {
+  return (permission.allowed_scope_types ?? []).some((scope) => scopes.includes(scope));
 }
 
 export function SelectRoles({
   permissions,
+  scopePermissions,
   selectedPermissionIds = [],
 }: {
   permissions: Permission[];
+  scopePermissions: string[];
   selectedPermissionIds?: number[];
 }) {
   const groups = groupPermissions(permissions);
   const [permissionIds, setPermissionIds] = useState(() => uniqueSortedIds(selectedPermissionIds));
-
-  function togglePage(group: PermissionGroup) {
-    const ids = group.actions.map((action) => action.id);
-
-    setPermissionIds((current) => {
-      if (ids.some((id) => current.includes(id))) {
-        return current.filter((id) => !ids.includes(id));
-      }
-      return uniqueSortedIds([...current, ...ids]);
-    });
-  }
 
   function toggleAction(id: number) {
     setPermissionIds((current) => {
@@ -74,7 +65,7 @@ export function SelectRoles({
 
       <div className="auth-permission__list">
         {groups.map((group) => {
-          const isPageEnabled = groupEnabled(permissionIds, group);
+          const isPageEnabled = group.actions.some((action) => matchesScope(action, scopePermissions));
 
           return (
             <div
@@ -82,10 +73,8 @@ export function SelectRoles({
               id={`permission-page-${group.id}`}
               className={["auth-permission__item", isPageEnabled && "is-enabled"].filter(Boolean).join(" ")}
             >
-              <button
-                type="button"
+              <div
                 className={["auth-permission__page", isPageEnabled && "is-checked"].filter(Boolean).join(" ")}
-                onClick={() => togglePage(group)}
               >
                 <span
                   className={["auth-permission__check", isPageEnabled && "is-checked"].filter(Boolean).join(" ")}
@@ -93,7 +82,7 @@ export function SelectRoles({
                   {isPageEnabled && <Icon name="hero-check" className="size-3.5" />}
                 </span>
                 <span>{group.name}</span>
-              </button>
+              </div>
 
               <div className="auth-permission__actions">
                 {group.actions.map((action) => {

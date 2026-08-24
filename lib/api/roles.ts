@@ -11,7 +11,7 @@ import {
 } from "@/lib/validate/roles";
 import { runServerAction } from "@/lib/server-actions";
 import { client } from "@/lib/http/client";
-import type { PermissionsResponse } from "@/lib/api/types";
+import type { RolePermissionsResponse } from "@/lib/api/types";
 
 export type { CreateRoleInput, UpdateRoleInput };
 
@@ -41,7 +41,5 @@ export async function updateRole(payload: UpdateRoleInput) {
 
 export async function fetchRolePermissions(roleId: number) {
   await requireCurrentUser();
-  const test = await client.get<PermissionsResponse>(`/api/v1/roles/${roleId}/permissions`);
-  console.log("test", test);
-  return (await client.get<PermissionsResponse>(`/api/v1/roles/${roleId}/permissions`)).data;
+  return (await client.get<RolePermissionsResponse>(`/api/v1/roles/${roleId}/permissions`)).data;
 }

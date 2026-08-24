@@ -18,28 +18,31 @@ import { CreatePermissionGroupComponent } from "./create_permission_group_compon
 export function PermissionGroupsComponent({
   roles,
   scopeTypes,
+  permissions,
 }: {
   roles: Role[];
   scopeTypes: ScopeType[];
+  permissions: Permission[];
 }) {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [scopePermissions, setScopePermissions] = useState<string[]>([]);
   const [selectedRole, setSelectedRole] = useState<Role | null>(null);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [payload, setPayload] = useState<UpdateRoleInput | null>(null);
-  const [permissions, setPermissions] = useState<Permission[] | null>(null);
+  const [userPermissionIds, setUserPermissionIds] = useState<number[] | null>(null);
   const [isPermissionsLoading, setIsPermissionsLoading] = useState(false);
 
   async function openForm(role: Role) {
     setSelectedRole(role);
     setPayload(null);
     setIsConfirmOpen(false);
-    setPermissions(null);
+    setUserPermissionIds(null);
     setIsPermissionsLoading(true);
 
     try {
       const userPermissions = await fetchRolePermissions(role.id);
-      console.log("nextPermissions", userPermissions.permissions);
-      setPermissions(userPermissions.permissions);
+      setScopePermissions(userPermissions.role.allowed_scope_types);
+      setUserPermissionIds(userPermissions.permissions.map((permission) => permission.id));
     } catch (error) {
       setSelectedRole(null);
       putFlash("error", error instanceof Error ? error.message : "Không tải được danh sách quyền", 1500);
@@ -51,16 +54,17 @@ export function PermissionGroupsComponent({
   function closeForm() {
     setPayload(null);
     setIsConfirmOpen(false);
-    setPermissions(null);
+    setUserPermissionIds(null);
+    setScopePermissions([]);
     setIsPermissionsLoading(false);
     setSelectedRole(null);
   }
 
   function handleFormSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!selectedRole) return;
+    if (!selectedRole || !userPermissionIds) return;
 
-    const formValues = readUpdateRoleForm(new FormData(event.currentTarget), selectedRole);
+    const formValues = readUpdateRoleForm(new FormData(event.currentTarget), selectedRole, userPermissionIds);
     if (!formValues) return;
 
     setPayload(formValues);
@@ -174,11 +178,8 @@ export function PermissionGroupsComponent({
 
               {isPermissionsLoading ? (
                 <p className="text-sm text-slate-500">Đang tải danh sách quyền...</p>
-              ) : permissions ? (
-                <SelectRoles
-                  permissions={permissions}
-                  selectedPermissionIds={selectedRole.grants.map((grant) => grant.permission_id)}
-                />
+              ) : userPermissionIds ? (
+                <SelectRoles permissions={permissions} scopePermissions={scopePermissions} selectedPermissionIds={userPermissionIds} />
               ) : null}
             </div>
 

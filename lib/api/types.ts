@@ -82,9 +82,15 @@ export type Permission = {
   module_code: string;
   module_name: string;
   function_name: string;
+  allowed_scope_types: string[];
 };
 
-export type PermissionsResponse = {
+export type CatalogPermissionsResponse = {
+  data: Permission[];
+  meta?: ApiListMeta;
+};
+
+export type RolePermissionsResponse = {
   data: {
     permissions: Permission[];
     role: {

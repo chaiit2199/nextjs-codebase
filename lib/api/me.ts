@@ -9,6 +9,7 @@ import type {
   ShortRolesResponse,
   UsersResponse,
   ScopeTypesResponse,
+  CatalogPermissionsResponse,
 } from "@/lib/api/types";
 
 export type {
@@ -62,3 +63,8 @@ export const getRoles = cache(() =>
 export const getScopeTypes = cache(() =>
   redirectOnUnauthorized(async () => (await client.get<ScopeTypesResponse>("/api/v1/scope-types")).data),
 );
+
+export const getPermissions = cache(() =>
+  redirectOnUnauthorized(async () => (await client.get<CatalogPermissionsResponse>("/api/v1/permissions")).data),
+);
+
