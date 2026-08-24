@@ -24,7 +24,8 @@
 }
 
 .core_input:disabled,
-.core_input:read-only {
+input.core_input:read-only,
+textarea.core_input:read-only {
   cursor: not-allowed;
   background: var(--theme-primary-border);
 }
@@ -114,7 +115,7 @@
 
 .core_modal .core_input {
   background-color: #fff;
-  border-color: #e2e8f0;
+  border-color: var(--theme-primary-border);
   color: #1a202c;
 }
 
