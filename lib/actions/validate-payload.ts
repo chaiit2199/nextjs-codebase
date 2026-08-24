@@ -92,6 +92,7 @@ export const updateRoleSchema = z.object({
   id: positiveInt,
   name: trimmed.min(1, "Thiếu tên nhóm quyền").max(255),
   description: optionalText(500),
+  permission_codes: z.array(trimmed.min(1).max(128)).max(200),
 });
 
 export type CreateUserInput = z.infer<typeof createUserSchema>;

@@ -11,6 +11,7 @@ import type { Role, ScopeType } from "@/lib/api/types";
 import { roleStatusMeta } from "@/lib/constants";
 import { subscribeHeaderAction } from "@/lib/dashboard/header-actions";
 import { putFlash } from "@/lib/flash/flash";
+import { SelectRoles } from "./select_roles_component";
 import { CreatePermissionGroupComponent } from "./create_permission_group_component";
 
 export function PermissionGroupsComponent({
@@ -49,6 +50,7 @@ export function PermissionGroupsComponent({
       id: selectedRole.id,
       name,
       description: String(data.get("description") ?? "").trim(),
+      permission_codes: data.getAll("permissions").map(String),
     });
     setIsConfirmOpen(true);
   }
@@ -120,9 +122,9 @@ export function PermissionGroupsComponent({
         id="permission-group-modal"
         show={selectedRole !== null}
         title="Chỉnh sửa nhóm quyền"
-        subtitle="Cập nhật tên và mô tả nhóm quyền."
+        subtitle="Đặt tên nhóm và tick quyền phù hợp."
         closeable={!isConfirmOpen}
-        width="lg"
+        width="3xl"
         onClose={closeForm}
       >
         {selectedRole && (
@@ -157,6 +159,8 @@ export function PermissionGroupsComponent({
                   />
                 </div>
               </div>
+
+              <SelectRoles selectedCodes={selectedRole.grants.map((grant) => grant.permission_code)} />
             </div>
 
             <div className="core_modal__actions">
