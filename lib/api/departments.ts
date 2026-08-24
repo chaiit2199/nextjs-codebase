@@ -7,8 +7,8 @@ import {
   updateDepartmentSchema,
   type CreateDepartmentInput,
   type UpdateDepartmentInput,
-} from "@/lib/actions/validate-payload";
-import { runServerAction } from "@/lib/actions/secure-action";
+} from "@/lib/validate/departments";
+import { runServerAction } from "@/lib/server-actions";
 import { client } from "@/lib/http/client";
 
 export type { CreateDepartmentInput, UpdateDepartmentInput };

@@ -9,8 +9,8 @@ import {
   type ChangePasswordInput,
   type CreateUserInput,
   type UpdateUserInput,
-} from "@/lib/actions/validate-payload";
-import { runServerAction } from "@/lib/actions/secure-action";
+} from "@/lib/validate/users";
+import { runServerAction } from "@/lib/server-actions";
 import { client } from "@/lib/http/client";
 
 export type { CreateUserInput, UpdateUserInput, ChangePasswordInput };

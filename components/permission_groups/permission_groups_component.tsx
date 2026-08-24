@@ -11,6 +11,7 @@ import type { Role, ScopeType } from "@/lib/api/types";
 import { roleStatusMeta } from "@/lib/constants";
 import { subscribeHeaderAction } from "@/lib/dashboard/header-actions";
 import { putFlash } from "@/lib/flash/flash";
+import { readUpdateRoleForm } from "@/lib/roles/read-update-role-form";
 import { SelectRoles } from "./select_roles_component";
 import { CreatePermissionGroupComponent } from "./create_permission_group_component";
 
@@ -42,16 +43,10 @@ export function PermissionGroupsComponent({
     event.preventDefault();
     if (!selectedRole) return;
 
-    const data = new FormData(event.currentTarget);
-    const name = String(data.get("name") ?? "").trim();
-    if (!name) return;
+    const formValues = readUpdateRoleForm(new FormData(event.currentTarget), selectedRole);
+    if (!formValues) return;
 
-    setPayload({
-      id: selectedRole.id,
-      name,
-      description: String(data.get("description") ?? "").trim(),
-      permission_codes: data.getAll("permissions").map(String),
-    });
+    setPayload(formValues);
     setIsConfirmOpen(true);
   }
 
@@ -160,7 +155,9 @@ export function PermissionGroupsComponent({
                 </div>
               </div>
 
-              <SelectRoles selectedCodes={selectedRole.grants.map((grant) => grant.permission_code)} />
+              <SelectRoles
+                selectedPermissionIds={selectedRole.grants.map((grant) => grant.permission_id)}
+              />
             </div>
 
             <div className="core_modal__actions">
@@ -168,7 +165,7 @@ export function PermissionGroupsComponent({
                 Hủy
               </button>
               <button type="submit" id="permission-group-submit" className="core_button core_button--primary">
-                Xác nhận cập nhật nhóm quyền
+                Cập nhật nhóm quyền
               </button>
             </div>
           </form>
@@ -191,7 +188,7 @@ export function PermissionGroupsComponent({
           >
             Hủy
           </button>
-          <FormSubmitButton>Cập nhật nhóm quyền</FormSubmitButton>
+          <FormSubmitButton>Xác nhận</FormSubmitButton>
         </form>
       </Modal>
     </>

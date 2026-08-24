@@ -11,8 +11,8 @@ type PermissionGroup = {
   actions: Permission[];
 };
 
-function uniqueSorted(codes: string[]) {
-  return [...new Set(codes)].sort();
+function uniqueSortedIds(ids: number[]) {
+  return [...new Set(ids)].sort((a, b) => a - b);
 }
 
 function groupPermissions(permissions: Permission[]): PermissionGroup[] {
@@ -31,36 +31,36 @@ function groupPermissions(permissions: Permission[]): PermissionGroup[] {
   return [...groups.values()];
 }
 
-function groupEnabled(selected: string[], group: PermissionGroup) {
-  return group.actions.some((action) => selected.includes(action.code));
+function groupEnabled(selectedIds: number[], group: PermissionGroup) {
+  return group.actions.some((action) => selectedIds.includes(action.id));
 }
 
-export function SelectRoles({ selectedCodes = [] }: { selectedCodes?: string[] }) {
+export function SelectRoles({ selectedPermissionIds = [] }: { selectedPermissionIds?: number[] }) {
   const groups = groupPermissions(SAMPLE_PERMISSIONS);
-  const [permissions, setPermissions] = useState(() => uniqueSorted(selectedCodes));
+  const [permissionIds, setPermissionIds] = useState(() => uniqueSortedIds(selectedPermissionIds));
 
   function togglePage(group: PermissionGroup) {
-    const codes = group.actions.map((action) => action.code);
+    const ids = group.actions.map((action) => action.id);
 
-    setPermissions((current) => {
-      if (codes.some((code) => current.includes(code))) {
-        return current.filter((code) => !codes.includes(code));
+    setPermissionIds((current) => {
+      if (ids.some((id) => current.includes(id))) {
+        return current.filter((id) => !ids.includes(id));
       }
-      return uniqueSorted([...current, ...codes]);
+      return uniqueSortedIds([...current, ...ids]);
     });
   }
 
-  function toggleAction(code: string) {
-    setPermissions((current) => {
-      if (current.includes(code)) return current.filter((item) => item !== code);
-      return uniqueSorted([...current, code]);
+  function toggleAction(id: number) {
+    setPermissionIds((current) => {
+      if (current.includes(id)) return current.filter((item) => item !== id);
+      return uniqueSortedIds([...current, id]);
     });
   }
 
   return (
     <div className="auth-permission" id="permission-matrix">
-      {permissions.map((code) => (
-        <input key={code} type="hidden" name="permissions" value={code} />
+      {permissionIds.map((id) => (
+        <input key={id} type="hidden" name="permission_ids" value={id} />
       ))}
       <div className="auth-permission__head">
         <h3 className="auth-permission__title">Quyền truy cập</h3>
@@ -68,27 +68,21 @@ export function SelectRoles({ selectedCodes = [] }: { selectedCodes?: string[] }
 
       <div className="auth-permission__list">
         {groups.map((group) => {
-          const isPageEnabled = groupEnabled(permissions, group);
+          const isPageEnabled = groupEnabled(permissionIds, group);
 
           return (
             <div
               key={group.id}
               id={`permission-page-${group.id}`}
-              className={["auth-permission__item", isPageEnabled && "is-enabled"]
-                .filter(Boolean)
-                .join(" ")}
+              className={["auth-permission__item", isPageEnabled && "is-enabled"].filter(Boolean).join(" ")}
             >
               <button
                 type="button"
-                className={["auth-permission__page", isPageEnabled && "is-checked"]
-                  .filter(Boolean)
-                  .join(" ")}
+                className={["auth-permission__page", isPageEnabled && "is-checked"].filter(Boolean).join(" ")}
                 onClick={() => togglePage(group)}
               >
                 <span
-                  className={["auth-permission__check", isPageEnabled && "is-checked"]
-                    .filter(Boolean)
-                    .join(" ")}
+                  className={["auth-permission__check", isPageEnabled && "is-checked"].filter(Boolean).join(" ")}
                 >
                   {isPageEnabled && <Icon name="hero-check" className="size-3.5" />}
                 </span>
@@ -97,11 +91,11 @@ export function SelectRoles({ selectedCodes = [] }: { selectedCodes?: string[] }
 
               <div className="auth-permission__actions">
                 {group.actions.map((action) => {
-                  const isActionEnabled = permissions.includes(action.code);
+                  const isActionEnabled = permissionIds.includes(action.id);
 
                   return (
                     <button
-                      key={action.code}
+                      key={action.id}
                       type="button"
                       className={[
                         "auth-permission__action",
@@ -111,12 +105,10 @@ export function SelectRoles({ selectedCodes = [] }: { selectedCodes?: string[] }
                         .filter(Boolean)
                         .join(" ")}
                       disabled={!isPageEnabled}
-                      onClick={() => toggleAction(action.code)}
+                      onClick={() => toggleAction(action.id)}
                     >
                       <span
-                        className={["auth-permission__check", isActionEnabled && "is-checked"]
-                          .filter(Boolean)
-                          .join(" ")}
+                        className={["auth-permission__check", isActionEnabled && "is-checked"].filter(Boolean).join(" ")}
                       >
                         {isActionEnabled && <Icon name="hero-check" className="size-3.5" />}
                       </span>
