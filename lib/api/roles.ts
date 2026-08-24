@@ -10,10 +10,15 @@ import {
   type UpdateRoleInput,
 } from "@/lib/validate/roles";
 import { runServerAction } from "@/lib/server-actions";
-import { client } from "@/lib/http/client";
-import type { RolePermissionsResponse } from "@/lib/api/types";
+import { client, HttpError } from "@/lib/http/client";
+import type { RolePermissionsResponse, ScopeTarget, ScopeTargetsResponse } from "@/lib/api/types";
 
 export type { CreateRoleInput, UpdateRoleInput };
+
+const SCOPE_TARGET_PATHS: Record<string, string> = {
+  WAREHOUSE: "warehouses",
+  AGENCY: "agencies",
+};
 
 export async function createRole(payload: CreateRoleInput) {
   return runServerAction(createRoleSchema, payload, "Không thể tạo nhóm quyền", async (params) => {
@@ -41,3 +46,18 @@ export async function fetchRolePermissions(roleId: number) {
   await requireCurrentUser();
   return (await client.get<RolePermissionsResponse>(`/api/v1/roles/${roleId}/permissions`)).data;
 }
+
+export async function fetchScopeTargets(scopeType: string): Promise<ScopeTarget[]> {
+  const path = SCOPE_TARGET_PATHS[String(scopeType).toUpperCase()];
+  if (!path) return [];
+
+  await requireCurrentUser();
+
+  try {
+    return (await client.get<ScopeTargetsResponse>(`/api/v1/${path}`)).data ?? [];
+  } catch (error) {
+    if (error instanceof HttpError && error.status === 404) return [];
+    throw error;
+  }
+}
+

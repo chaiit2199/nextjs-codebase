@@ -3,7 +3,7 @@ import { Suspense } from "react";
 
 import { AuthorizationComponent } from "@/components/authorization/authorization_component";
 import { Dashboard, TableSkeleton } from "@/components/dashboard";
-import { getUsers } from "@/lib/api/me";
+import { getRoles, getUsers } from "@/lib/api/me";
 import { pageMetadata } from "@/lib/dashboard/navbar";
 
 export const metadata: Metadata = pageMetadata("/authorization");
@@ -19,6 +19,6 @@ export default function AuthorizationPage() {
 }
 
 async function AuthorizationData() {
-  const users = await getUsers();
-  return <AuthorizationComponent users={users} />;
+  const [users, roles] = await Promise.all([getUsers(), getRoles()]);
+  return <AuthorizationComponent users={users} roles={roles} />;
 }

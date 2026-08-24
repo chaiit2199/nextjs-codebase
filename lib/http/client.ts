@@ -100,7 +100,7 @@ export class Client {
     const methodLabel = String(method ?? "GET").toUpperCase();
     const retryLabel = isRetry ? " (retry)" : "";
 
-    const endDebug = startHttpDebugLog(methodLabel, `${url}${retryLabel}`);
+    const debug = startHttpDebugLog(methodLabel, `${url}${retryLabel}`);
 
     try {
       const response = await this.instance.request<TResponse>({
@@ -114,11 +114,11 @@ export class Client {
         },
       });
 
-      endDebug(response.status);
+      debug(response.status);
       return response.data;
     } catch (error) {
       const httpError = toHttpError(error);
-      endDebug(httpError.status ?? "error");
+      debug(httpError.status ?? "error");
 
       if (
         !isRetry &&

@@ -113,3 +113,20 @@ export type ScopeType = {
   requires_targets: boolean;
   target_resource: string | null;
 };
+
+export type ScopeTarget = {
+  id: number;
+  code: string;
+  name: string;
+  status?: number;
+  address?: string;
+  latitude?: string;
+  longitude?: string;
+  cover_priority?: number;
+  region_code?: string;
+};
+
+export type ScopeTargetsResponse = {
+  data: ScopeTarget[];
+  meta?: ApiListMeta;
+};

@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { ChangeEvent, ReactNode } from "react";
 
 import { RECORD_STATUS_OPTIONS, UserStatus } from "@/lib/constants";
 
@@ -16,6 +16,7 @@ export function SelectField({
   label,
   defaultValue,
   required,
+  onChange,
   children,
 }: {
   id: string;
@@ -23,6 +24,7 @@ export function SelectField({
   label: ReactNode;
   defaultValue?: string;
   required?: boolean;
+  onChange?: (event: ChangeEvent<HTMLSelectElement>) => void;
   children: ReactNode;
 }) {
   return (
@@ -35,6 +37,7 @@ export function SelectField({
         name={name}
         defaultValue={defaultValue}
         required={required}
+        onChange={onChange}
         className="core_input core_input--select w-full"
       >
         {children}

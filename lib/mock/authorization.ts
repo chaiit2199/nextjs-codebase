@@ -1,18 +1,7 @@
-export type MockRoleOption = {
-  id: string;
-  name: string;
-};
-
 export type Warehouse = {
   code: string;
   name: string;
 };
-
-export const MOCK_ROLES: MockRoleOption[] = [
-  { id: "r1", name: "thủ kho 2" },
-  { id: "r2", name: "quản lý kho" },
-  { id: "r3", name: "nhân viên bán hàng" },
-];
 
 export const MOCK_WAREHOUSES: Warehouse[] = [
   { code: "DEMO_WH_LA", name: "Kho khu vực Long An" },

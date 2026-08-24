@@ -29,7 +29,7 @@ export async function refreshSession(refreshToken: string): Promise<Session | nu
   const path = "/api/v1/auth/refresh-token";
   const url = `${apiUrl}${path}`;
 
-  const endDebug = startHttpDebugLog("POST", path);
+  const debug = startHttpDebugLog("POST", path);
 
   try {
     const response = await axios.post<AuthTokenResponse>(
@@ -44,7 +44,7 @@ export async function refreshSession(refreshToken: string): Promise<Session | nu
       },
     );
 
-    endDebug(response.status);
+    debug(response.status);
 
     const data = response.data?.data;
     if (!data?.access_token) return null;
@@ -55,9 +55,9 @@ export async function refreshSession(refreshToken: string): Promise<Session | nu
     });
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      endDebug(error.response?.status ?? "error");
+      debug(error.response?.status ?? "error");
     } else {
-      endDebug("error");
+      debug("error");
     }
 
     return null;

@@ -3,9 +3,11 @@
 import { revalidatePath } from "next/cache";
 
 import {
+  assignUserAccessSchema,
   changePasswordSchema,
   createUserSchema,
   updateUserSchema,
+  type AssignUserAccessInput,
   type ChangePasswordInput,
   type CreateUserInput,
   type UpdateUserInput,
@@ -13,11 +15,11 @@ import {
 import { runServerAction } from "@/lib/server-actions";
 import { client } from "@/lib/http/client";
 
-export type { CreateUserInput, UpdateUserInput, ChangePasswordInput };
+export type { CreateUserInput, UpdateUserInput, ChangePasswordInput, AssignUserAccessInput };
 
 export async function createUser(payload: CreateUserInput) {
   return runServerAction(createUserSchema, payload, "Không thể tạo nhân viên", async (input) => {
-    await client.post("/api/v1/users", input);
+    await client.post("/api/v1/users", input, { params: { status: 1 } });
     revalidatePath("/users");
     return { ok: true as const };
   });
@@ -35,6 +37,16 @@ export async function updateUser(payload: UpdateUserInput) {
     const { id, ...body } = input;
     await client.patch(`/api/v1/users/${id}`, body);
     revalidatePath("/users");
+    return { ok: true as const };
+  });
+}
+
+export async function assignUserAccess(payload: AssignUserAccessInput) {
+  return runServerAction(assignUserAccessSchema, payload, "Không thể cập nhật phân quyền", async (input) => {
+    const { user_id, reason, permissions } = input;
+    const body = { reason, permissions };
+    await client.put(`/api/v1/users/${user_id}/roles`, body);
+    revalidatePath("/authorization");
     return { ok: true as const };
   });
 }
