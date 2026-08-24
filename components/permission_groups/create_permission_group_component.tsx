@@ -7,7 +7,7 @@ import { FormSubmitButton } from "@/components/form-submit-button";
 import { RequiredLabel } from "@/components/form-fields";
 import { Icon } from "@/components/icon";
 import { createRole, type CreateRoleInput } from "@/lib/api/roles";
-import type { ShortRole } from "@/lib/api/types";
+import type { ScopeType } from "@/lib/api/types";
 import { putFlash } from "@/lib/flash/flash";
 
 export function suggestRoleCode(name: string) {
@@ -25,7 +25,7 @@ function buildCreatePayload(
   form: FormData,
   name: string,
   code: string,
-  scopes: number[],
+  scopes: string[],
 ): CreateRoleInput | null {
   const roleName = name.trim();
   const roleCode = code.trim();
@@ -36,7 +36,6 @@ function buildCreatePayload(
     code: roleCode,
     description: String(form.get("description") ?? "").trim(),
     allowed_scope_types: scopes,
-    permission_codes: [],
   };
 }
 
@@ -45,9 +44,9 @@ function ScopeField({
   selected,
   onToggle,
 }: {
-  options: ShortRole[];
-  selected: number[];
-  onToggle: (id: number) => void;
+  options: ScopeType[];
+  selected: string[];
+  onToggle: (code: string) => void;
 }) {
   return (
     <div className="core_field">
@@ -55,22 +54,23 @@ function ScopeField({
         <RequiredLabel>Phạm vi dữ liệu</RequiredLabel>
       </p>
       <div className="auth-scope">
-        {options.map((role) => {
-          const isChecked = selected.includes(role.id);
+        {options.map((scope) => {
+          const isChecked = selected.includes(scope.code);
 
           return (
             <button
-              key={role.id}
+              key={scope.code}
               type="button"
               className={["auth-scope__item", isChecked && "is-checked"].filter(Boolean).join(" ")}
-              onClick={() => onToggle(role.id)}
+              onClick={() => onToggle(scope.code)}
+              title={scope.description || undefined}
             >
               <span
                 className={["auth-permission__check", isChecked && "is-checked"].filter(Boolean).join(" ")}
               >
                 {isChecked && <Icon name="hero-check" className="size-3.5" />}
               </span>
-              <span className="auth-scope__name">{role.name}</span>
+              <span className="auth-scope__name">{scope.name}</span>
             </button>
           );
         })}
@@ -81,21 +81,23 @@ function ScopeField({
 
 export function CreatePermissionGroupComponent({
   onClose,
-  shortRoles,
+  scopeTypes,
 }: {
   onClose: () => void;
-  shortRoles: ShortRole[];
+  scopeTypes: ScopeType[];
 }) {
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [payload, setPayload] = useState<CreateRoleInput | null>(null);
-  const [scopes, setScopes] = useState<number[]>([]);
+  const [scopes, setScopes] = useState<string[]>([]);
   const [name, setName] = useState("");
   const [code, setCode] = useState("");
   const [codeEdited, setCodeEdited] = useState(false);
 
-  function toggleScope(id: number) {
+  function toggleScope(scopeCode: string) {
     setScopes((current) =>
-      current.includes(id) ? current.filter((item) => item !== id) : [...current, id],
+      current.includes(scopeCode)
+        ? current.filter((item) => item !== scopeCode)
+        : [...current, scopeCode],
     );
   }
 
@@ -115,6 +117,7 @@ export function CreatePermissionGroupComponent({
 
   async function confirmCreate() {
     if (!payload) return;
+
 
     const result = await createRole(payload);
 
@@ -183,7 +186,7 @@ export function CreatePermissionGroupComponent({
               />
             </div>
 
-            <ScopeField options={shortRoles} selected={scopes} onToggle={toggleScope} />
+            <ScopeField options={scopeTypes} selected={scopes} onToggle={toggleScope} />
           </div>
 
           <div className="core_modal__actions">

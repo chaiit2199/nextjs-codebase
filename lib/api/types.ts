@@ -70,3 +70,16 @@ export type ShortRolesResponse = {
   data: ShortRole[];
   meta?: ApiListMeta;
 };
+
+export type ScopeTypesResponse = {
+  data: ScopeType[];
+  meta?: ApiListMeta;
+};
+
+export type ScopeType = {
+  code: string;
+  name: string;
+  description: string;
+  requires_targets: boolean;
+  target_resource: string | null;
+};

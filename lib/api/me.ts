@@ -8,6 +8,7 @@ import type {
   RolesResponse,
   ShortRolesResponse,
   UsersResponse,
+  ScopeTypesResponse,
 } from "@/lib/api/types";
 
 export type {
@@ -45,7 +46,7 @@ export const getUsers = cache(() =>
 );
 
 export const getDepartments = cache(() =>
-  redirectOnUnauthorized(async () => (await client.get<DepartmentsResponse>("/api/v1/departments")).data),
+  redirectOnUnauthorized(async () => (await client.get<DepartmentsResponse>("/api/v1/departments?status=ALL")).data),
 );
 
 export const getShortRoles = cache(() =>
@@ -56,4 +57,8 @@ export const getShortRoles = cache(() =>
 
 export const getRoles = cache(() =>
   redirectOnUnauthorized(async () => (await client.get<RolesResponse>("/api/v1/roles")).data),
+);
+
+export const getScopeTypes = cache(() =>
+  redirectOnUnauthorized(async () => (await client.get<ScopeTypesResponse>("/api/v1/scope-types")).data),
 );

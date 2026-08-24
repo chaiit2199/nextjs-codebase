@@ -81,21 +81,17 @@ export const updateDepartmentSchema = z
     "Không có dữ liệu cập nhật",
   );
 
-const permissionCodeSchema = trimmed.min(1).max(128);
-
 export const createRoleSchema = z.object({
   code: trimmed.min(1, "Thiếu mã vai trò").max(64),
   name: trimmed.min(1, "Thiếu tên vai trò").max(255),
   description: optionalText(500),
-  allowed_scope_types: z.array(positiveInt).min(1, "Chọn ít nhất một phạm vi").max(50),
-  permission_codes: z.array(permissionCodeSchema).max(200),
+  allowed_scope_types: z.array(trimmed.min(1).max(64)).min(1, "Chọn ít nhất một phạm vi").max(50),
 });
 
 export const updateRoleSchema = z.object({
   id: positiveInt,
   name: trimmed.min(1, "Thiếu tên nhóm quyền").max(255),
   description: optionalText(500),
-  permission_codes: z.array(permissionCodeSchema).max(200),
 });
 
 export type CreateUserInput = z.infer<typeof createUserSchema>;

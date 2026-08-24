@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 
 import { Dashboard, TableSkeleton } from "@/components/dashboard";
-import { getRoles, getShortRoles } from "@/lib/api/me";
+import { getRoles, getScopeTypes } from "@/lib/api/me";
 import { PermissionGroupsComponent } from "@/components/permission_groups/permission_groups_component";
 import { pageMetadata } from "@/lib/dashboard/navbar";
 
@@ -18,7 +18,7 @@ export default function PermissionGroupsPage() {
   );
 }
 async function RolesData() {
-  const [roles, shortRoles] = await Promise.all([getRoles(), getShortRoles()]);
-  return <PermissionGroupsComponent roles={roles} shortRoles={shortRoles} />;
+  const [roles, scopeTypes] = await Promise.all([getRoles(), getScopeTypes()]);
+  return <PermissionGroupsComponent roles={roles} scopeTypes={scopeTypes} />;
 }
 

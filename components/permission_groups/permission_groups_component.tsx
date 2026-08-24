@@ -7,19 +7,18 @@ import { FormSubmitButton } from "@/components/form-submit-button";
 import { RequiredLabel } from "@/components/form-fields";
 import { Icon } from "@/components/icon";
 import { updateRole, type UpdateRoleInput } from "@/lib/api/roles";
-import type { Role, ShortRole } from "@/lib/api/types";
+import type { Role, ScopeType } from "@/lib/api/types";
 import { roleStatusMeta } from "@/lib/constants";
 import { subscribeHeaderAction } from "@/lib/dashboard/header-actions";
 import { putFlash } from "@/lib/flash/flash";
-import { SelectRoles } from "./select_roles_component";
 import { CreatePermissionGroupComponent } from "./create_permission_group_component";
 
 export function PermissionGroupsComponent({
   roles,
-  shortRoles,
+  scopeTypes,
 }: {
   roles: Role[];
-  shortRoles: ShortRole[];
+  scopeTypes: ScopeType[];
 }) {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [selectedRole, setSelectedRole] = useState<Role | null>(null);
@@ -50,7 +49,6 @@ export function PermissionGroupsComponent({
       id: selectedRole.id,
       name,
       description: String(data.get("description") ?? "").trim(),
-      permission_codes: data.getAll("permissions").map(String),
     });
     setIsConfirmOpen(true);
   }
@@ -79,7 +77,7 @@ export function PermissionGroupsComponent({
   return (
     <>
       {isCreateOpen && (
-        <CreatePermissionGroupComponent onClose={() => setIsCreateOpen(false)} shortRoles={shortRoles} />
+        <CreatePermissionGroupComponent onClose={() => setIsCreateOpen(false)} scopeTypes={scopeTypes} />
       )}
       <section className="admin-section" id="admin-permission-groups-section">
         <div className="admin-table-card mb-6">
@@ -122,9 +120,9 @@ export function PermissionGroupsComponent({
         id="permission-group-modal"
         show={selectedRole !== null}
         title="Chỉnh sửa nhóm quyền"
-        subtitle="Đặt tên nhóm và tick quyền phù hợp."
+        subtitle="Cập nhật tên và mô tả nhóm quyền."
         closeable={!isConfirmOpen}
-        width="3xl"
+        width="lg"
         onClose={closeForm}
       >
         {selectedRole && (
@@ -159,8 +157,6 @@ export function PermissionGroupsComponent({
                   />
                 </div>
               </div>
-
-              <SelectRoles selectedCodes={selectedRole.grants.map((grant) => grant.permission_code)} />
             </div>
 
             <div className="core_modal__actions">
