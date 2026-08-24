@@ -2,73 +2,55 @@
 
 import { useState, type FormEvent } from "react";
 
-import { Modal } from "@/components/core_component";
+import { Input, Modal } from "@/components/core_component";
 import { FormSubmitButton } from "@/components/form-submit-button";
 import { RequiredLabel, SelectField } from "@/components/form-fields";
+import type { User } from "@/lib/api/types";
 import { putFlash } from "@/lib/flash/flash";
-import {
-  MOCK_ROLES,
-  MOCK_USERS,
-  MOCK_WAREHOUSES,
-  warehouseOptionLabel,
-  type AuthorizationRow,
-} from "@/lib/mock/authorization";
+import { MOCK_ROLES, MOCK_WAREHOUSES, warehouseOptionLabel } from "@/lib/mock/authorization";
 
-export type AssignRolePayload = {
+type AssignRolePayload = {
   userId: string;
-  userLabel: string;
   fullName: string;
   username: string;
-  departmentName: string;
   roleId: string;
   roleName: string;
   warehouseCode: string;
   reason: string;
 };
 
-function readAssignForm(data: FormData): AssignRolePayload | null {
-  const userId = String(data.get("user_id") ?? "").trim();
+function readAssignForm(data: FormData, user: User): AssignRolePayload | null {
   const roleId = String(data.get("role_id") ?? "").trim();
   const warehouseCode = String(data.get("warehouse_code") ?? "").trim();
   const reason = String(data.get("reason") ?? "").trim();
+  const userId = String(user.id ?? user.username);
 
-  if (!userId || !roleId || !warehouseCode || !reason) return null;
-
-  const user = MOCK_USERS.find((item) => item.id === userId);
-  const roleName = MOCK_ROLES.find((role) => role.id === roleId)?.name ?? roleId;
-
-  if (!user) return null;
+  if (!roleId || !warehouseCode || !reason) return null;
 
   return {
     userId,
-    userLabel: user.label,
-    fullName: user.fullName,
+    fullName: user.full_name,
     username: user.username,
-    departmentName: user.departmentName,
     roleId,
-    roleName,
+    roleName: MOCK_ROLES.find((role) => role.id === roleId)?.name ?? roleId,
     warehouseCode,
     reason,
   };
 }
 
 export function AssignRoleFormComponent({
-  mode,
-  row,
+  user,
   onClose,
-  onSaved,
 }: {
-  mode: "create" | "edit";
-  row?: AuthorizationRow | null;
+  user: User;
   onClose: () => void;
-  onSaved?: (payload: AssignRolePayload, mode: "create" | "edit", rowId?: string) => void;
 }) {
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [payload, setPayload] = useState<AssignRolePayload | null>(null);
 
   function handleFormSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const formValues = readAssignForm(new FormData(event.currentTarget));
+    const formValues = readAssignForm(new FormData(event.currentTarget), user);
     if (!formValues) return;
 
     setPayload(formValues);
@@ -78,19 +60,12 @@ export function AssignRoleFormComponent({
   function confirmAssign() {
     if (!payload) return;
 
-    onSaved?.(payload, mode, row?.id);
     setIsConfirmOpen(false);
     onClose();
-    putFlash(
-      "success",
-      mode === "create"
-        ? `Đã gán ${payload.userLabel} vào vai trò ${payload.roleName}`
-        : `Đã cập nhật phân quyền cho ${payload.userLabel}`,
-      2000,
-    );
+    putFlash("success", `Đã cập nhật phân quyền cho ${payload.fullName}`, 2000);
   }
 
-  const formKey = `${mode}-${row?.id ?? "new"}`;
+  const formKey = String(user.id ?? user.username);
 
   return (
     <>
@@ -100,7 +75,7 @@ export function AssignRoleFormComponent({
         title="Gán người dùng vào vai trò"
         subtitle="Phạm vi bị giới hạn theo danh sách vai trò đã cho phép."
         closeable={!isConfirmOpen}
-        width="lg"
+        width="xl"
         onClose={onClose}
       >
         <form
@@ -110,29 +85,25 @@ export function AssignRoleFormComponent({
           autoComplete="off"
           onSubmit={handleFormSubmit}
         >
-          <div className="flex flex-col gap-4 overflow-y-auto flex-auto h-full">
-            <SelectField
-              id="assign-role-user"
-              name="user_id"
-              label={<RequiredLabel>Người dùng</RequiredLabel>}
-              defaultValue={mode === "edit" && row ? row.userId : ""}
-              required
-            >
-              <option value="" disabled>
-                Chọn người dùng
-              </option>
-              {MOCK_USERS.map((user) => (
-                <option key={user.id} value={user.id}>
-                  {user.label}
-                </option>
-              ))}
-            </SelectField>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 overflow-y-auto flex-auto h-full content-start">
+            <Input
+              id="assign-role-full-name"
+              label="Họ và tên"
+              value={user.full_name}
+              readOnly
+            />
+            <Input
+              id="assign-role-username"
+              label="Tên đăng nhập"
+              value={user.username}
+              readOnly
+            />
 
             <SelectField
               id="assign-role-role"
               name="role_id"
               label={<RequiredLabel>Vai trò</RequiredLabel>}
-              defaultValue={mode === "edit" && row?.roleId ? row.roleId : ""}
+              defaultValue={user.role != null && user.role !== "" ? String(user.role) : ""}
               required
             >
               <option value="" disabled>
@@ -149,7 +120,7 @@ export function AssignRoleFormComponent({
               id="assign-role-warehouse"
               name="warehouse_code"
               label={<RequiredLabel>Kho được truy cập</RequiredLabel>}
-              defaultValue={mode === "edit" && row?.warehouseCode ? row.warehouseCode : ""}
+              defaultValue=""
               required
             >
               <option value="" disabled>
@@ -162,7 +133,7 @@ export function AssignRoleFormComponent({
               ))}
             </SelectField>
 
-            <div className="core_field admin-user-form__full">
+            <div className="core_field md:col-span-2">
               <label htmlFor="assign-role-reason" className="core_label">
                 <RequiredLabel>Lý do thay đổi</RequiredLabel>
               </label>
@@ -191,7 +162,7 @@ export function AssignRoleFormComponent({
       <Modal
         id="assign-role-confirm-modal"
         show={isConfirmOpen}
-        title={mode === "create" ? "Xác nhận gán người dùng vào vai trò" : "Xác nhận cập nhật phân quyền"}
+        title="Xác nhận cập nhật phân quyền"
         width="md"
         className="core_modal--stacked"
         onClose={() => setIsConfirmOpen(false)}

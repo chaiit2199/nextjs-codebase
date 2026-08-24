@@ -27,9 +27,9 @@ export async function updateRole(payload: UpdateRoleInput) {
   return runServerAction(updateRoleSchema, payload, "Không thể cập nhật nhóm quyền", async (params) => {
     const { id, name, description, remove, upsert } = params;
 
-    await client.patch(`/api/v1/roles/${id}`, {
-      name,
-      description,
+    console.log("params123123123", params);
+
+    await client.patch(`/api/v1/roles/${id}/permissions`, {
       remove,
       upsert,
     });
