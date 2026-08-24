@@ -43,10 +43,12 @@ function ScopeField({
   options,
   selected,
   onToggle,
+  error,
 }: {
   options: ScopeType[];
   selected: string[];
   onToggle: (code: string) => void;
+  error?: string;
 }) {
   return (
     <div className="core_field">
@@ -75,6 +77,7 @@ function ScopeField({
           );
         })}
       </div>
+      {error && <p className="core_field__error">{error}</p>}
     </div>
   );
 }
@@ -92,8 +95,10 @@ export function CreatePermissionGroupComponent({
   const [name, setName] = useState("");
   const [code, setCode] = useState("");
   const [codeEdited, setCodeEdited] = useState(false);
+  const [scopeError, setScopeError] = useState("");
 
   function toggleScope(scopeCode: string) {
+    setScopeError("");
     setScopes((current) =>
       current.includes(scopeCode)
         ? current.filter((item) => item !== scopeCode)
@@ -108,9 +113,23 @@ export function CreatePermissionGroupComponent({
 
   function handleFormSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const formValues = buildCreatePayload(new FormData(event.currentTarget), name, code, scopes);
+    const form = event.currentTarget;
+
+    if (!form.checkValidity()) {
+      form.reportValidity();
+      if (scopes.length === 0) setScopeError("Chọn ít nhất một phạm vi dữ liệu");
+      return;
+    }
+
+    if (scopes.length === 0) {
+      setScopeError("Chọn ít nhất một phạm vi dữ liệu");
+      return;
+    }
+
+    const formValues = buildCreatePayload(new FormData(form), name, code, scopes);
     if (!formValues) return;
 
+    setScopeError("");
     setPayload(formValues);
     setIsConfirmOpen(true);
   }
@@ -186,14 +205,19 @@ export function CreatePermissionGroupComponent({
               />
             </div>
 
-            <ScopeField options={scopeTypes} selected={scopes} onToggle={toggleScope} />
+            <ScopeField
+              options={scopeTypes}
+              selected={scopes}
+              onToggle={toggleScope}
+              error={scopeError}
+            />
           </div>
 
           <div className="core_modal__actions">
             <button type="button" className="core_button core_button--secondary" onClick={onClose}>
               Hủy
             </button>
-            <button type="submit" className="core_button core_button--primary" disabled={scopes.length === 0}>
+            <button type="submit" className="core_button core_button--primary">
               Thêm nhóm quyền
             </button>
           </div>
