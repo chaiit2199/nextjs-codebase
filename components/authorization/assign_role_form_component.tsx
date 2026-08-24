@@ -69,8 +69,8 @@ function readAssignForm(
   };
 }
 
-function initialAllowedScopes(user: User, roles: Role[]) {
-  if (user.role == null || user.role === "") return [];
+function initialAllowedScopes(user: User | null, roles: Role[]) {
+  if (!user || user.role == null || user.role === "") return [];
   return roles.find((role) => String(role.id) === String(user.role))?.allowed_scope_types ?? [];
 }
 
@@ -80,7 +80,7 @@ export function AssignRoleFormComponent({
   roles,
   onClose,
 }: {
-  user: User;
+  user: User | null;
   users: User[];
   roles: Role[];
   onClose: () => void;
@@ -121,7 +121,7 @@ export function AssignRoleFormComponent({
     event.preventDefault();
     const formValues = readAssignForm(
       new FormData(event.currentTarget),
-      user.id,
+      user?.id,
       roles,
       allowedScopes.length > 0,
       scopeTargets.length > 0,
@@ -143,13 +143,18 @@ export function AssignRoleFormComponent({
       return;
     }
 
+    const assignedUser =
+      user ?? users.find((item) => Number(item.id) === payload.user_id) ?? null;
+    const displayName = assignedUser?.full_name ?? `user #${payload.user_id}`;
+
     setIsConfirmOpen(false);
     onClose();
-    putFlash("success", `Đã cập nhật phân quyền cho ${user.full_name}`, 2000);
+    putFlash("success", `Đã cập nhật phân quyền cho ${displayName}`, 2000);
   }
 
-  const formKey = String(user.id ?? user.username);
-  const defaultUserId = user.id != null ? String(user.id) : "";
+  const formKey = user ? String(user.id ?? user.username) : "new-assign";
+  const defaultUserId = user?.id != null ? String(user.id) : "";
+  const defaultRoleId = user?.role != null && user.role !== "" ? String(user.role) : "";
   const targetPath = selectedScope ? SCOPE_TARGET_PATHS[selectedScope] : undefined;
 
   return (
@@ -179,6 +184,9 @@ export function AssignRoleFormComponent({
                 defaultValue={defaultUserId}
                 required
               >
+                <option value="" disabled>
+                  Chọn người dùng
+                </option>
                 {users.map((item) => (
                   <option key={String(item.id ?? item.username)} value={String(item.id ?? item.username)}>
                     {item.full_name} - {item.username}
@@ -191,7 +199,7 @@ export function AssignRoleFormComponent({
               id="assign-role-role"
               name="role_id"
               label={<RequiredLabel>Vai trò</RequiredLabel>}
-              defaultValue={user.role != null && user.role !== "" ? String(user.role) : ""}
+              defaultValue={defaultRoleId}
               required
               onChange={handleRoleChange}
             >

@@ -1,23 +1,41 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Icon } from "@/components/icon";
 import { UserAvatar } from "@/components/user-components";
 import type { Role, User } from "@/lib/api/types";
+import { subscribeHeaderAction } from "@/lib/dashboard/header-actions";
 import { AssignRoleFormComponent } from "./assign_role_form_component";
 
 export function AuthorizationComponent({ users, roles }: { users: User[]; roles: Role[] }) {
+  const [isFormOpen, setIsFormOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
+
+  function openForm(user: User | null) {
+    setSelectedUser(user);
+    setIsFormOpen(true);
+  }
+
+  function closeForm() {
+    setIsFormOpen(false);
+    setSelectedUser(null);
+  }
+
+  useEffect(() => {
+    return subscribeHeaderAction("/authorization", (detail) => {
+      if (detail.action === "authorization") openForm(null);
+    });
+  }, []);
 
   return (
     <>
-      {selectedUser && (
+      {isFormOpen && (
         <AssignRoleFormComponent
           user={selectedUser}
           users={users}
           roles={roles}
-          onClose={() => setSelectedUser(null)}
+          onClose={closeForm}
         />
       )}
 
@@ -43,11 +61,9 @@ export function AuthorizationComponent({ users, roles }: { users: User[]; roles:
                       key={rowId}
                       id={`authorization-row-${rowId}`}
                       className="cursor-pointer"
-                      onClick={() => setSelectedUser(user)}
+                      onClick={() => openForm(user)}
                     >
-                      <td className="w-10">
-                        {user.id}
-                      </td>
+                      <td className="w-10">{user.id}</td>
                       <td>
                         <div className="admin-user">
                           <UserAvatar fullname={user.full_name} />

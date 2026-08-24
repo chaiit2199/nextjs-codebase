@@ -13,7 +13,7 @@
 }
 
 .header__search {
-  @apply flex items-center gap-2 w-32 min-w-32 w-auto h-11 pl-3 pr-1 py-1 rounded-xl bg-white text-theme-primary-content drop-shadow-sm;
+  @apply flex items-center gap-2 w-32 min-w-32 w-auto h-[42px] pl-3 pr-1.5 py-1 rounded-xl bg-white text-theme-primary-content drop-shadow-sm;
 }
 
 .header__search-icon {
@@ -52,7 +52,7 @@
 }
 
 .header__search-submit {
-  @apply inline-flex items-center gap-1.5 shrink-0 h-9 w-9 max-w-9 px-2 rounded-lg bg-theme-primary text-white text-sm font-medium border-0 cursor-pointer;
+  @apply inline-flex items-center gap-1.5 shrink-0 h-8 w-[32px] max-w-[32px] px-2 rounded-lg bg-theme-primary text-white text-sm font-medium border-0 cursor-pointer;
 }
 
 .header__search-submit:hover {
