@@ -1,13 +1,14 @@
 "use client";
 
-import { useState, type ChangeEvent, type FormEvent } from "react";
+import { useState, useEffect, type ChangeEvent, type FormEvent } from "react";
 
 import { Modal } from "@/components/core_component";
 import { FormSubmitButton } from "@/components/form-submit-button";
 import { RequiredLabel, SelectField } from "@/components/form-fields";
 import { fetchScopeTargets } from "@/lib/api/roles";
+import { fetchUserAccess } from "@/lib/api/users";
 import { assignUserAccess, type AssignUserAccessInput } from "@/lib/api/users";
-import type { Role, ScopeTarget, User } from "@/lib/api/types";
+import type { Role, ScopeTarget, User, UserAccessPermission, UserAccessResponse, UserAccessRole } from "@/lib/api/types";
 import { putFlash } from "@/lib/flash/flash";
 
 const SCOPE_TYPE_LABELS: Record<string, string> = {
@@ -85,12 +86,26 @@ export function AssignRoleFormComponent({
   roles: Role[];
   onClose: () => void;
 }) {
+  const [userAccessRole, setUserAccessRole] = useState<UserAccessRole[]>([]);
+  const [userAccessPermission, setUserAccessPermission] = useState<UserAccessPermission[]>([]);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [payload, setPayload] = useState<AssignRolePayload | null>(null);
   const [allowedScopes, setAllowedScopes] = useState<string[]>(() => initialAllowedScopes(user, roles));
   const [selectedScope, setSelectedScope] = useState("");
   const [scopeTargets, setScopeTargets] = useState<ScopeTarget[]>([]);
   const [isTargetsLoading, setIsTargetsLoading] = useState(false);
+
+  useEffect(() => {
+    if (!user) return;
+    fetchUserAccess(Number(user.id)).then((data) => {
+      setUserAccessRole(data.user.roles);
+      setUserAccessPermission(data.permissions);
+    }); 
+  }, [user?.id]);
+
+  console.log("userAccessRole", userAccessRole);
+  console.log("userAccessPermission", userAccessPermission);
+  console.log("roles", roles);
 
   function handleRoleChange(event: ChangeEvent<HTMLSelectElement>) {
     const role = roles.find((item) => String(item.id) === event.target.value) ?? null;

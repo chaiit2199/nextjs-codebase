@@ -60,4 +60,4 @@ export async function fetchScopeTargets(scopeType: string): Promise<ScopeTarget[
     throw error;
   }
 }
-
+ 

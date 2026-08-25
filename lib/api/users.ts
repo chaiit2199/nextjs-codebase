@@ -14,6 +14,8 @@ import {
 } from "@/lib/validate/users";
 import { runServerAction } from "@/lib/server-actions";
 import { client } from "@/lib/http/client";
+import { requireCurrentUser } from "@/lib/api/me";
+import type { UserAccessResponse } from "@/lib/api/types";
 
 export type { CreateUserInput, UpdateUserInput, ChangePasswordInput, AssignUserAccessInput };
 
@@ -49,4 +51,8 @@ export async function assignUserAccess(payload: AssignUserAccessInput) {
     revalidatePath("/authorization");
     return { ok: true as const };
   });
+}
+
+export async function fetchUserAccess(userId: number) {
+  return (await client.get<UserAccessResponse>(`/api/v1/users/${userId}/access`)).data;
 }

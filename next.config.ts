@@ -7,6 +7,8 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  reactStrictMode: false,
+
   crossOrigin: "anonymous",
 
   async headers() {

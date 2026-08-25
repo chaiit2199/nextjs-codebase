@@ -130,3 +130,39 @@ export type ScopeTargetsResponse = {
   data: ScopeTarget[];
   meta?: ApiListMeta;
 };
+
+export type UserAccessTarget = {
+  id: number;
+  code: string;
+  name: string;
+};
+
+export type UserAccessRole = {
+  id: number;
+  code: string;
+  name: string;
+  scope_type: string;
+  is_system: boolean;
+  targets: UserAccessTarget[];
+  managed_for_user: unknown | null;
+};
+
+export type UserAccessPermissionSource = {
+  role_id: number;
+  role_code: string;
+};
+
+export type UserAccessPermission = {
+  id: number;
+  code: string;
+  sources: UserAccessPermissionSource[];
+}; 
+
+export type UserAccessResponse = {
+  data: {
+    user: {
+      roles: UserAccessRole[];
+    };
+    permissions: UserAccessPermission[];
+  };
+};
