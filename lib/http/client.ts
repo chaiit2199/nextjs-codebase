@@ -1,27 +1,26 @@
 import "server-only";
+
 import axios, { type AxiosInstance, type AxiosRequestConfig } from "axios";
 import { cookies } from "next/headers";
 
 import { refreshSession } from "@/lib/auth/refresh";
-import { Logger } from "@/lib/debug/logger";
 import {
   SESSION_KEY,
-  encodeSession,
   decodeSession,
+  encodeSession,
   sessionCookieOptions,
   type Session,
 } from "@/lib/auth/session";
-
-export type { AuthTokenData, AuthTokenResponse } from "@/lib/auth/tokens";
+import { Logger } from "@/lib/debug/logger";
 
 export type HttpRequestOptions = Omit<AxiosRequestConfig, "url" | "method" | "data"> & {
   accessToken?: string;
 };
 
-const AUTH_SKIP_REFRESH = ["/api/v1/auth/login", "/api/v1/auth/refresh-token"];
+const AUTH_ENDPOINTS = ["/api/v1/auth/login", "/api/v1/auth/refresh-token"];
 
-function isAuthSkipRefresh(url?: string) {
-  return AUTH_SKIP_REFRESH.some((path) => url?.includes(path));
+function isAuthEndpoint(url?: string) {
+  return AUTH_ENDPOINTS.some((path) => url?.includes(path));
 }
 
 export class HttpError extends Error {
@@ -35,7 +34,6 @@ export class HttpError extends Error {
   ) {
     super(message);
     this.name = "HttpError";
-    Object.setPrototypeOf(this, HttpError.prototype);
   }
 }
 
@@ -48,8 +46,8 @@ export class Client {
 
   private async readSession(): Promise<Session> {
     try {
-      const cookieStore = await cookies();
-      return await decodeSession(cookieStore.get(SESSION_KEY)?.value);
+      const store = await cookies();
+      return await decodeSession(store.get(SESSION_KEY)?.value);
     } catch {
       return {};
     }
@@ -57,30 +55,28 @@ export class Client {
 
   private async writeSession(session: Session): Promise<boolean> {
     try {
-      const cookieStore = await cookies();
-      cookieStore.set(
+      const store = await cookies();
+      store.set(
         SESSION_KEY,
         await encodeSession(session),
         sessionCookieOptions(process.env.NODE_ENV === "production"),
       );
       return true;
     } catch {
-      // Server Components cannot mutate cookies — proxy persists refreshed tokens.
+      // RSC cannot set cookies — proxy/guard persists refreshed session.
       return false;
     }
   }
 
   private async refreshAccessToken(): Promise<string | null> {
-    const session = await this.readSession();
-    const refreshToken = session.refresh_token;
-
+    const refreshToken = (await this.readSession()).refresh_token;
     if (!refreshToken) return null;
 
-    const tokens = await refreshSession(refreshToken);
-    if (!tokens) return null;
+    const session = await refreshSession(refreshToken);
+    if (!session?.access_token) return null;
 
-    await this.writeSession(tokens);
-    return tokens.access_token ?? null;
+    await this.writeSession(session);
+    return session.access_token;
   }
 
   private async request<TResponse, TBody = unknown>(
@@ -91,16 +87,13 @@ export class Client {
     isRetry = false,
   ): Promise<TResponse> {
     const { accessToken: explicitToken, headers, ...requestConfig } = options;
+    const skipAuth = isAuthEndpoint(url);
+    const token = skipAuth ? undefined : (explicitToken ?? (await this.readSession()).access_token);
 
-    const skipAuthHeader = isAuthSkipRefresh(typeof url === "string" ? url : undefined);
-    const token = skipAuthHeader
-      ? undefined
-      : (explicitToken ?? (await this.readSession()).access_token);
-
-    const methodLabel = String(method ?? "GET").toUpperCase();
-    const retryLabel = isRetry ? " (retry)" : "";
-
-    const debug = Logger(methodLabel, `${url}${retryLabel}`);
+    const debug = Logger(
+      String(method ?? "GET").toUpperCase(),
+      `${url}${isRetry ? " (retry)" : ""}`,
+    );
 
     try {
       const response = await this.instance.request<TResponse>({
@@ -110,7 +103,7 @@ export class Client {
         data,
         headers: {
           ...headers,
-          ...(token && { Authorization: `Bearer ${token}` }),
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
       });
 
@@ -120,21 +113,10 @@ export class Client {
       const httpError = toHttpError(error);
       debug(httpError.status ?? "error");
 
-      if (
-        !isRetry &&
-        httpError.status === HttpError.Unauthorized &&
-        !skipAuthHeader
-      ) {
-        const newAccessToken = await this.refreshAccessToken();
-
-        if (newAccessToken) {
-          return this.request<TResponse, TBody>(
-            method,
-            url,
-            data,
-            { ...options, accessToken: newAccessToken },
-            true,
-          );
+      if (!isRetry && !skipAuth && httpError.status === HttpError.Unauthorized) {
+        const accessToken = await this.refreshAccessToken();
+        if (accessToken) {
+          return this.request<TResponse, TBody>(method, url, data, { ...options, accessToken }, true);
         }
       }
 
@@ -168,33 +150,36 @@ function toHttpError(error: unknown): HttpError {
     return new HttpError(error instanceof Error ? error.message : "Unknown HTTP error");
   }
 
-  const responseData = error.response?.data;
-  const message =
-    extractServerMessage(responseData) || error.message || "HTTP request failed";
-
-  return new HttpError(message, error.response?.status, responseData, error.code);
+  const data = error.response?.data;
+  return new HttpError(
+    extractServerMessage(data) || error.message || "HTTP request failed",
+    error.response?.status,
+    data,
+    error.code,
+  );
 }
 
 function extractServerMessage(data: unknown): string | undefined {
   if (!data || typeof data !== "object") return undefined;
 
   const body = data as Record<string, unknown>;
-  const nested = body.data;
-  const nestedRecord =
-    nested && typeof nested === "object" ? (nested as Record<string, unknown>) : undefined;
+  const nested =
+    body.data && typeof body.data === "object"
+      ? (body.data as Record<string, unknown>)
+      : undefined;
 
   return (
     readMessage(body.message) ||
     readMessage(body.error) ||
-    readMessage(nestedRecord?.message) ||
-    readMessage(nestedRecord?.error)
+    readMessage(nested?.message) ||
+    readMessage(nested?.error)
   );
 }
 
 function readMessage(value: unknown): string | undefined {
   if (typeof value === "string" && value.trim()) return value;
   if (Array.isArray(value)) {
-    const joined = value.filter((item) => typeof item === "string").join(", ");
+    const joined = value.filter((item): item is string => typeof item === "string").join(", ");
     return joined || undefined;
   }
   if (value && typeof value === "object" && "message" in value) {
@@ -203,10 +188,8 @@ function readMessage(value: unknown): string | undefined {
   return undefined;
 }
 
-const apiUrl = process.env.BASE_API_URL;
-
 export const client = new Client({
-  baseURL: apiUrl,
+  baseURL: process.env.BASE_API_URL,
   timeout: 10_000,
   headers: {
     Accept: "application/json",
