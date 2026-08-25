@@ -10,6 +10,7 @@ import type {
   UsersResponse,
   ScopeTypesResponse,
   CatalogPermissionsResponse,
+  MeAccessResponse,
 } from "@/lib/api/types";
 
 export type {
@@ -18,6 +19,9 @@ export type {
   Role,
   RoleGrant,
   ShortRole,
+  MeAccessData,
+  MeAccessPermission,
+  MeAccessActions,
 } from "@/lib/api/types";
 
 async function redirectOnUnauthorized<T>(load: () => Promise<T>): Promise<T> {
@@ -67,4 +71,9 @@ export const getScopeTypes = cache(() =>
 export const getPermissions = cache(() =>
   redirectOnUnauthorized(async () => (await client.get<CatalogPermissionsResponse>("/api/v1/permissions")).data),
 );
+
+export const getCurrentUserPermissions = cache(() =>
+  redirectOnUnauthorized(async () => (await client.get<MeAccessResponse>("/api/v1/me/access")).data),
+);
+
 

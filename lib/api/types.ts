@@ -156,7 +156,7 @@ export type UserAccessPermission = {
   id: number;
   code: string;
   sources: UserAccessPermissionSource[];
-}; 
+};
 
 export type UserAccessResponse = {
   data: {
@@ -165,4 +165,29 @@ export type UserAccessResponse = {
     };
     permissions: UserAccessPermission[];
   };
+};
+
+export type MeAccessActions = {
+  approve: boolean;
+  create: boolean;
+  delete: boolean;
+  edit: boolean;
+  read: boolean;
+  reject: boolean;
+};
+
+export type MeAccessPermission = {
+  resource: string;
+  actions: MeAccessActions;
+  extra_actions: string[];
+  permission_codes: string[];
+};
+
+export type MeAccessData = {
+  roles: UserAccessRole[];
+  permissions: MeAccessPermission[];
+};
+
+export type MeAccessResponse = {
+  data: MeAccessData;
 };

@@ -8,16 +8,16 @@ import { Dropdown } from "@/components/core_component";
 import { Icon } from "@/components/icon";
 import { UserAvatarRow } from "@/components/user-components";
 import { MENU, getPageId } from "@/lib/dashboard/navbar";
-import type { User } from "@/lib/api/me";
+import type { User  } from "@/lib/api/me";
+import type { MeAccessPermission } from "@/lib/api/types";
 import { ChangePasswordComponent } from "@/components/users/change_password";
 
-export function SidebarComponent({ user }: { user?: User | null }) {
+export function SidebarComponent({ user, userPermissions }: { user?: User | null, userPermissions?: MeAccessPermission[] }) {
   const pathname = usePathname();
   const currentPage = getPageId(pathname);
   const [collapsed, setCollapsed] = useState(false);
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const displayName = user?.full_name || user?.username || "User";
-  const email = user?.email || "";
   const role = user?.role ?? "1002";
   const userId = String(user?.id ?? user?.username ?? "guest");
 
@@ -35,6 +35,8 @@ export function SidebarComponent({ user }: { user?: User | null }) {
   function groupActive(item: (typeof MENU)[number]) {
     return currentPage === item.id || Boolean(item.children?.some((child) => child.id === currentPage));
   }
+
+  console.log("userPermissions", userPermissions);
 
   return (
     <aside

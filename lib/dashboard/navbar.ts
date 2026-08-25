@@ -14,6 +14,7 @@ export type NavBarItem = {
   href: string;
   icon: string;
   title?: string;
+  resource?: string;
 } & HeaderButtons;
 
 export type Navbar = {
@@ -23,6 +24,7 @@ export type Navbar = {
   icon: string;
   title?: string;
   children?: NavBarItem[];
+  resource?: string;
 } & HeaderButtons;
 
 export const MENU: Navbar[] = [
@@ -34,6 +36,7 @@ export const MENU: Navbar[] = [
     children: [
       {
         id: "cost-management",
+        resource: "",
         label: "Quản lý giá vốn",
         href: "/products/cost-management",
         icon: "hero-currency-dollar",
@@ -42,6 +45,7 @@ export const MENU: Navbar[] = [
       },
       {
         id: "ingredients",
+        resource: "",
         label: "Quản lý thành phần",
         href: "/products/ingredients",
         icon: "hero-beaker",
@@ -50,6 +54,7 @@ export const MENU: Navbar[] = [
       },
       {
         id: "packaging",
+        resource: "packing",
         label: "Quản lý bao bì",
         href: "/products/packaging",
         icon: "hero-archive-box",
@@ -57,9 +62,10 @@ export const MENU: Navbar[] = [
         create: true,
       },
       {
-        id: "finished-goods",
+        id: "product", 
+        resource: "product",
         label: "Quản lý thành phẩm",
-        href: "/products/finished-goods",
+        href: "/products/product",
         icon: "hero-calculator",
         title: "Quản lý thành phẩm",
         create: true,
@@ -68,6 +74,7 @@ export const MENU: Navbar[] = [
   },
   {
     id: "orders",
+    resource: "order",
     label: "Quản lý đơn hàng",
     href: "/orders",
     icon: "hero-clipboard-document-list",
@@ -76,6 +83,7 @@ export const MENU: Navbar[] = [
   },
   {
     id: "agents",
+    resource: "agency",
     label: "Quản lý đại lý",
     href: "/agents",
     icon: "hero-users",
@@ -84,6 +92,7 @@ export const MENU: Navbar[] = [
   },
   {
     id: "promotions",
+    resource: "promotion",
     label: "Khuyến mãi",
     href: "/promotions",
     icon: "hero-ticket",
@@ -97,6 +106,7 @@ export const MENU: Navbar[] = [
     children: [
       {
         id: "users",
+        resource: "user",
         label: "Nhân viên",
         href: "/users",
         icon: "hero-identification",
@@ -106,6 +116,7 @@ export const MENU: Navbar[] = [
       },
       {
         id: "departments",
+        resource: "department",
         label: "Phòng ban",
         href: "/departments",
         icon: "hero-user-group",
@@ -114,6 +125,7 @@ export const MENU: Navbar[] = [
       },
       {
         id: "permission-groups",
+        resource: "",
         label: "Nhóm quyền",
         href: "/permission-groups",
         icon: "hero-shield-check",
@@ -122,6 +134,7 @@ export const MENU: Navbar[] = [
       },
       {
         id: "authorization",
+        resource: "",
         label: "Phân quyền",
         href: "/authorization",
         icon: "hero-cog-6-tooth",
