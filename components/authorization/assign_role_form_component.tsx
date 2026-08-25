@@ -6,9 +6,8 @@ import { Modal } from "@/components/core_component";
 import { FormSubmitButton } from "@/components/form-submit-button";
 import { RequiredLabel, SelectField } from "@/components/form-fields";
 import { fetchScopeTargets } from "@/lib/api/roles";
-import { fetchUserAccess } from "@/lib/api/users";
-import { assignUserAccess, type AssignUserAccessInput } from "@/lib/api/users";
-import type { Role, ScopeTarget, User, UserAccessPermission, UserAccessResponse, UserAccessRole } from "@/lib/api/types";
+import { assignUserAccess, fetchUserAccess, type AssignUserAccessInput } from "@/lib/api/users";
+import type { Role, ScopeTarget, User } from "@/lib/api/types";
 import { putFlash } from "@/lib/flash/flash";
 
 const SCOPE_TYPE_LABELS: Record<string, string> = {
@@ -21,7 +20,7 @@ const SCOPE_TYPE_LABELS: Record<string, string> = {
 const SCOPE_TARGET_TITLE: Record<string, string> = {
   WAREHOUSE: "Kho được truy cập",
   AGENCY: "Hãng được truy cập",
-}; 
+};
 
 const SCOPE_TARGET_PATHS: Record<string, string> = {
   WAREHOUSE: "warehouses",
@@ -30,7 +29,7 @@ const SCOPE_TARGET_PATHS: Record<string, string> = {
 
 function scopeTypeLabel(code: string) {
   return SCOPE_TYPE_LABELS[code] ?? code;
-} 
+}
 
 type AssignRolePayload = AssignUserAccessInput;
 
@@ -86,8 +85,6 @@ export function AssignRoleFormComponent({
   roles: Role[];
   onClose: () => void;
 }) {
-  const [userAccessRole, setUserAccessRole] = useState<UserAccessRole[]>([]);
-  const [userAccessPermission, setUserAccessPermission] = useState<UserAccessPermission[]>([]);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [payload, setPayload] = useState<AssignRolePayload | null>(null);
   const [allowedScopes, setAllowedScopes] = useState<string[]>(() => initialAllowedScopes(user, roles));
@@ -95,29 +92,66 @@ export function AssignRoleFormComponent({
   const [scopeTargets, setScopeTargets] = useState<ScopeTarget[]>([]);
   const [isTargetsLoading, setIsTargetsLoading] = useState(false);
 
-  useEffect(() => {
-    if (!user) return;
-    fetchUserAccess(Number(user.id)).then((data) => {
-      setUserAccessRole(data.user.roles);
-      setUserAccessPermission(data.permissions);
-    }); 
-  }, [user?.id]);
+  // Prefill từ GET /users/:id/access (role + scope + kho đã gán)
+  const [selectedRoleId, setSelectedRoleId] = useState(
+    user?.role != null && user.role !== "" ? String(user.role) : "",
+  );
+  const [selectedTargetIds, setSelectedTargetIds] = useState<number[]>([]);
 
-  console.log("userAccessRole", userAccessRole);
-  console.log("userAccessPermission", userAccessPermission);
-  console.log("roles", roles);
+  useEffect(() => {
+    if (!user?.id) return;
+
+    let cancelled = false;
+
+    // Load quyền đã gán → chọn sẵn role / scope / targets trên form
+    void fetchUserAccess(Number(user.id)).then(async (data) => {
+      if (cancelled) return;
+
+      const assigned = data.user.roles[0];
+      if (!assigned) return;
+
+      const catalogRole = roles.find((role) => role.id === assigned.id);
+      setSelectedRoleId(String(assigned.id));
+      setAllowedScopes(catalogRole?.allowed_scope_types ?? []);
+      setSelectedScope(assigned.scope_type);
+      setSelectedTargetIds(assigned.targets.map((t) => t.id));
+
+      // Scope kiểu WAREHOUSE/AGENCY cần list checkbox từ API
+      if (!SCOPE_TARGET_PATHS[assigned.scope_type]) return;
+
+      setIsTargetsLoading(true);
+      try {
+        const list = await fetchScopeTargets(assigned.scope_type);
+        if (!cancelled) setScopeTargets(list);
+      } catch (error) {
+        if (!cancelled) {
+          setScopeTargets([]);
+          putFlash("error", error instanceof Error ? error.message : "Không tải được danh sách phạm vi", 1500);
+        }
+      } finally {
+        if (!cancelled) setIsTargetsLoading(false);
+      }
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [user?.id, roles]);
 
   function handleRoleChange(event: ChangeEvent<HTMLSelectElement>) {
     const role = roles.find((item) => String(item.id) === event.target.value) ?? null;
+    setSelectedRoleId(event.target.value);
     setAllowedScopes(role?.allowed_scope_types ?? []);
     setSelectedScope("");
     setScopeTargets([]);
+    setSelectedTargetIds([]);
   }
 
   async function handleScopeChange(event: ChangeEvent<HTMLSelectElement>) {
     const scopeType = event.target.value;
     setSelectedScope(scopeType);
     setScopeTargets([]);
+    setSelectedTargetIds([]);
 
     if (!scopeType || !SCOPE_TARGET_PATHS[scopeType]) return;
 
@@ -134,12 +168,24 @@ export function AssignRoleFormComponent({
 
   function handleFormSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const requireTargets = scopeTargets.length > 0;
+
+    // Checkbox group không dùng HTML required — bắt buộc chọn ≥ 1 khi có list kho/hãng
+    if (requireTargets) {
+      const checked = formData.getAll("scope_target_ids").filter(Boolean);
+      if (checked.length === 0) {
+        putFlash("error", "Vui lòng chọn ít nhất một đối tượng được truy cập", 1500);
+        return;
+      }
+    }
+
     const formValues = readAssignForm(
-      new FormData(event.currentTarget),
+      formData,
       user?.id,
       roles,
       allowedScopes.length > 0,
-      scopeTargets.length > 0,
+      requireTargets,
     );
     if (!formValues) return;
 
@@ -169,8 +215,9 @@ export function AssignRoleFormComponent({
 
   const formKey = user ? String(user.id ?? user.username) : "new-assign";
   const defaultUserId = user?.id != null ? String(user.id) : "";
-  const defaultRoleId = user?.role != null && user.role !== "" ? String(user.role) : "";
   const targetPath = selectedScope ? SCOPE_TARGET_PATHS[selectedScope] : undefined;
+  // key remount SelectField vì defaultValue chỉ áp dụng lần mount đầu
+  const prefillKey = `${selectedRoleId}:${selectedScope}`;
 
   return (
     <>
@@ -211,10 +258,11 @@ export function AssignRoleFormComponent({
             </div>
 
             <SelectField
+              key={`role-${prefillKey}`}
               id="assign-role-role"
               name="role_id"
               label={<RequiredLabel>Vai trò</RequiredLabel>}
-              defaultValue={defaultRoleId}
+              defaultValue={selectedRoleId}
               required
               onChange={handleRoleChange}
             >
@@ -230,11 +278,11 @@ export function AssignRoleFormComponent({
 
             {allowedScopes.length > 0 && (
               <SelectField
-                key={allowedScopes.join(",")}
+                key={`scope-${prefillKey}`}
                 id="assign-role-scope"
                 name="scope_type"
                 label={<RequiredLabel>Phạm vi được truy cập</RequiredLabel>}
-                defaultValue=""
+                defaultValue={selectedScope}
                 required
                 onChange={handleScopeChange}
               >
@@ -257,7 +305,7 @@ export function AssignRoleFormComponent({
               <div className="auth-targets md:col-span-2">
                 <p className="auth-targets__title">
                   <RequiredLabel>{SCOPE_TARGET_TITLE[selectedScope] ?? "Đối tượng được truy cập"}</RequiredLabel>
-                </p> 
+                </p>
                 <div className="auth-targets__list">
                   {scopeTargets.map((target) => (
                     <label key={target.id} className="auth-targets__item">
@@ -265,6 +313,8 @@ export function AssignRoleFormComponent({
                         type="checkbox"
                         name="scope_target_ids"
                         value={target.id}
+                        // Tick kho/hãng đã có trong access.targets
+                        defaultChecked={selectedTargetIds.includes(target.id)}
                         className="core_input--checkbox"
                       />
                       <span className="auth-targets__body">
