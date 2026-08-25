@@ -54,6 +54,15 @@ export function SelectRoles({
     });
   }
 
+  function togglePage(group: PermissionGroup) {
+    const actionIds = group.actions.map((action) => action.id);
+    setPermissionIds((current) => {
+      const allSelected = actionIds.every((id) => current.includes(id));
+      if (allSelected) return current.filter((id) => !actionIds.includes(id));
+      return uniqueSortedIds([...current, ...actionIds]);
+    });
+  }
+
   return (
     <div className="auth-permission" id="permission-matrix">
       {permissionIds.map((id) => (
@@ -66,6 +75,9 @@ export function SelectRoles({
       <div className="auth-permission__list">
         {groups.map((group) => {
           const isPageEnabled = group.actions.some((action) => matchesScope(action, scopePermissions));
+          const actionIds = group.actions.map((action) => action.id);
+          const isPageChecked =
+            actionIds.length > 0 && actionIds.every((id) => permissionIds.includes(id));
 
           return (
             <div
@@ -73,16 +85,25 @@ export function SelectRoles({
               id={`permission-page-${group.id}`}
               className={["auth-permission__item", isPageEnabled && "is-enabled"].filter(Boolean).join(" ")}
             >
-              <div
-                className={["auth-permission__page", isPageEnabled && "is-checked"].filter(Boolean).join(" ")}
+              <button
+                type="button"
+                className={[
+                  "auth-permission__page",
+                  isPageChecked && "is-checked",
+                  !isPageEnabled && "is-disabled",
+                ]
+                  .filter(Boolean)
+                  .join(" ")}
+                disabled={!isPageEnabled}
+                onClick={() => togglePage(group)}
               >
                 <span
-                  className={["auth-permission__check", isPageEnabled && "is-checked"].filter(Boolean).join(" ")}
+                  className={["auth-permission__check", isPageChecked && "is-checked"].filter(Boolean).join(" ")}
                 >
-                  {isPageEnabled && <Icon name="hero-check" className="size-3.5" />}
+                  {isPageChecked && <Icon name="hero-check" className="size-3.5" />}
                 </span>
                 <span>{group.name}</span>
-              </div>
+              </button>
 
               <div className="auth-permission__actions">
                 {group.actions.map((action) => {

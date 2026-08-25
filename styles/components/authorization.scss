@@ -39,6 +39,10 @@
   transition:
     border-color 0.15s ease,
     box-shadow 0.15s ease;
+
+  &:not(.is-enabled) {
+    opacity: 0.5;
+  }
 }
 
 .auth-permission__item.is-enabled {
@@ -82,7 +86,8 @@
   background: #3b7a57;
 }
 
-.auth-permission__action.is-disabled {
+.auth-permission__action.is-disabled,
+.auth-permission__page.is-disabled {
   opacity: 0.4;
   pointer-events: none;
   cursor: not-allowed;
