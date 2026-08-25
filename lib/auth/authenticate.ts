@@ -24,10 +24,6 @@ export async function login(request: NextRequest) {
   try {
     const payload = await client.post<AuthTokenResponse>("/api/v1/auth/login", { username, password });
     const response = NextResponse.redirect(new URL("/", getPublicOrigin(request)), 303);
-    console.log("payload", payload.data);
-    console.log("buildSession", buildSession(payload.data));
-    console.log("encodeSession", await encodeSession(buildSession(payload.data)));
-    console.log("sessionCookieOptions", sessionCookieOptions(isSecureRequest(request)));
     response.cookies.set(
       SESSION_KEY,
       await encodeSession(buildSession(payload.data)),
