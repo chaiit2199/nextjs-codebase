@@ -7,12 +7,11 @@ import { useEffect, useState } from "react";
 import { Dropdown } from "@/components/core_component";
 import { Icon } from "@/components/icon";
 import { UserAvatarRow } from "@/components/user-components";
-import { MENU, getPageId } from "@/lib/dashboard/navbar";
-import type { User  } from "@/lib/api/me";
-import type { MeAccessPermission } from "@/lib/api/types";
+import { getPageId, type Navbar } from "@/lib/dashboard/navbar";
+import type { User } from "@/lib/api/me";
 import { ChangePasswordComponent } from "@/components/users/change_password";
 
-export function SidebarComponent({ user, userPermissions }: { user?: User | null, userPermissions?: MeAccessPermission[] }) {
+export function SidebarComponent({ user, menu }: { user?: User | null; menu: Navbar[] }) {
   const pathname = usePathname();
   const currentPage = getPageId(pathname);
   const [collapsed, setCollapsed] = useState(false);
@@ -22,21 +21,17 @@ export function SidebarComponent({ user, userPermissions }: { user?: User | null
   const userId = String(user?.id ?? user?.username ?? "guest");
 
   useEffect(() => {
-    const match = MENU.findIndex((item) =>
-      item.children?.some((child) => child.href === pathname),
-    );
+    const match = menu.findIndex((item) => item.children?.some((child) => child.href === pathname));
     if (match >= 0) setOpenIndex(match);
-  }, [pathname]);
+  }, [pathname, menu]);
 
-  function groupOpen(index: number, item: (typeof MENU)[number]) {
+  function groupOpen(index: number, item: Navbar) {
     return openIndex === index || Boolean(item.children?.some((child) => child.id === currentPage));
   }
 
-  function groupActive(item: (typeof MENU)[number]) {
+  function groupActive(item: Navbar) {
     return currentPage === item.id || Boolean(item.children?.some((child) => child.id === currentPage));
   }
-
-  console.log("userPermissions", userPermissions);
 
   return (
     <aside
@@ -63,7 +58,7 @@ export function SidebarComponent({ user, userPermissions }: { user?: User | null
       </div>
 
       <ul className="dash-sidebar__nav">
-        {MENU.map((item, index) => {
+        {menu.map((item, index) => {
           const isOpen = groupOpen(index, item);
 
           return (
@@ -150,12 +145,12 @@ export function SidebarComponent({ user, userPermissions }: { user?: User | null
           className="header__user-menu"
           label={<UserAvatarRow fullname={displayName} role={role} />}
         >
-          <div className="header-menu" role="menu"> 
+          <div className="header-menu" role="menu">
             <div className="header-menu__section">
               <button type="button" id="open-account-info" className="header-menu__item" role="menuitem">
                 <Icon name="hero-identification" className="header-menu__icon" />
                 <span>Thông tin tài khoản</span>
-              </button> 
+              </button>
               <ChangePasswordComponent />
             </div>
 

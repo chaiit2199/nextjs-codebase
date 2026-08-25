@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 
+import type { MeAccessActions, MeAccessPermission } from "@/lib/api/types";
+
 export type HeaderButtons = {
   create?: boolean;
   export?: boolean;
@@ -15,6 +17,8 @@ export type NavBarItem = {
   icon: string;
   title?: string;
   resource?: string;
+  view?: boolean;
+  actions?: MeAccessActions;
 } & HeaderButtons;
 
 export type Navbar = {
@@ -25,6 +29,8 @@ export type Navbar = {
   title?: string;
   children?: NavBarItem[];
   resource?: string;
+  view?: boolean;
+  actions?: MeAccessActions;
 } & HeaderButtons;
 
 export const MENU: Navbar[] = [
@@ -36,39 +42,33 @@ export const MENU: Navbar[] = [
     children: [
       {
         id: "cost-management",
-        resource: "",
         label: "Quản lý giá vốn",
         href: "/products/cost-management",
         icon: "hero-currency-dollar",
         title: "Quản lý giá vốn",
-        create: true,
       },
       {
         id: "ingredients",
-        resource: "",
         label: "Quản lý thành phần",
         href: "/products/ingredients",
         icon: "hero-beaker",
         title: "Quản lý thành phần",
-        create: true,
       },
       {
         id: "packaging",
-        resource: "packing",
         label: "Quản lý bao bì",
         href: "/products/packaging",
         icon: "hero-archive-box",
         title: "Quản lý bao bì",
-        create: true,
       },
       {
-        id: "product", 
-        resource: "product",
+        id: "product",
         label: "Quản lý thành phẩm",
         href: "/products/product",
         icon: "hero-calculator",
         title: "Quản lý thành phẩm",
         create: true,
+        view: true,
       },
     ],
   },
@@ -80,6 +80,7 @@ export const MENU: Navbar[] = [
     icon: "hero-clipboard-document-list",
     title: "Quản lý đơn hàng",
     create: true,
+    view: true,
   },
   {
     id: "agents",
@@ -89,15 +90,17 @@ export const MENU: Navbar[] = [
     icon: "hero-users",
     title: "Quản lý đại lý",
     create: true,
+    view: true,
   },
   {
-    id: "promotions",
+    id: "promotion",
     resource: "promotion",
     label: "Khuyến mãi",
-    href: "/promotions",
+    href: "/promotion",
     icon: "hero-ticket",
     title: "Khuyến mãi",
     create: true,
+    view: true,
   },
   {
     id: "management",
@@ -105,48 +108,99 @@ export const MENU: Navbar[] = [
     icon: "hero-building-office-2",
     children: [
       {
-        id: "users",
+        id: "user",
         resource: "user",
         label: "Nhân viên",
-        href: "/users",
+        href: "/user",
         icon: "hero-identification",
         title: "Nhân viên",
         create: true,
         search: true,
+        view: true,
       },
       {
         id: "departments",
-        resource: "department",
         label: "Phòng ban",
         href: "/departments",
         icon: "hero-user-group",
         title: "Phòng ban",
         create: true,
+        view: true,
       },
       {
         id: "permission-groups",
-        resource: "",
         label: "Nhóm quyền",
         href: "/permission-groups",
         icon: "hero-shield-check",
         title: "Nhóm quyền",
         create: true,
+        view: true,
       },
       {
         id: "authorization",
-        resource: "",
         label: "Phân quyền",
         href: "/authorization",
         icon: "hero-cog-6-tooth",
         title: "Phân quyền",
         authorization: true,
+        view: true,
       },
     ],
   },
 ];
 
-function findMenuItem(pathname: string) {
-  for (const item of MENU) {
+function isVisible(
+  item: { resource?: string },
+  byResource: Map<string, MeAccessActions>,
+) {
+  const resource = item.resource?.trim();
+  if (!resource) return true;
+  return byResource.has(resource);
+}
+
+function attachActions<T extends { resource?: string; create?: boolean; view?: boolean }>(
+  item: T,
+  byResource: Map<string, MeAccessActions>,
+): T {
+  const resource = item.resource?.trim();
+  if (!resource) return item;
+
+  const actions = byResource.get(resource);
+  if (!actions) return item;
+
+  return {
+    ...item,
+    actions,
+    create: actions.create,
+    view: actions.read,
+  };
+}
+
+/** Ẩn item có `resource` không có trong permissions; gắn `actions` khi khớp. */
+export function buildMenuWithPermissions(
+  permissions: MeAccessPermission[],
+  menu: Navbar[] = MENU,
+): Navbar[] {
+  const byResource = new Map(permissions.map((entry) => [entry.resource, entry.actions]));
+
+  return menu.flatMap((item) => {
+    if (item.children) {
+      const children = item.children
+        .filter((child) => isVisible(child, byResource))
+        .map((child) => attachActions(child, byResource));
+
+      if (children.length === 0) return [];
+      return [{ ...item, children }];
+    }
+
+    if (!isVisible(item, byResource)) return [];
+    return [attachActions(item, byResource)];
+  });
+}
+
+
+function findMenuItem(pathname: string, menu: Navbar[] = MENU) {
+  for (const item of menu) {
     if (item.href === pathname) return item;
     const child = item.children?.find((entry) => entry.href === pathname);
     if (child) return child;
