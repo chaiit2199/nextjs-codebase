@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { isAccessExpired, refreshSession } from "@/lib/auth/refresh";
+import { isAccessTokenExpired, refreshSession } from "@/lib/auth/refresh";
 import {
   SESSION_KEY,
   SESSION_COOKIE_PATH,
@@ -41,7 +41,7 @@ export async function ensureAuthenticated(request: NextRequest) {
     return redirectToLogin(request);
   }
 
-  if (!session.access_token || isAccessExpired(session)) {
+  if (!session.access_token || isAccessTokenExpired(session)) {
     const refreshed = await refreshSession(session.refresh_token);
     if (!refreshed) {
       return redirectToLogin(request);

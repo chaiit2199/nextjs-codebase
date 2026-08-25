@@ -15,7 +15,7 @@ export function buildSession(data: AuthTokenResponse["data"]): Session {
   };
 }
 
-export function isAccessExpired(session: Session): boolean {
+export function isAccessTokenExpired(session: Session): boolean {
   if (!session.access_token || !session.access_expires_at) return true;
   return Date.now() >= session.access_expires_at - REFRESH_BUFFER_MS;
 }
