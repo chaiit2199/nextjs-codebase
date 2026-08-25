@@ -3,7 +3,7 @@ import axios, { type AxiosInstance, type AxiosRequestConfig } from "axios";
 import { cookies } from "next/headers";
 
 import { refreshSession } from "@/lib/auth/refresh";
-import { startHttpDebugLog } from "@/lib/debug/http-log";
+import { Logger } from "@/lib/debug/logger";
 import {
   SESSION_KEY,
   encodeSession,
@@ -100,7 +100,7 @@ export class Client {
     const methodLabel = String(method ?? "GET").toUpperCase();
     const retryLabel = isRetry ? " (retry)" : "";
 
-    const debug = startHttpDebugLog(methodLabel, `${url}${retryLabel}`);
+    const debug = Logger(methodLabel, `${url}${retryLabel}`);
 
     try {
       const response = await this.instance.request<TResponse>({

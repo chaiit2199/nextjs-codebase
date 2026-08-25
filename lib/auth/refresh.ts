@@ -1,6 +1,6 @@
 import axios from "axios";
 
-import { startHttpDebugLog } from "@/lib/debug/http-log";
+import { Logger } from "@/lib/debug/logger";
 import type { AuthTokenResponse } from "@/lib/auth/tokens";
 import type { Session } from "@/lib/auth/session";
 
@@ -23,13 +23,13 @@ export function isAccessExpired(session: Session): boolean {
 }
 
 export async function refreshSession(refreshToken: string): Promise<Session | null> {
-  const apiUrl = process.env.BASE_API_URL;
-  if (!apiUrl) return null;
+  const BASE_API_URL = process.env.BASE_API_URL;
+  if (!BASE_API_URL) return null;
 
   const path = "/api/v1/auth/refresh-token";
-  const url = `${apiUrl}${path}`;
+  const url = `${BASE_API_URL}${path}`;
 
-  const debug = startHttpDebugLog("POST", path);
+  const debug = Logger("POST", path);
 
   try {
     const response = await axios.post<AuthTokenResponse>(
