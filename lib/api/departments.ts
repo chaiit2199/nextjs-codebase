@@ -16,7 +16,7 @@ export type { CreateDepartmentInput, UpdateDepartmentInput };
 export async function createDepartment(payload: CreateDepartmentInput) {
   return runServerAction(createDepartmentSchema, payload, "Không thể tạo phòng ban", async (input) => {
     await client.post("/api/v1/departments", input);
-    revalidatePath("/departments");
+    revalidatePath("/department");
     return { ok: true as const };
   });
 }
@@ -25,7 +25,7 @@ export async function updateDepartment(payload: UpdateDepartmentInput) {
   return runServerAction(updateDepartmentSchema, payload, "Không thể cập nhật phòng ban", async (input) => {
     const { id, ...body } = input;
     await client.patch(`/api/v1/departments/${id}`, body);
-    revalidatePath("/departments");
+    revalidatePath("/department");
     return { ok: true as const };
   });
 }

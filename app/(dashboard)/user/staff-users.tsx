@@ -23,7 +23,7 @@ export function StaffUsers({ users, departments, roles }: {
       : users;
 
     useEffect(() => {
-        return subscribeHeaderAction("/users", (detail) => {
+        return subscribeHeaderAction("/user", (detail) => {
           if (detail.action === "create") setIsCreateOpen(true);
           if (detail.action === "search") setSearch(detail.query ?? "");
         });

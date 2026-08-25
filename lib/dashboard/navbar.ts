@@ -73,10 +73,10 @@ export const MENU: Navbar[] = [
     ],
   },
   {
-    id: "orders",
+    id: "order",
     resource: "order",
     label: "Quản lý đơn hàng",
-    href: "/orders",
+    href: "/order",
     icon: "hero-clipboard-document-list",
     title: "Quản lý đơn hàng",
     create: true,
@@ -121,7 +121,7 @@ export const MENU: Navbar[] = [
       {
         id: "departments",
         label: "Phòng ban",
-        href: "/departments",
+        href: "/department",
         icon: "hero-user-group",
         title: "Phòng ban",
         create: true,

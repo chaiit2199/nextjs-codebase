@@ -6,7 +6,7 @@ import { getDepartments } from "@/lib/api/me";
 import { DepartmentsComponent } from "@/components/departments/departments_component";
 import { pageMetadata } from "@/lib/dashboard/navbar";
 
-export const metadata: Metadata = pageMetadata("/departments");
+export const metadata: Metadata = pageMetadata("/department"); 
 
 export default function DepartmentsPage() {
   return (

@@ -11,7 +11,7 @@ export function DepartmentsComponent({ departments }: { departments: Department[
   const [isCreateOpen, setIsCreateOpen] = useState(false);
 
   useEffect(() => {
-    return subscribeHeaderAction("/departments", (detail) => {
+    return subscribeHeaderAction("/department", (detail) => {
       if (detail.action === "create") setIsCreateOpen(true);
     });
   }, []);

@@ -6,5 +6,5 @@ import { pageMetadata } from "@/lib/dashboard/navbar";
 export const metadata: Metadata = pageMetadata("/agents");
 
 export default function Page() {
-  return <WipPage id="agents-main" />;
+  return <WipPage id="agency-main" />;
 }

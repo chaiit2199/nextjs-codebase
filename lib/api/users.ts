@@ -21,8 +21,9 @@ export type { CreateUserInput, UpdateUserInput, ChangePasswordInput, AssignUserA
 
 export async function createUser(payload: CreateUserInput) {
   return runServerAction(createUserSchema, payload, "Không thể tạo nhân viên", async (input) => {
-    await client.post("/api/v1/users", input, { params: { status: 1 } });
-    revalidatePath("/users");
+    console.log(input);
+    await client.post("/api/v1/users", input);
+    revalidatePath("/user");
     return { ok: true as const };
   });
 }
@@ -38,7 +39,7 @@ export async function updateUser(payload: UpdateUserInput) {
   return runServerAction(updateUserSchema, payload, "Không thể cập nhật nhân viên", async (input) => {
     const { id, ...body } = input;
     await client.patch(`/api/v1/users/${id}`, body);
-    revalidatePath("/users");
+    revalidatePath("/user");
     return { ok: true as const };
   });
 }
