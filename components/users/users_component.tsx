@@ -174,6 +174,14 @@ export function UsersComponent({ departments, search }: { departments: Departmen
                 ) : (
                 <div className="overview-table-wrap">
                     <table className="overview-table" id="users-table">
+                        <colgroup>
+                            <col style={{ width: "28%" }} />
+                            <col style={{ width: "12rem" }} />
+                            <col style={{ width: "16%" }} />
+                            <col style={{ width: "14%" }} />
+                            <col />
+                            <col style={{ width: "3rem" }} />
+                        </colgroup>
                         <thead>
                             <tr>
                                 <th>Tên</th>
