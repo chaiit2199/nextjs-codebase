@@ -11,7 +11,7 @@ export type TabItem = {
 };
 
 export type TabProps<T extends TabItem = TabItem> = {
-  tabs: T[];
+  tabs: readonly T[];
   activeTab?: T["value"];
   onTabClick?: (tab: T) => void;
   /** Map tab → value (default: `tab.value`). */

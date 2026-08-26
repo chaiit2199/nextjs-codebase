@@ -81,16 +81,5 @@ export function recordStatusMeta(status?: number) {
 /** @deprecated Dùng recordStatusMeta — giữ alias cho component user. */
 export const userStatusMeta = recordStatusMeta;
 
-/** Role API trả status dạng chuỗi ACTIVE / INACTIVE. */
-export const RoleStatus = {
-  Active: "ACTIVE",
-  Inactive: "INACTIVE",
-  WaitingForApproval: "WAITING_FOR_APPROVAL",
-} as const;
-
-export function roleStatusMeta(status?: string) {
-  if (status === RoleStatus.Active) return RECORD_STATUS_META[UserStatus.Active];
-  if (status === RoleStatus.Inactive) return RECORD_STATUS_META[UserStatus.Inactive];
-  if (status === RoleStatus.WaitingForApproval) return RECORD_STATUS_META[UserStatus.WaitingForApproval];
-  return UNKNOWN_STATUS;
-}
+/** Role dùng cùng 0/1/2/3 với user & department. */
+export const roleStatusMeta = recordStatusMeta;

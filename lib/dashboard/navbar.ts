@@ -135,6 +135,7 @@ export const MENU: Navbar[] = [
         icon: "hero-shield-check",
         title: "Nhóm quyền",
         create: true,
+        search: true,
         view: true,
       },
       {

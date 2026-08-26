@@ -11,9 +11,16 @@ import {
 } from "@/lib/validate/roles";
 import { runServerAction } from "@/lib/server-actions";
 import { client, HttpError } from "@/lib/http/client";
-import type { RolePermissionsResponse, ScopeTarget, ScopeTargetsResponse } from "@/lib/api/types";
+import type { RolePermissionsResponse, RolesResponse, ScopeTarget, ScopeTargetsResponse } from "@/lib/api/types";
 
 export type { CreateRoleInput, UpdateRoleInput };
+
+export type FilterRolesParams = {
+  search?: string;
+  status?: number | "ALL";
+  page?: number;
+  page_size?: number;
+};
 
 const SCOPE_TARGET_PATHS: Record<string, string> = {
   WAREHOUSE: "warehouses",
@@ -59,5 +66,10 @@ export async function fetchScopeTargets(scopeType: string): Promise<ScopeTarget[
     if (error instanceof HttpError && error.status === 404) return [];
     throw error;
   }
+}
+
+export async function filterRoles(params: FilterRolesParams = {}) {
+  const response = await client.get<RolesResponse>("/api/v1/roles", { params });
+  return { ok: true as const, data: response.data, meta: response.meta };
 }
  

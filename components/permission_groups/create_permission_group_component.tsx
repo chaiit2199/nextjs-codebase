@@ -84,9 +84,11 @@ function ScopeField({
 
 export function CreatePermissionGroupComponent({
   onClose,
+  onCreated,
   scopeTypes,
 }: {
   onClose: () => void;
+  onCreated?: () => void;
   scopeTypes: ScopeType[];
 }) {
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
@@ -147,6 +149,7 @@ export function CreatePermissionGroupComponent({
     }
 
     onClose();
+    onCreated?.();
     putFlash("success", "Tạo mới nhóm quyền thành công.", 1500);
   }
 

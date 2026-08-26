@@ -34,7 +34,7 @@ export type Role = {
   id: number;
   code: string;
   name: string;
-  status: string;
+  status: number;
   version: number;
   description: string;
   is_system: boolean;
