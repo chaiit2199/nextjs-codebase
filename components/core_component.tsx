@@ -4,6 +4,9 @@ import { createContext, useContext, useEffect, useId, useRef, useState } from "r
 import { createPortal } from "react-dom";
 
 export { Input, type InputProps } from "@/components/input";
+export { Tab, type TabItem, type TabProps } from "@/components/tab";
+export { EmptyData } from "@/components/empty_data";
+export { Pagination, type PaginationProps } from "@/components/pagination";
 
 export type ModalCloseable = true | false | "close_button";
 

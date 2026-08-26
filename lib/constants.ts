@@ -31,6 +31,7 @@ export const ORDER_SERIES = [
 export enum UserStatus {
   Active = 1,
   Inactive = 0,
+  WaitingForApproval = 2,
 }
 
 export type RecordStatus = UserStatus.Active | UserStatus.Inactive;
@@ -38,6 +39,7 @@ export type RecordStatus = UserStatus.Active | UserStatus.Inactive;
 const RECORD_STATUS_META = {
   [UserStatus.Active]: { kind: "active", label: "Đang hoạt động" },
   [UserStatus.Inactive]: { kind: "paused", label: "Ngưng hoạt động" },
+  [UserStatus.WaitingForApproval]: { kind: "waiting_for_approval", label: "Chờ phê duyệt" },
 } as const;
 
 const UNKNOWN_STATUS = { kind: "new", label: "—" } as const;
@@ -45,7 +47,16 @@ const UNKNOWN_STATUS = { kind: "new", label: "—" } as const;
 export const RECORD_STATUS_OPTIONS = [
   { value: UserStatus.Active, label: RECORD_STATUS_META[UserStatus.Active].label },
   { value: UserStatus.Inactive, label: RECORD_STATUS_META[UserStatus.Inactive].label },
+  { value: UserStatus.WaitingForApproval, label: RECORD_STATUS_META[UserStatus.WaitingForApproval].label },
 ] as const;
+
+/** Tabs filter danh sách user: Tất cả + các status trong RECORD_STATUS_OPTIONS. */
+export const USER_STATUS_TABS = [
+  { value: "all" as const, label: "Tất cả" },
+  ...RECORD_STATUS_OPTIONS,
+];
+
+export type UserStatusTabValue = (typeof USER_STATUS_TABS)[number]["value"];
 
 export function isRecordStatus(value: number): value is RecordStatus {
   return value === UserStatus.Active || value === UserStatus.Inactive;
@@ -57,7 +68,7 @@ export function readFormStatus(data: FormData, field = "status"): RecordStatus |
 }
 
 export function recordStatusMeta(status?: number) {
-  if (status === UserStatus.Active || status === UserStatus.Inactive) {
+  if (status === UserStatus.Active || status === UserStatus.Inactive || status === UserStatus.WaitingForApproval) {
     return RECORD_STATUS_META[status];
   }
 
@@ -71,10 +82,12 @@ export const userStatusMeta = recordStatusMeta;
 export const RoleStatus = {
   Active: "ACTIVE",
   Inactive: "INACTIVE",
+  WaitingForApproval: "WAITING_FOR_APPROVAL",
 } as const;
 
 export function roleStatusMeta(status?: string) {
   if (status === RoleStatus.Active) return RECORD_STATUS_META[UserStatus.Active];
   if (status === RoleStatus.Inactive) return RECORD_STATUS_META[UserStatus.Inactive];
+  if (status === RoleStatus.WaitingForApproval) return RECORD_STATUS_META[UserStatus.WaitingForApproval];
   return UNKNOWN_STATUS;
 }

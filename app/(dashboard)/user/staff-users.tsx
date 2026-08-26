@@ -2,26 +2,17 @@
 
 import { useEffect, useState } from "react";
 
-import type { Department, ShortRole, User } from "@/lib/api/me";
+import type { Department, User } from "@/lib/api/me";
 import { UsersComponent } from "@/components/users/users_component";
 import { subscribeHeaderAction } from "@/lib/dashboard/header-actions";
 import { CreateUserComponent } from "@/components/users/create_user_component";
 
-export function StaffUsers({ users, departments, roles }: {
-  users: User[];
+export function StaffUsers({ departments }: {
   departments: Department[];
-  roles: ShortRole[];
 }) {
     const [search, setSearch] = useState("");
-    const [isCreateOpen, setIsCreateOpen] = useState(false);
-
-    const q = search.trim().toLowerCase();
-    const filteredUsers = q
-      ? users.filter((user) =>
-          [user.full_name, user.username, user.phone, user.email, user.department?.name]
-            .join(" ").toLowerCase().includes(q))
-      : users;
-
+    const [isCreateOpen, setIsCreateOpen] = useState(false); 
+ 
     useEffect(() => {
         return subscribeHeaderAction("/user", (detail) => {
           if (detail.action === "create") setIsCreateOpen(true);
@@ -31,11 +22,10 @@ export function StaffUsers({ users, departments, roles }: {
 
   return (
     <>
-        <UsersComponent users={filteredUsers} departments={departments} />
+        <UsersComponent search={search} departments={departments} />
             {isCreateOpen && (
                 <CreateUserComponent
                 departments={departments}
-                roles={roles}
                 onClose={() => setIsCreateOpen(false)}
             />
         )}

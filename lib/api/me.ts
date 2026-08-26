@@ -75,5 +75,3 @@ export const getPermissions = cache(() =>
 export const getCurrentUserPermissions = cache(() =>
   redirectOnUnauthorized(async () => (await client.get<MeAccessResponse>("/api/v1/me/access")).data),
 );
-
-

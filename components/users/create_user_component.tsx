@@ -2,11 +2,11 @@
 
 import { useState, type FormEvent } from "react";
 
-import type { Department, ShortRole } from "@/lib/api/me";
+import type { Department } from "@/lib/api/me";
 import { Input, Modal } from "@/components/core_component";
-import { readFormStatus, UserStatus } from "@/lib/constants";
+import { readFormStatus } from "@/lib/constants";
 import { FormSubmitButton } from "@/components/form-submit-button";
-import { RequiredLabel, RecordStatusSelectField, SelectField } from "@/components/form-fields";
+import { RequiredLabel, SelectField } from "@/components/form-fields";
 import { createUser, type CreateUserInput } from "@/lib/api/users";
 import { PASSWORD_MIN_LENGTH } from "@/lib/auth/password";
 import { putFlash } from "@/lib/flash/flash";
@@ -43,11 +43,9 @@ function readCreateForm(data: FormData): CreateUserInput | null {
 
 export function CreateUserComponent({
   departments,
-  roles,
   onClose,
 }: {
   departments: Department[];
-  roles: ShortRole[];
   onClose: () => void;
 }) {
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
@@ -133,28 +131,7 @@ export function CreateUserComponent({
               label={<RequiredLabel>Email</RequiredLabel>}
               placeholder="Email"
               required
-            />
-            <RecordStatusSelectField
-              id="create-user-status"
-              label={<RequiredLabel>Trạng thái</RequiredLabel>}
-              defaultValue={UserStatus.Active}
-            />
-            <SelectField
-              id="create-user-role"
-              name="role_id"
-              label={<RequiredLabel>Vai trò</RequiredLabel>}
-              defaultValue=""
-              required
-            >
-              <option value="" disabled>
-                Chọn vai trò
-              </option>
-              {roles.map((role) => (
-                <option key={role.id} value={role.id}>
-                  {role.name}
-                </option>
-              ))}
-            </SelectField>
+            /> 
             <SelectField
               id="create-user-department"
               name="department_id"

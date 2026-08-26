@@ -26,7 +26,7 @@
 .core_input:disabled,
 input.core_input:read-only,
 textarea.core_input:read-only {
-  cursor: not-allowed;
+  pointer-events: none;
   background: var(--theme-primary-border);
 }
 

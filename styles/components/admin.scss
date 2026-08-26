@@ -158,6 +158,11 @@
   color: #475569;
 }
 
+.admin-status--waiting_for_approval {
+  background: #3730A3;
+  color: #fff;
+}
+
 .admin-actions {
   display: flex;
   align-items: center;
@@ -283,11 +288,6 @@
   border-color: var(--dash-border, #262c3a);
   background: var(--dash-surface, #141820);
   color: var(--dash-text, #f3f4f6);
-}
-
-.admin-modal .login-field__input:focus {
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgb(59 130 246 / 0.18);
 }
 
 @media (max-width: 767px) {

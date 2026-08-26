@@ -15,7 +15,14 @@ import {
 import { runServerAction } from "@/lib/server-actions";
 import { client } from "@/lib/http/client";
 import { requireCurrentUser } from "@/lib/api/me";
-import type { UserAccessResponse } from "@/lib/api/types";
+import type { UserAccessResponse, UsersResponse } from "@/lib/api/types";
+
+export type FilterUsersParams = {
+  search?: string;
+  status?: number;
+  page?: number;
+  page_size?: number;
+};
 
 export type { CreateUserInput, UpdateUserInput, ChangePasswordInput, AssignUserAccessInput };
 
@@ -56,4 +63,9 @@ export async function assignUserAccess(payload: AssignUserAccessInput) {
 
 export async function fetchUserAccess(userId: number) {
   return (await client.get<UserAccessResponse>(`/api/v1/users/${userId}/access`)).data;
+}
+
+export async function filterUsers(params: FilterUsersParams = {}) {
+  const response = await client.get<UsersResponse>("/api/v1/users", { params });
+  return { ok: true as const, data: response.data, meta: response.meta };
 }

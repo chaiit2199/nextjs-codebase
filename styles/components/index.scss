@@ -5,6 +5,16 @@
   }
 }
 
+input,
+select,
+textarea {
+  &:focus,
+  &:focus-visible {
+    outline: none;
+    box-shadow: none;
+  }
+}
+
 @import "./dropdown.scss";
 @import "./header.scss";
 @import "./login.scss";
@@ -15,4 +25,7 @@
 @import "./admin.scss";
 @import "./authorization.scss";
 @import "./modal.scss";
+@import "./tab.scss";
+@import "./empty.scss";
+@import "./pagination.scss";
 @import "./flash.scss";

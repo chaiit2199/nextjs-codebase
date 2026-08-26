@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 
 import { Dashboard, TableSkeleton } from "@/components/dashboard";
-import { getDepartments, getShortRoles, getUsers } from "@/lib/api/me";
+import { getDepartments } from "@/lib/api/me";
 import { pageMetadata } from "@/lib/dashboard/navbar";
 import { StaffUsers } from "./staff-users";
 
@@ -19,11 +19,7 @@ export default function StaffPage() {
 }
 
 async function StaffData() {
-  const [users, departments, roles] = await Promise.all([
-    getUsers(),
-    getDepartments(),
-    getShortRoles(),
-  ]);
+  const departments = await getDepartments();
 
-  return <StaffUsers users={users} departments={departments} roles={roles} />;
+  return <StaffUsers departments={departments} />;
 }

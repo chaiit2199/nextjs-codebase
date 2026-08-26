@@ -1,15 +1,16 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useState, useEffect, type FormEvent } from "react";
 
+import { Tab } from "@/components/tab";
 import type { Department, User } from "@/lib/api/me";
 import { UserAvatar } from "@/components/user-components";
 import { Icon } from "@/components/icon";
-import { UserStatus, readFormStatus, userStatusMeta } from "@/lib/constants";
+import { USER_STATUS_TABS, UserStatus, type UserStatusTabValue, readFormStatus, userStatusMeta } from "@/lib/constants";
 import { FormSubmitButton } from "@/components/form-submit-button";
 import { RequiredLabel, RecordStatusSelectField, SelectField } from "@/components/form-fields";
-import { Input, Modal } from "@/components/core_component";
-import { updateUser } from "@/lib/api/users";
+import { Input, Modal, EmptyData, Pagination } from "@/components/core_component";
+import { filterUsers, updateUser } from "@/lib/api/users";
 import { putFlash } from "@/lib/flash/flash";
 
 type UpdateUserEntity = {
@@ -42,11 +43,42 @@ function readUpdateForm(data: FormData): UpdateUserEntity {
     return formValues;
 }
 
-export function UsersComponent({ users, departments }: { users: User[]; departments: Department[]}) {
+export function UsersComponent({ departments, search }: { departments: Department[]; search: string }) {
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [isConfirmOpen, setIsConfirmOpen] = useState(false);
     const [payload, setPayload] = useState<UpdateUserEntity | null>(null);
+    const [activeTab, setActiveTab] = useState<UserStatusTabValue>("all");
+    const [page, setPage] = useState(1);
+    const [pageSize, setPageSize] = useState(20);
+    const [totalPages, setTotalPages] = useState(1);
+    const [users, setUsers] = useState<User[]>([]);
+
+    useEffect(() => {
+        setPage(1);
+    }, [search]);
+
+    useEffect(() => {
+        let cancelled = false;
+
+        filterUsers({
+            search: search.trim() || undefined,
+            status: activeTab === "all" ? undefined : Number(activeTab),
+            page,
+            page_size: pageSize,
+        }).then((result) => {
+            if (cancelled || !result.ok) return;
+            setUsers(result.data);
+            const total = result.meta?.total ?? result.data.length;
+            const size = result.meta?.page_size ?? pageSize;
+            setTotalPages(Math.max(1, Math.ceil(total / size)));
+        });
+
+        return () => {
+            cancelled = true;
+        };
+    }, [search, activeTab, page, pageSize]);
+
 
     function openEditForm(user: User) {
         setSelectedUser(user);
@@ -90,6 +122,22 @@ export function UsersComponent({ users, departments }: { users: User[]; departme
         <>
         <section className="admin-section" id="admin-users-section">
             <div className="admin-table-card mb-6">
+            {/* Tab */}
+                <Tab
+                    tabs={USER_STATUS_TABS}
+                    activeTab={activeTab}
+                    onTabClick={(tab) => {
+                        setActiveTab(tab.value);
+                        setPage(1);
+                    }}
+                />
+
+                {users.length === 0 ? (
+                    <EmptyData
+                        title="Không có nhân viên"
+                        description="Thử đổi bộ lọc hoặc từ khóa tìm kiếm."
+                    />
+                ) : (
                 <div className="overview-table-wrap">
                     <table className="overview-table" id="users-table">
                         <thead>
@@ -133,6 +181,17 @@ export function UsersComponent({ users, departments }: { users: User[]; departme
                         </tbody>
                     </table>
                 </div>
+                )}
+                <Pagination
+                    currentPage={page}
+                    totalPages={totalPages}
+                    pageSize={pageSize}
+                    onPageChange={setPage}
+                    onPageSizeChange={(size) => {
+                        setPageSize(size);
+                        setPage(1);
+                    }}
+                />
             </div>
         </section>
 
