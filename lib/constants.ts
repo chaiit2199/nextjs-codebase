@@ -40,7 +40,7 @@ export type RecordStatus = UserStatus.Active | UserStatus.Inactive | UserStatus.
 const RECORD_STATUS_META = {
   [UserStatus.Active]: { kind: "active", label: "Đang hoạt động" },
   [UserStatus.Inactive]: { kind: "paused", label: "Ngưng hoạt động" },
-  [UserStatus.WaitingForApproval]: { kind: "waiting_for_approval", label: "Chờ phê duyệt" },
+  [UserStatus.WaitingForApproval]: { kind: "waiting-for-approval", label: "Chờ phê duyệt" },
   [UserStatus.Rejected]: { kind: "rejected", label: "Từ chối" },
 } as const;
 

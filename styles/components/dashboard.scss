@@ -428,6 +428,10 @@ $sidebar-label-delay: 0.15s;
   line-height: 1;
   letter-spacing: 0.02em;
   user-select: none;
+  width: 2.5rem;
+  height: 2.5rem;
+  min-width: 2.5rem;
+  min-height: 2.5rem;
 }
 
 .profile__meta {
@@ -479,13 +483,6 @@ $sidebar-label-delay: 0.15s;
   display: inline-flex;
   margin: 0;
 }
-
-.user-avatar--md {
-  width: 2.5rem;
-  height: 2.5rem;
-  min-width: 2.5rem;
-  min-height: 2.5rem;
-} 
 
 .profile .user-avatar,
 .profile__avatar {

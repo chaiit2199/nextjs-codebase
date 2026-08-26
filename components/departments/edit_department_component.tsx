@@ -99,7 +99,7 @@ export function EditDepartmentComponent({ departments }: { departments: Departme
                       <td className="overview-table__muted">{department.code}</td>
                       <td>{department.name}</td>
                       <td>
-                        <span className={`admin-status admin-status--${meta.kind}`}>{meta.label}</span>
+                        <span className={`status status--${meta.kind}`}>{meta.label}</span>
                       </td>
                       <td className="actions bg-transparent">
                         <div className="admin-actions">

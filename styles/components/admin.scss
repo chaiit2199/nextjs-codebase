@@ -133,39 +133,32 @@
   color: var(--dash-text, #0f172a);
 }
 
-.admin-status {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.25rem 0.65rem;
-  border-radius: 0.375rem;
-  font-size: 0.75rem;
-  font-weight: 600;
-  white-space: nowrap;
+.admin-user__email {
+  @apply text-theme-muted;
 }
 
-.admin-status--active {
-  background: #d1fae5;
-  color: #065f46;
-}
+.status {
+  @apply inline-flex items-center rounded-lg border px-3 py-1 text-sm font-medium;
 
-.admin-status--paused {
-  background: #fef3c7;
-  color: #92400e;
-}
+  &--active {
+    @apply border-emerald-200 bg-emerald-50 text-emerald-700;
+  }
 
-.admin-status--new {
-  background: #e2e8f0;
-  color: #475569;
-}
+  &--paused {
+    @apply border-slate-200 bg-slate-100 text-slate-600;
+  }
 
-.admin-status--waiting_for_approval {
-  background: #3730a3;
-  color: #fff;
-}
+  &--waiting-for-approval {
+    @apply border-amber-200 bg-amber-50 text-amber-700;
+  }
 
-.admin-status--rejected {
-  background: #fee2e2;
-  color: #991b1b;
+  &--rejected {
+    @apply border-rose-200 bg-rose-50 text-rose-700;
+  }
+
+  &--new {
+    @apply border-slate-200 bg-slate-100 text-slate-600;
+  }
 }
 
 .admin-actions {

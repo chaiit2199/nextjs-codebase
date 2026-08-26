@@ -177,10 +177,10 @@ export function UsersComponent({ departments, search }: { departments: Departmen
                         <thead>
                             <tr>
                                 <th>Tên</th>
+                                <th>Trạng thái</th>
                                 <th>Tên đăng nhập</th>
                                 <th>Số điện thoại</th>
                                 <th>Phòng ban</th>
-                                <th>Trạng thái</th>
                                 <th className="actions" />
                             </tr>
                         </thead>
@@ -190,15 +190,19 @@ export function UsersComponent({ departments, search }: { departments: Departmen
                                     <td>
                                     <div className="admin-user">
                                         <UserAvatar fullname={user.full_name} />
-                                        <p className="admin-user__name">{user.full_name}</p>
+                                        <div>
+                                            <p className="admin-user__name mb-1">{user.full_name}</p>
+                                            <p className="admin-user__email">{user.email}</p>    
+                                        </div>    
                                     </div>
+                                    </td>
+                                    <td>
+                                        <UserStatusBadge status={user.status} />
                                     </td>
                                     <td className="overview-table__muted">{user.username}</td>
                                     <td className="overview-table__muted">{user.phone}</td>
                                     <td className="overview-table__muted">{user.department?.name ?? "—"}</td>
-                                    <td>
-                                        <UserStatusBadge status={user.status} />
-                                    </td>
+                                    
                                     <td className="actions bg-transparent">
                                         <div className="admin-actions">
                                             <button
@@ -367,7 +371,7 @@ function UserStatusBadge({ status }: { status?: number }) {
     const meta = userStatusMeta(status);
 
     return (
-        <span className={`admin-status admin-status--${meta.kind}`}>
+        <span className={`status status--${meta.kind}`}>
         {meta.label}
         </span>
     );

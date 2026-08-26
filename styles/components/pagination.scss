@@ -1,10 +1,5 @@
 .core_paginator {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem 1.25rem;
-  margin-top: 1.25rem;
+  @apply flex flex-wrap items-center justify-between gap-3 border-t border-theme-primary-border pt-6; 
 }
 
 .core_paginator__size {

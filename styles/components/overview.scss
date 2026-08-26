@@ -428,17 +428,19 @@
   width: 100%;
   border-collapse: collapse;
 
+ 
+
   th {
-    padding: 0.85rem 0.5rem;
+    @apply text-sm font-medium text-theme-muted bg-theme-primary-border; 
+    @apply p-2;
     text-align: left;
-    font-size: 0.75rem;
-    font-weight: 600;
-    letter-spacing: 0.02em;
-    text-transform: uppercase;
-    color: var(--ov-muted, #9197b3);
-    border-bottom: 1px solid var(--theme-primary-border, #eef0f4);
-    white-space: nowrap;
-    vertical-align: top; 
+
+    &:first-child {
+      @apply rounded-tl-lg rounded-bl-lg;
+    }
+    &:last-child {
+      @apply rounded-tr-lg rounded-br-lg;
+    }
 
     &.is-num {
       text-align: right;
@@ -471,6 +473,16 @@
     &.is-center {
       text-align: center;
     }
+
+    &.actions {
+      position: sticky;
+      right: 0;
+      z-index: 1;
+  
+      &:not(.bg-transparent) {
+        background: #fff;
+      }
+    }
   }
 
   tbody tr {
@@ -483,17 +495,7 @@
 
   tbody tr:last-child td {
     border-bottom: 0;
-  }
-
-  .actions {
-    position: sticky;
-    right: 0;
-    z-index: 1;
-
-    &:not(.bg-transparent) {
-      background: #fff;
-    }
-  }
+  } 
 }
 
 .overview-table__code {

@@ -1,20 +1,17 @@
 import { getColor, getInitials, roleLabel } from "@/components/users/avatar";
 
-export type UserAvatarSize = "sm" | "md" | "lg";
-
 export type UserAvatarProps = {
   fullname: string;
   className?: string;
-  size?: UserAvatarSize;
 };
 
-export function UserAvatar({ fullname, className, size = "md" }: UserAvatarProps) {
+export function UserAvatar({ fullname, className }: UserAvatarProps) {
   const initials = getInitials(fullname);
   const background = getColor(fullname);
 
   return (
     <span
-      className={["user-avatar", `user-avatar--${size}`, className].filter(Boolean).join(" ")}
+      className={["user-avatar", className].filter(Boolean).join(" ")}
       style={{ backgroundColor: background, ["--avatar-bg" as string]: background }}
       title={fullname}
       aria-hidden="true"
