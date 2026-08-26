@@ -5,7 +5,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import type { Department } from "@/lib/api/me";
 import { Icon } from "@/components/icon";
 import { Tab } from "@/components/tab";
-import { Input, Modal, EmptyData, Pagination } from "@/components/core_component";
+import { Input, Modal, EmptyData, Pagination, TableLoading } from "@/components/core_component";
 import { FormSubmitButton } from "@/components/form-submit-button";
 import { RequiredLabel } from "@/components/form-fields";
 import {
@@ -69,7 +69,7 @@ export function EditDepartmentComponent({
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
   const [totalPages, setTotalPages] = useState(1);
-  const [departments, setDepartments] = useState<Department[]>([]);
+  const [departments, setDepartments] = useState<Department[] | null>(null);
   const canEdit = selectedDepartment?.status === UserStatus.Active;
   const isPendingApproval = selectedDepartment?.status === UserStatus.WaitingForApproval;
 
@@ -165,7 +165,9 @@ export function EditDepartmentComponent({
             }}
           />
 
-          {departments.length === 0 ? (
+          {departments === null ? (
+            <TableLoading />
+          ) : departments.length === 0 ? (
             <EmptyData
               title="Không có phòng ban"
               description="Thử đổi bộ lọc hoặc từ khóa tìm kiếm."

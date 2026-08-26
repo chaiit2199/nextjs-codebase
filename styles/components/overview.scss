@@ -421,7 +421,8 @@
 }
 
 .overview-table-wrap {
-  @apply min-h-100 overflow-x-auto;
+  @apply min-h-60 overflow-auto;
+  max-height: calc(100vh - 336px); 
 }
 
 .overview-table {

@@ -2,7 +2,7 @@
 
 import { useEffect, useState, type FormEvent } from "react";
 
-import { Input, Modal, EmptyData, Pagination } from "@/components/core_component";
+import { Input, Modal, EmptyData, Pagination, TableLoading } from "@/components/core_component";
 import { FormSubmitButton } from "@/components/form-submit-button";
 import { RequiredLabel } from "@/components/form-fields";
 import { Icon } from "@/components/icon";
@@ -28,7 +28,7 @@ export function PermissionGroupsComponent({
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
   const [totalPages, setTotalPages] = useState(1);
-  const [roles, setRoles] = useState<Role[]>([]);
+  const [roles, setRoles] = useState<Role[] | null>(null);
   const [reloadAt, setReloadAt] = useState(0);
 
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -145,7 +145,9 @@ export function PermissionGroupsComponent({
             }}
           />
 
-          {roles.length === 0 ? (
+          {roles === null ? (
+            <TableLoading />
+          ) : roles.length === 0 ? (
             <EmptyData title="Không có nhóm quyền" description="Thử đổi bộ lọc hoặc từ khóa tìm kiếm." />
           ) : (
             <div className="overview-table-wrap">

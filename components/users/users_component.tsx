@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, type FormEvent } from "react";
+import { useState, useEffect, useRef, type FormEvent } from "react";
 
 import { Tab } from "@/components/tab";
 import type { Department, User } from "@/lib/api/me";
@@ -9,7 +9,7 @@ import { Icon } from "@/components/icon";
 import { USER_STATUS_TABS, UserStatus, type UserStatusTabValue, readFormStatus, userStatusMeta } from "@/lib/constants";
 import { FormSubmitButton } from "@/components/form-submit-button";
 import { RequiredLabel, SelectField } from "@/components/form-fields";
-import { Input, Modal, EmptyData, Pagination } from "@/components/core_component";
+import { Input, Modal, EmptyData, Pagination, TableLoading } from "@/components/core_component";
 import { approveUser, filterUsers, rejectUser, updateUser } from "@/lib/api/users";
 import { putFlash } from "@/lib/flash/flash";
 
@@ -57,7 +57,17 @@ function readUpdateForm(data: FormData): UpdateUserEntity {
     return formValues;
 }
 
-export function UsersComponent({ departments, search }: { departments: Department[]; search: string }) {
+export function UsersComponent({
+    departments,
+    search,
+    initialUsers,
+    initialTotalPages = 1,
+}: {
+    departments: Department[];
+    search: string;
+    initialUsers: User[];
+    initialTotalPages?: number;
+}) {
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [isConfirmOpen, setIsConfirmOpen] = useState(false);
@@ -67,8 +77,9 @@ export function UsersComponent({ departments, search }: { departments: Departmen
     const [activeTab, setActiveTab] = useState<UserStatusTabValue>("all");
     const [page, setPage] = useState(1);
     const [pageSize, setPageSize] = useState(20);
-    const [totalPages, setTotalPages] = useState(1);
-    const [users, setUsers] = useState<User[]>([]);
+    const [totalPages, setTotalPages] = useState(initialTotalPages);
+    const [users, setUsers] = useState<User[] | null>(initialUsers);
+    const skipFirstFetch = useRef(true);
     const canEdit = selectedUser?.status === UserStatus.Active;
     const isPendingApproval = selectedUser?.status === UserStatus.WaitingForApproval;
 
@@ -77,6 +88,11 @@ export function UsersComponent({ departments, search }: { departments: Departmen
     }, [search]);
 
     useEffect(() => {
+        if (skipFirstFetch.current) {
+            skipFirstFetch.current = false;
+            return;
+        }
+
         let cancelled = false;
 
         filterUsers({
@@ -86,8 +102,8 @@ export function UsersComponent({ departments, search }: { departments: Departmen
             page_size: pageSize,
         }).then((result) => {
             if (cancelled || !result.ok) return;
-            setUsers(result.data);
-            const total = result.meta?.total ?? result.data.length;
+            setUsers(result.data ?? []);
+            const total = result.meta?.total ?? result.data?.length ?? 0;
             const size = result.meta?.page_size ?? pageSize;
             setTotalPages(Math.max(1, Math.ceil(total / size)));
         });
@@ -166,7 +182,9 @@ export function UsersComponent({ departments, search }: { departments: Departmen
                     }}
                 />
 
-                {users.length === 0 ? (
+                {users === null ? (
+                    <TableLoading />
+                ) : users.length === 0 ? (
                     <EmptyData
                         title="Không có nhân viên"
                         description="Thử đổi bộ lọc hoặc từ khóa tìm kiếm."
