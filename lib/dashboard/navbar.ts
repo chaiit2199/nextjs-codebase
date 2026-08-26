@@ -125,6 +125,7 @@ export const MENU: Navbar[] = [
         icon: "hero-user-group",
         title: "Phòng ban",
         create: true,
+        search: true,
         view: true,
       },
       {

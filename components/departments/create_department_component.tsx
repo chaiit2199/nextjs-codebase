@@ -17,13 +17,17 @@ function readCreateForm(data: FormData): CreateDepartmentInput | null {
   if (!code || !name) return null;
 
   const formValues: CreateDepartmentInput = { code, name };
-  const status = readFormStatus(data);
-  if (status !== undefined) formValues.status = status;
 
   return formValues;
 }
 
-export function CreateDepartmentComponent({ onClose }: { onClose: () => void }) {
+export function CreateDepartmentComponent({
+  onClose,
+  onCreated,
+}: {
+  onClose: () => void;
+  onCreated?: () => void;
+}) {
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [payload, setPayload] = useState<CreateDepartmentInput | null>(null);
 
@@ -48,6 +52,7 @@ export function CreateDepartmentComponent({ onClose }: { onClose: () => void }) 
     }
 
     onClose();
+    onCreated?.();
     putFlash("success", "Thêm phòng ban thành công", 1500);
   }
 
@@ -81,12 +86,7 @@ export function CreateDepartmentComponent({ onClose }: { onClose: () => void }) 
               label={<RequiredLabel>Tên phòng ban</RequiredLabel>}
               placeholder="Phòng kinh doanh"
               required
-            />
-            <RecordStatusSelectField
-              id="create-department-status"
-              label={<RequiredLabel>Trạng thái</RequiredLabel>}
-              defaultValue={UserStatus.Active}
-            />
+            /> 
           </div>
           <div className="core_modal__actions">
             <button type="button" className="core_button core_button--secondary" onClick={onClose}>

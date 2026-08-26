@@ -57,30 +57,8 @@ export function Tab<T extends TabItem>({
             .join(" ");
 
           return (
-            <li key={String(value)} className={itemClass} role="presentation">
-              {href && !tab.disabled ? (
-                <Link
-                  href={href}
-                  className="menu_tab__trigger"
-                  role="tab"
-                  aria-selected={isActive}
-                  tabIndex={isActive ? 0 : -1}
-                >
-                  {content}
-                </Link>
-              ) : (
-                <button
-                  type="button"
-                  className="menu_tab__trigger"
-                  role="tab"
-                  aria-selected={isActive}
-                  disabled={tab.disabled}
-                  tabIndex={isActive ? 0 : -1}
-                  onClick={() => onTabClick?.(tab)}
-                >
-                  {content}
-                </button>
-              )}
+            <li key={String(value)} className={itemClass} role="presentation" onClick={() => onTabClick?.(tab)}>
+              {content}
             </li>
           );
         })}
