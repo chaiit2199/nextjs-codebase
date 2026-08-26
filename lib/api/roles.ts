@@ -23,7 +23,7 @@ const SCOPE_TARGET_PATHS: Record<string, string> = {
 export async function createRole(payload: CreateRoleInput) {
   return runServerAction(createRoleSchema, payload, "Không thể tạo nhóm quyền", async (params) => {
     await client.post("/api/v1/roles", params);
-    revalidatePath("/permission-groups");
+    revalidatePath("/permission");
     return { ok: true as const };
   });
 }
@@ -37,7 +37,7 @@ export async function updateRole(payload: UpdateRoleInput) {
       upsert,
     });
     
-    revalidatePath("/permission-groups");
+    revalidatePath("/permission");
     return { ok: true as const };
   });
 }

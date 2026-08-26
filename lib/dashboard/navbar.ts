@@ -129,9 +129,9 @@ export const MENU: Navbar[] = [
         view: true,
       },
       {
-        id: "permission-groups",
+        id: "permission",
         label: "Nhóm quyền",
-        href: "/permission-groups",
+        href: "/permission",
         icon: "hero-shield-check",
         title: "Nhóm quyền",
         create: true,

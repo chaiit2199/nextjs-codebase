@@ -87,7 +87,7 @@ export function PermissionGroupsComponent({
   }
 
   useEffect(() => {
-    return subscribeHeaderAction("/permission-groups", (detail) => {
+    return subscribeHeaderAction("/permission", (detail) => {
       if (detail.action === "create") setIsCreateOpen(true);
     });
   }, []);
@@ -97,10 +97,10 @@ export function PermissionGroupsComponent({
       {isCreateOpen && (
         <CreatePermissionGroupComponent onClose={() => setIsCreateOpen(false)} scopeTypes={scopeTypes} />
       )}
-      <section className="admin-section" id="admin-permission-groups-section">
+      <section className="admin-section" id="admin-permission-section">
         <div className="admin-table-card mb-6">
           <div className="overview-table-wrap">
-            <table className="overview-table" id="permission-groups-table">
+            <table className="overview-table" id="permission-table">
               <thead>
                 <tr>
                   <th>Tên nhóm quyền</th>

@@ -173,13 +173,15 @@ export function UsersComponent({ departments, search }: { departments: Departmen
                     />
                 ) : (
                 <div className="overview-table-wrap">
-                    <table className="overview-table" id="users-table">
+                    <table className="overview-table min-w-[1400px]" id="users-table">
                         <colgroup>
-                            <col style={{ width: "28%" }} />
+                            <col style={{ width: "8%" }} />
                             <col style={{ width: "12rem" }} />
+                            <col style={{ width: "12%" }} />
+                            <col style={{ width: "10rem" }} />
                             <col style={{ width: "16%" }} />
-                            <col style={{ width: "14%" }} />
-                            <col />
+                            <col style={{ width: "12rem" }} />
+                            <col style={{ width: "12rem" }} />
                             <col style={{ width: "3rem" }} />
                         </colgroup>
                         <thead>
@@ -189,6 +191,8 @@ export function UsersComponent({ departments, search }: { departments: Departmen
                                 <th>Tên đăng nhập</th>
                                 <th>Số điện thoại</th>
                                 <th>Phòng ban</th>
+                                <th>Ngày tạo</th>
+                                <th>Ngày hiệu lực</th>
                                 <th className="actions" />
                             </tr>
                         </thead>
@@ -210,8 +214,9 @@ export function UsersComponent({ departments, search }: { departments: Departmen
                                     <td className="overview-table__muted">{user.username}</td>
                                     <td className="overview-table__muted">{user.phone}</td>
                                     <td className="overview-table__muted">{user.department?.name ?? "—"}</td>
-                                    
-                                    <td className="actions bg-transparent">
+                                    <td>dd/mm/yyyy</td>
+                                    <td>dd/mm/yyyy</td>
+                                    <td className="actions">
                                         <div className="admin-actions">
                                             <button
                                             type="button"
