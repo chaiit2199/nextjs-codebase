@@ -29,7 +29,6 @@ export type { CreateUserInput, UpdateUserInput, ChangePasswordInput, AssignUserA
 
 export async function createUser(payload: CreateUserInput) {
   return runServerAction(createUserSchema, payload, "Không thể tạo nhân viên", async (input) => {
-    console.log(input);
     await client.post("/api/v1/users", input);
     revalidatePath("/user");
     return { ok: true as const };
