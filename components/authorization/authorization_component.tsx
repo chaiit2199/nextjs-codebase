@@ -2,13 +2,23 @@
 
 import { useEffect, useState } from "react";
 
+import { EmptyData, Pagination } from "@/components/core_component";
 import { Icon } from "@/components/icon";
+import { Tab } from "@/components/tab";
 import { UserAvatar } from "@/components/user-components";
+import { filterUsers } from "@/lib/api/users";
 import type { Role, User } from "@/lib/api/types";
+import { USER_STATUS_TABS, type UserStatusTabValue, userStatusMeta } from "@/lib/constants";
 import { subscribeHeaderAction } from "@/lib/dashboard/header-actions";
 import { AssignRoleFormComponent } from "./assign_role_form_component";
 
-export function AuthorizationComponent({ users, roles }: { users: User[]; roles: Role[] }) {
+export function AuthorizationComponent({ roles }: { roles: Role[] }) {
+  const [search, setSearch] = useState("");
+  const [activeTab, setActiveTab] = useState<UserStatusTabValue>("all");
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(20);
+  const [totalPages, setTotalPages] = useState(1);
+  const [users, setUsers] = useState<User[]>([]);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
@@ -25,66 +35,122 @@ export function AuthorizationComponent({ users, roles }: { users: User[]; roles:
   useEffect(() => {
     return subscribeHeaderAction("/authorization", (detail) => {
       if (detail.action === "authorization") openForm(null);
+      if (detail.action === "search") {
+        setSearch(detail.query ?? "");
+        setPage(1);
+      }
     });
   }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    filterUsers({
+      search: search.trim() || undefined,
+      status: activeTab === "all" ? undefined : Number(activeTab),
+      page,
+      page_size: pageSize,
+    }).then((result) => {
+      if (cancelled || !result.ok) return;
+      setUsers(result.data ?? []);
+      const total = result.meta?.total ?? result.data?.length ?? 0;
+      const size = result.meta?.page_size ?? pageSize;
+      setTotalPages(Math.max(1, Math.ceil(total / size)));
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [search, activeTab, page, pageSize]);
 
   return (
     <>
       {isFormOpen && (
-        <AssignRoleFormComponent
-          user={selectedUser}
-          users={users}
-          roles={roles}
-          onClose={closeForm}
-        />
+        <AssignRoleFormComponent user={selectedUser} users={users} roles={roles} onClose={closeForm} />
       )}
 
       <section className="admin-section" id="admin-authorization-section">
         <div className="admin-table-card mb-6">
-          <div className="overview-table-wrap">
-            <table className="overview-table" id="authorization-table">
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Tên</th>
-                  <th>Username</th>
-                  <th>Phòng ban</th>
-                  <th className="actions" />
-                </tr>
-              </thead>
-              <tbody>
-                {users.map((user) => {
-                  const rowId = String(user.id ?? user.username);
+          <Tab
+            tabs={USER_STATUS_TABS}
+            activeTab={activeTab}
+            onTabClick={(tab) => {
+              setActiveTab(tab.value);
+              setPage(1);
+            }}
+          />
 
-                  return (
-                    <tr
-                      key={rowId}
-                      id={`authorization-row-${rowId}`}
-                      className="cursor-pointer"
-                      onClick={() => openForm(user)}
-                    >
-                      <td className="w-10">{user.id}</td>
-                      <td>
-                        <div className="admin-user">
-                          <UserAvatar fullname={user.full_name} />
-                          <p className="admin-user__name">{user.full_name}</p>
-                        </div>
-                      </td>
-                      <td className="overview-table__muted">{user.username}</td>
-                      <td className="overview-table__muted">{user.department?.name ?? "—"}</td>
-                      <td className="actions bg-transparent">
-                        <div className="admin-actions">
-                          <button type="button" className="admin-actions__btn" aria-label="Chỉnh sửa">
-                            <Icon name="hero-pencil-square" className="size-4" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+          {users.length === 0 ? (
+            <EmptyData title="Không có nhân viên" description="Thử đổi bộ lọc hoặc từ khóa tìm kiếm." />
+          ) : (
+            <div className="overview-table-wrap">
+              <table className="overview-table" id="authorization-table">
+                <colgroup>
+                  <col style={{ width: "5rem" }} />
+                  <col />
+                  <col style={{ width: "16%" }} />
+                  <col style={{ width: "16%" }} />
+                  <col style={{ width: "12rem" }} />
+                  <col style={{ width: "3rem" }} />
+                </colgroup>
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Tên</th>
+                    <th>Username</th>
+                    <th>Phòng ban</th>
+                    <th>Trạng thái</th>
+                    <th className="actions" />
+                  </tr>
+                </thead>
+                <tbody>
+                  {users.map((user) => {
+                    const rowId = String(user.id ?? user.username);
+                    const meta = userStatusMeta(user.status);
+
+                    return (
+                      <tr
+                        key={rowId}
+                        id={`authorization-row-${rowId}`}
+                        className="cursor-pointer"
+                        onClick={() => openForm(user)}
+                      >
+                        <td className="w-10">{user.id}</td>
+                        <td>
+                          <div className="admin-user">
+                            <UserAvatar fullname={user.full_name} />
+                            <p className="admin-user__name">{user.full_name}</p>
+                          </div>
+                        </td>
+                        <td className="overview-table__muted">{user.username}</td>
+                        <td className="overview-table__muted">{user.department?.name ?? "—"}</td>
+                        <td>
+                          <span className={`status status--${meta.kind}`}>{meta.label}</span>
+                        </td>
+                        <td className="actions bg-transparent">
+                          <div className="admin-actions">
+                            <button type="button" className="admin-actions__btn" aria-label="Chỉnh sửa">
+                              <Icon name="hero-pencil-square" className="size-4" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
+          <Pagination
+            currentPage={page}
+            totalPages={totalPages}
+            pageSize={pageSize}
+            onPageChange={setPage}
+            onPageSizeChange={(size) => {
+              setPageSize(size);
+              setPage(1);
+            }}
+          />
         </div>
       </section>
     </>

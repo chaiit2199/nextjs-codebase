@@ -145,6 +145,7 @@ export const MENU: Navbar[] = [
         icon: "hero-cog-6-tooth",
         title: "Phân quyền",
         authorization: true,
+        search: true,
         view: true,
       },
     ],
