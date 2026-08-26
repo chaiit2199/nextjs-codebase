@@ -31,6 +31,10 @@ export const updateUserSchema = z.object({
   department_id: positiveInt.optional(),
 });
 
+export const userIdSchema = z.object({
+  id: positiveInt,
+});
+
 export const changePasswordSchema = z
   .object({
     current_password: trimmed.min(1, "Vui lòng nhập mật khẩu hiện tại"),
@@ -58,5 +62,6 @@ export const assignUserAccessSchema = z.object({
 
 export type CreateUserInput = z.infer<typeof createUserSchema>;
 export type UpdateUserInput = z.infer<typeof updateUserSchema>;
+export type UserIdInput = z.infer<typeof userIdSchema>;
 export type ChangePasswordInput = z.infer<typeof changePasswordSchema>;
 export type AssignUserAccessInput = z.infer<typeof assignUserAccessSchema>;

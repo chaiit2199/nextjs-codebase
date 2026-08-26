@@ -7,6 +7,7 @@ import {
   changePasswordSchema,
   createUserSchema,
   updateUserSchema,
+  userIdSchema,
   type AssignUserAccessInput,
   type ChangePasswordInput,
   type CreateUserInput,
@@ -46,6 +47,22 @@ export async function updateUser(payload: UpdateUserInput) {
   return runServerAction(updateUserSchema, payload, "Không thể cập nhật nhân viên", async (input) => {
     const { id, ...body } = input;
     await client.patch(`/api/v1/users/${id}`, body);
+    revalidatePath("/user");
+    return { ok: true as const };
+  });
+}
+
+export async function approveUser(payload: { id: number }) {
+  return runServerAction(userIdSchema, payload, "Không thể duyệt nhân viên", async ({ id }) => {
+    await client.post(`/api/v1/users/${id}/approve`);
+    revalidatePath("/user");
+    return { ok: true as const };
+  });
+}
+
+export async function rejectUser(payload: { id: number }) {
+  return runServerAction(userIdSchema, payload, "Không thể từ chối nhân viên", async ({ id }) => {
+    await client.post(`/api/v1/users/${id}/reject`);
     revalidatePath("/user");
     return { ok: true as const };
   });

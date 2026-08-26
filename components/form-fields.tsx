@@ -16,6 +16,7 @@ export function SelectField({
   label,
   defaultValue,
   required,
+  disabled,
   onChange,
   children,
 }: {
@@ -24,6 +25,7 @@ export function SelectField({
   label: ReactNode;
   defaultValue?: string;
   required?: boolean;
+  disabled?: boolean;
   onChange?: (event: ChangeEvent<HTMLSelectElement>) => void;
   children: ReactNode;
 }) {
@@ -37,6 +39,7 @@ export function SelectField({
         name={name}
         defaultValue={defaultValue}
         required={required}
+        disabled={disabled}
         onChange={onChange}
         className="core_input core_input--select w-full"
       >

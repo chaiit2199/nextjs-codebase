@@ -480,29 +480,12 @@ $sidebar-label-delay: 0.15s;
   margin: 0;
 }
 
-.user-avatar--sm {
-  width: 1.5rem;
-  height: 1.5rem;
-  min-width: 1.5rem;
-  min-height: 1.5rem;
-  font-size: 0.55rem;
-}
-
 .user-avatar--md {
-  width: 2rem;
-  height: 2rem;
-  min-width: 2rem;
-  min-height: 2rem;
-  font-size: 0.65rem;
-}
-
-.user-avatar--lg {
   width: 2.5rem;
   height: 2.5rem;
   min-width: 2.5rem;
   min-height: 2.5rem;
-  font-size: 0.75rem;
-}
+} 
 
 .profile .user-avatar,
 .profile__avatar {

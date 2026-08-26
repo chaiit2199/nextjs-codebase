@@ -27,7 +27,6 @@
 input.core_input:read-only,
 textarea.core_input:read-only {
   pointer-events: none;
-  background: var(--theme-primary-border);
 }
 
 .core_input--select {

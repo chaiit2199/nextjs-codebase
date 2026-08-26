@@ -8,10 +8,24 @@ import { UserAvatar } from "@/components/user-components";
 import { Icon } from "@/components/icon";
 import { USER_STATUS_TABS, UserStatus, type UserStatusTabValue, readFormStatus, userStatusMeta } from "@/lib/constants";
 import { FormSubmitButton } from "@/components/form-submit-button";
-import { RequiredLabel, RecordStatusSelectField, SelectField } from "@/components/form-fields";
+import { RequiredLabel, SelectField } from "@/components/form-fields";
 import { Input, Modal, EmptyData, Pagination } from "@/components/core_component";
-import { filterUsers, updateUser } from "@/lib/api/users";
+import { approveUser, filterUsers, rejectUser, updateUser } from "@/lib/api/users";
 import { putFlash } from "@/lib/flash/flash";
+
+type ConfirmAction = "update" | "approve" | "reject";
+
+const CONFIRM_TITLE: Record<ConfirmAction, string> = {
+    update: "Xác nhận cập nhật nhân viên",
+    approve: "Xác nhận duyệt nhân viên",
+    reject: "Xác nhận từ chối nhân viên",
+};
+
+const CONFIRM_SUCCESS: Record<ConfirmAction, string> = {
+    update: "Cập nhật nhân viên thành công",
+    approve: "Đã duyệt nhân viên",
+    reject: "Đã từ chối nhân viên",
+};
 
 type UpdateUserEntity = {
     full_name?: string;
@@ -48,11 +62,15 @@ export function UsersComponent({ departments, search }: { departments: Departmen
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [isConfirmOpen, setIsConfirmOpen] = useState(false);
     const [payload, setPayload] = useState<UpdateUserEntity | null>(null);
+    const [confirmAction, setConfirmAction] = useState<ConfirmAction | null>(null);
+    const [reloadAt, setReloadAt] = useState(0);
     const [activeTab, setActiveTab] = useState<UserStatusTabValue>("all");
     const [page, setPage] = useState(1);
     const [pageSize, setPageSize] = useState(20);
     const [totalPages, setTotalPages] = useState(1);
     const [users, setUsers] = useState<User[]>([]);
+    const canEdit = selectedUser?.status === UserStatus.Active;
+    const isPendingApproval = selectedUser?.status === UserStatus.WaitingForApproval;
 
     useEffect(() => {
         setPage(1);
@@ -77,18 +95,20 @@ export function UsersComponent({ departments, search }: { departments: Departmen
         return () => {
             cancelled = true;
         };
-    }, [search, activeTab, page, pageSize]);
+    }, [search, activeTab, page, pageSize, reloadAt]);
 
 
     function openEditForm(user: User) {
         setSelectedUser(user);
         setPayload(null);
+        setConfirmAction(null);
         setIsConfirmOpen(false);
         setIsFormOpen(true);
     }
 
     function resetForm() {
         setPayload(null);
+        setConfirmAction(null);
         setIsConfirmOpen(false);
         setIsFormOpen(false);
         setSelectedUser(null);
@@ -96,26 +116,40 @@ export function UsersComponent({ departments, search }: { departments: Departmen
 
     function handleFormSubmit(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
+        if (selectedUser?.status !== UserStatus.Active) return;
         setPayload(readUpdateForm(new FormData(event.currentTarget)));
+        setConfirmAction("update");
         setIsConfirmOpen(true);
     }
 
-    async function confirmUpdate() {
-        if (!payload || !selectedUser?.id) return;
+    function openReviewConfirm(action: "approve" | "reject") {
+        if (!selectedUser?.id) return;
+        setConfirmAction(action);
+        setIsConfirmOpen(true);
+    }
 
-        const result = await updateUser({
-            id: Number(selectedUser.id),
-            ...payload,
-        });
+    async function handleConfirm() {
+        const userId = Number(selectedUser?.id);
+        if (!selectedUser || !userId || !confirmAction) return;
 
-        if (!result.ok) {
+        const result =
+            confirmAction === "update"
+                ? selectedUser.status === UserStatus.Active && payload
+                    ? await updateUser({ id: userId, ...payload })
+                    : null
+                : confirmAction === "approve"
+                    ? await approveUser({ id: userId })
+                    : await rejectUser({ id: userId });
+
+        if (!result?.ok) {
             setIsConfirmOpen(false);
-            putFlash("error", result.message, 1500);
+            putFlash("error", result?.message ?? "Không thể cập nhật nhân viên", 1500);
             return;
         }
 
         resetForm();
-        putFlash("success", "Cập nhật nhân viên thành công", 1500);
+        setReloadAt((value) => value + 1);
+        putFlash("success", CONFIRM_SUCCESS[confirmAction], 1500);
     }
 
     return (
@@ -224,12 +258,14 @@ export function UsersComponent({ departments, search }: { departments: Departmen
                         name="full_name"
                         label={<RequiredLabel>Họ và tên</RequiredLabel>}
                         defaultValue={selectedUser.full_name}
+                        readOnly={!canEdit}
                     />
                     <Input
                         id="update-user-phone"
                         name="phone"
                         label={<RequiredLabel>Số điện thoại</RequiredLabel>}
                         defaultValue={selectedUser.phone}
+                        readOnly={!canEdit}
                     />
                     <Input
                         id="update-user-email"
@@ -238,17 +274,14 @@ export function UsersComponent({ departments, search }: { departments: Departmen
                         label={<RequiredLabel>Email</RequiredLabel>}
                         placeholder="Email"
                         defaultValue={selectedUser.email ?? ""}
-                    />
-                    <RecordStatusSelectField
-                        id="update-user-status"
-                        label={<RequiredLabel>Trạng thái</RequiredLabel>}
-                        defaultValue={selectedUser.status ?? UserStatus.Active}
+                        readOnly={!canEdit}
                     />
                     <SelectField
                         id="update-user-department"
                         name="department_id"
                         label={<RequiredLabel>Phòng ban</RequiredLabel>}
                         defaultValue={departmentOptionValue(selectedUser.department)}
+                        disabled={!canEdit}
                     >
                         <option value="" disabled>
                         Chọn phòng ban
@@ -259,24 +292,35 @@ export function UsersComponent({ departments, search }: { departments: Departmen
                         </option>
                         ))}
                     </SelectField>
-                    <div className="admin-user-form__full">
-                        <Input
+                    <Input
                         id="update-user-address"
                         name="address"
                         label={<RequiredLabel>Địa chỉ</RequiredLabel>}
                         placeholder="Địa chỉ"
                         defaultValue={selectedUser.address ?? ""}
-                        />
-                    </div>
+                        readOnly={!canEdit}
+                    />
                     </div>
 
                     <div className="core_modal__actions">
                     <button type="button" className="core_button core_button--secondary" onClick={resetForm}>
                         Hủy
                     </button>
-                    <button type="submit" className="core_button core_button--primary">
-                        Xác nhận
-                    </button>
+                    {isPendingApproval && (
+                        <>
+                        <button type="button" className="core_button core_button--danger" onClick={() => openReviewConfirm("reject")}>
+                            Từ chối
+                        </button>
+                        <button type="button" className="core_button core_button--primary" onClick={() => openReviewConfirm("approve")}>
+                            Duyệt
+                        </button>
+                        </>
+                    )}
+                    {canEdit && (
+                        <button type="submit" className="core_button core_button--primary">
+                            Xác nhận
+                        </button>
+                    )}
                     </div>
                 </form>
                 )}
@@ -285,20 +329,30 @@ export function UsersComponent({ departments, search }: { departments: Departmen
             <Modal
                 id="update-user-confirm-modal"
                 show={isConfirmOpen}
-                title="Xác nhận cập nhật nhân viên"
+                title={confirmAction ? CONFIRM_TITLE[confirmAction] : "Xác nhận"}
                 width="md"
                 className="core_modal--stacked"
-                onClose={() => setIsConfirmOpen(false)}
+                onClose={() => {
+                    setIsConfirmOpen(false);
+                    setConfirmAction(null);
+                }}
             >
-                <form className="core_modal__actions" action={confirmUpdate}>
+                <form className="core_modal__actions" action={handleConfirm}>
+                <input type="hidden" name="user_id" value={selectedUser?.id ?? ""} />
+                <input type="hidden" name="action" value={confirmAction ?? ""} />
                 <button
                     type="button"
                     className="core_button core_button--secondary"
-                    onClick={() => setIsConfirmOpen(false)}
+                    onClick={() => {
+                        setIsConfirmOpen(false);
+                        setConfirmAction(null);
+                    }}
                 >
                     Hủy
                 </button>
-                <FormSubmitButton>Xác nhận</FormSubmitButton>
+                <FormSubmitButton>
+                    {confirmAction === "reject" ? "Từ chối" : confirmAction === "approve" ? "Duyệt" : "Xác nhận"}
+                </FormSubmitButton>
                 </form>
             </Modal>
         </>

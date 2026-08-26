@@ -159,8 +159,13 @@
 }
 
 .admin-status--waiting_for_approval {
-  background: #3730A3;
+  background: #3730a3;
   color: #fff;
+}
+
+.admin-status--rejected {
+  background: #fee2e2;
+  color: #991b1b;
 }
 
 .admin-actions {

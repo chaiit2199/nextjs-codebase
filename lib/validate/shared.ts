@@ -24,4 +24,4 @@ export const positiveInt = z.coerce.number().int().positive();
 export const recordStatusSchema = z.coerce
   .number()
   .int()
-  .refine((value) => value === UserStatus.Active || value === UserStatus.Inactive);
+  .refine((value) => value === UserStatus.Active || value === UserStatus.Inactive || value === UserStatus.WaitingForApproval || value === UserStatus.Rejected);
