@@ -193,14 +193,14 @@ export function UsersComponent({
                 <div className="overview-table-wrap">
                     <table className="overview-table min-w-[1400px]" id="users-table">
                         <colgroup>
-                            <col style={{ width: "8%" }} />
-                            <col style={{ width: "12rem" }} />
-                            <col style={{ width: "12%" }} />
-                            <col style={{ width: "10rem" }} />
-                            <col style={{ width: "16%" }} />
-                            <col style={{ width: "12rem" }} />
-                            <col style={{ width: "12rem" }} />
-                            <col style={{ width: "3rem" }} />
+                            <col style={{ width: "21%" }} />
+                            <col style={{ width: "12.5%" }} />
+                            <col style={{ width: "12.5%" }} />
+                            <col style={{ width: "12.5%" }} />
+                            <col style={{ width: "12.5%" }} />
+                            <col style={{ width: "12.5%" }} />
+                            <col style={{ width: "12.5%" }} />
+                            <col style={{ width: "4%" }} />
                         </colgroup>
                         <thead>
                             <tr>
