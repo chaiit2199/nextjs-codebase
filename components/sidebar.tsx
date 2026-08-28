@@ -12,6 +12,7 @@ import type { User } from "@/lib/api/me";
 import { ChangePasswordComponent } from "@/components/users/change_password";
 
 export function SidebarComponent({ user, menu }: { user?: User | null; menu: Navbar[] }) {
+  console.log(user);
   const pathname = usePathname();
   const currentPage = getPageId(pathname);
   const [collapsed, setCollapsed] = useState(false);
@@ -143,7 +144,7 @@ export function SidebarComponent({ user, menu }: { user?: User | null; menu: Nav
           id={`header-user-actions-${userId}`}
           placement={collapsed ? "top-left" : "top-right"}
           className="header__user-menu"
-          label={<UserAvatarRow fullname={displayName} role={role} />}
+          label={<UserAvatarRow fullname={displayName} email={user?.email ?? "hungnd@usa-farm.vn"} role={role} />}
         >
           <div className="header-menu" role="menu">
             <div className="header-menu__section">

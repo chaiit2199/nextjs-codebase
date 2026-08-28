@@ -50,8 +50,4 @@ function hslToHex(h: number, s: number, l: number): string {
 export function normalizeRole(role?: string | number | null): string {
   if (role === null || role === undefined || role === "") return "1002";
   return String(role);
-}
-
-export function roleLabel(role?: string | number | null): string {
-  return normalizeRole(role) === "1001" ? "Admin" : "Nhân viên";
-}
+} 

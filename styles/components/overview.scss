@@ -467,7 +467,7 @@
   }
 
   td {
-    padding: 1rem 0.5rem;
+    @apply py-3.5 px-2; 
     vertical-align: top;
     text-align: left;
     color: var(--ov-text, #0f172a);

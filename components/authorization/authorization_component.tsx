@@ -8,13 +8,14 @@ import { Tab } from "@/components/tab";
 import { UserAvatar } from "@/components/user-components";
 import { filterUsers } from "@/lib/api/users";
 import type { Role, User } from "@/lib/api/types";
-import { USER_STATUS_TABS, type UserStatusTabValue, userStatusMeta } from "@/lib/constants";
+import { UserStatus, userStatusMeta } from "@/lib/constants";
 import { subscribeHeaderAction } from "@/lib/dashboard/header-actions";
 import { AssignRoleFormComponent } from "./assign_role_form_component";
 
+const ACTIVE_STATUS_TABS = [{ value: UserStatus.Active, label: "Đang hoạt động" }] as const;
+
 export function AuthorizationComponent({ roles }: { roles: Role[] }) {
   const [search, setSearch] = useState("");
-  const [activeTab, setActiveTab] = useState<UserStatusTabValue>("all");
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
   const [totalPages, setTotalPages] = useState(1);
@@ -47,7 +48,7 @@ export function AuthorizationComponent({ roles }: { roles: Role[] }) {
 
     filterUsers({
       search: search.trim() || undefined,
-      status: activeTab === "all" ? undefined : Number(activeTab),
+      status: UserStatus.Active,
       page,
       page_size: pageSize,
     }).then((result) => {
@@ -61,7 +62,7 @@ export function AuthorizationComponent({ roles }: { roles: Role[] }) {
     return () => {
       cancelled = true;
     };
-  }, [search, activeTab, page, pageSize]);
+  }, [search, page, pageSize]);
 
   return (
     <>
@@ -71,14 +72,7 @@ export function AuthorizationComponent({ roles }: { roles: Role[] }) {
 
       <section className="admin-section" id="admin-authorization-section">
         <div className="admin-table-card mb-6">
-          <Tab
-            tabs={USER_STATUS_TABS}
-            activeTab={activeTab}
-            onTabClick={(tab) => {
-              setActiveTab(tab.value);
-              setPage(1);
-            }}
-          />
+          <Tab tabs={ACTIVE_STATUS_TABS} activeTab={UserStatus.Active} />
 
           {users === null ? (
             <TableLoading />
@@ -86,61 +80,75 @@ export function AuthorizationComponent({ roles }: { roles: Role[] }) {
             <EmptyData title="Không có nhân viên" description="Thử đổi bộ lọc hoặc từ khóa tìm kiếm." />
           ) : (
             <div className="overview-table-wrap">
-              <table className="overview-table" id="authorization-table">
-                <colgroup>
-                  <col style={{ width: "5rem" }} />
-                  <col />
-                  <col style={{ width: "16%" }} />
-                  <col style={{ width: "16%" }} />
-                  <col style={{ width: "12rem" }} />
-                  <col style={{ width: "3rem" }} />
-                </colgroup>
-                <thead>
-                  <tr>
-                    <TableHead icon="hero-hashtag">ID</TableHead>
-                    <TableHead icon="hero-users">Tên</TableHead>
-                    <TableHead icon="hero-at-symbol">Username</TableHead>
-                    <TableHead icon="hero-building-office-2">Phòng ban</TableHead>
-                    <TableHead icon="hero-tag">Trạng thái</TableHead>
-                    <th className="actions" />
-                  </tr>
-                </thead>
-                <tbody>
-                  {users.map((user) => {
-                    const rowId = String(user.id ?? user.username);
-                    const meta = userStatusMeta(user.status);
+              <div className="overview-table-inner">
+                <table className="overview-table min-w-[1400px]" id="authorization-table">
+                  <colgroup>
+                    <col style={{ width: "21%" }} />
+                    <col style={{ width: "12.5%" }} />
+                    <col style={{ width: "12.5%" }} />
+                    <col style={{ width: "12.5%" }} />
+                    <col style={{ width: "12.5%" }} />
+                    <col style={{ width: "12.5%" }} />
+                    <col style={{ width: "12.5%" }} />
+                    <col style={{ width: "4%" }} />
+                  </colgroup>
+                  <thead>
+                    <tr>
+                      <TableHead icon="hero-users">Tên người dùng</TableHead>
+                      <TableHead icon="hero-tag">Trạng thái</TableHead>
+                      <TableHead icon="hero-at-symbol">Tên đăng nhập</TableHead>
+                      <TableHead icon="hero-phone">Số điện thoại</TableHead>
+                      <TableHead icon="hero-building-office-2">Phòng ban</TableHead>
+                      <TableHead icon="hero-calendar-days">Ngày tạo</TableHead>
+                      <TableHead icon="hero-calendar-days">Ngày hiệu lực</TableHead>
+                      <th className="actions" />
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {users.map((user) => {
+                      const meta = userStatusMeta(user.status);
 
-                    return (
-                      <tr
-                        key={rowId}
-                        id={`authorization-row-${rowId}`}
-                        className="cursor-pointer"
-                        onClick={() => openForm(user)}
-                      >
-                        <td className="w-10">{user.id}</td>
-                        <td>
-                          <div className="admin-user">
-                            <UserAvatar fullname={user.full_name} />
-                            <p className="admin-user__name">{user.full_name}</p>
-                          </div>
-                        </td>
-                        <td className="overview-table__muted">{user.username}</td>
-                        <td className="overview-table__muted">{user.department?.name ?? "—"}</td>
-                        <td>
-                          <span className={`status status--${meta.kind}`}>{meta.label}</span>
-                        </td>
-                        <td className="actions bg-transparent">
-                          <div className="admin-actions">
-                            <button type="button" className="admin-actions__btn" aria-label="Chỉnh sửa">
-                              <Icon name="hero-pencil-square" className="size-4" />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+                      return (
+                        <tr
+                          key={user.id}
+                          id={`authorization-row-${user.id}`}
+                          className="cursor-pointer"
+                          onClick={() => openForm(user)}
+                        >
+                          <td>
+                            <div className="admin-user">
+                              <UserAvatar fullname={user.full_name} />
+                              <div>
+                                <p className="admin-user__name mb-1">{user.full_name}</p>
+                                <p className="admin-user__email">{user.email}</p>
+                              </div>
+                            </div>
+                          </td>
+                          <td>
+                            <span className={`status status--${meta.kind}`}>{meta.label}</span>
+                          </td>
+                          <td className="overview-table__muted">{user.username}</td>
+                          <td className="overview-table__muted">{user.phone}</td>
+                          <td className="overview-table__muted">{user.department?.name ?? "—"}</td>
+                          <td className="overview-table__muted">
+                            {user.created_at ? new Date(user.created_at).toLocaleDateString("vi-VN") : "-"}
+                          </td>
+                          <td className="overview-table__muted">
+                            {user.updated_at ? new Date(user.updated_at).toLocaleDateString("vi-VN") : "-"}
+                          </td>
+                          <td className="actions">
+                            <div className="admin-actions">
+                              <button type="button" className="admin-actions__btn" aria-label="Chỉnh sửa">
+                                <Icon name="hero-pencil-square" className="size-4" />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
             </div>
           )}
           <Pagination

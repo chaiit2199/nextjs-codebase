@@ -1,4 +1,4 @@
-import { getColor, getInitials, roleLabel } from "@/components/users/avatar";
+import { getColor, getInitials } from "@/components/users/avatar";
 
 export type UserAvatarProps = {
   fullname: string;
@@ -27,21 +27,24 @@ export type UserAvatarRowProps = {
   id?: string;
   className?: string;
   showChevron?: boolean;
+  email?: string;
 };
 
 export function UserAvatarRow({
   fullname,
+  email = "",
   role = "1002",
   id,
   className,
   showChevron = true,
 }: UserAvatarRowProps) {
+  console.log(role);
   return (
     <div id={id} className={["profile", className].filter(Boolean).join(" ")}>
       <UserAvatar fullname={fullname} className="profile__avatar" />
       <div className="profile__meta">
         <span className="profile__name">{fullname}</span>
-        <span className="profile__role">{roleLabel(role)}</span>
+        <span className="profile__role">{email}</span>
       </div>
       {showChevron && (
         <svg className="profile__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
