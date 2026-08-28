@@ -40,7 +40,7 @@ export function PermissionGroupsComponent({
   const [isPermissionsLoading, setIsPermissionsLoading] = useState(false);
 
   useEffect(() => {
-    return subscribeHeaderAction("/permission", (detail) => {
+    return subscribeHeaderAction("/role", (detail) => {
       if (detail.action === "create") setIsCreateOpen(true);
       if (detail.action === "search") {
         setSearch(detail.query ?? "");

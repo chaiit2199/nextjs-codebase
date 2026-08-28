@@ -6,7 +6,7 @@ import { getPermissions, getScopeTypes } from "@/lib/api/me";
 import { PermissionGroupsComponent } from "@/components/permission_groups/permission_groups_component";
 import { pageMetadata } from "@/lib/dashboard/navbar";
 
-export const metadata: Metadata = pageMetadata("/permission");
+export const metadata: Metadata = pageMetadata("/role");
 
 export default function PermissionGroupsPage() {
   return (
