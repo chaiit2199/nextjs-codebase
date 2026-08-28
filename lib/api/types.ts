@@ -47,6 +47,9 @@ export type Role = {
   allowed_scope_types: string[];
   grants: RoleGrant[];
   users_count: number;
+  created_at?: string;
+  updated_at?: string;
+  reason?: string;
 };
 
 export type ShortRole = Pick<Role, "id" | "name">;

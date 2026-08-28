@@ -17,7 +17,7 @@ export type { CreateRoleInput, UpdateRoleInput };
 
 export type FilterRolesParams = {
   search?: string;
-  status?: number | "ALL";
+  status?: number;
   page?: number;
   page_size?: number;
 };

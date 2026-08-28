@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 
 import { Input, Modal, EmptyData, Pagination, TableHead, TableLoading } from "@/components/core_component";
 import { FormSubmitButton } from "@/components/form-submit-button";
@@ -19,17 +19,22 @@ import { CreatePermissionGroupComponent } from "./create_permission_group_compon
 export function PermissionGroupsComponent({
   scopeTypes,
   permissions,
+  initialRoles,
+  initialTotalPages = 1,
 }: {
   scopeTypes: ScopeType[];
   permissions: Permission[];
+  initialRoles: Role[];
+  initialTotalPages?: number;
 }) {
   const [search, setSearch] = useState("");
   const [activeTab, setActiveTab] = useState<UserStatusTabValue>("all");
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
-  const [totalPages, setTotalPages] = useState(1);
-  const [roles, setRoles] = useState<Role[] | null>(null);
+  const [totalPages, setTotalPages] = useState(initialTotalPages);
+  const [roles, setRoles] = useState<Role[] | null>(initialRoles);
   const [reloadAt, setReloadAt] = useState(0);
+  const skipFirstFetch = useRef(true);
 
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [scopePermissions, setScopePermissions] = useState<string[]>([]);
@@ -50,11 +55,16 @@ export function PermissionGroupsComponent({
   }, []);
 
   useEffect(() => {
+    if (skipFirstFetch.current) {
+      skipFirstFetch.current = false;
+      return;
+    }
+
     let cancelled = false;
 
     filterRoles({
       search: search.trim() || undefined,
-      status: activeTab === "all" ? "ALL" : Number(activeTab),
+      status: activeTab === "all" ? undefined : Number(activeTab),
       page,
       page_size: pageSize,
     }).then((result) => {
@@ -185,8 +195,8 @@ export function PermissionGroupsComponent({
                           <span className={`status status--${meta.kind}`}>{meta.label}</span>
                         </td>
                         <td>{role.description}</td>
-                        <td>dd/mm/yyyy</td>
-                        <td>dd/mm/yyyy</td>
+                        <td className="overview-table__muted">{role.created_at ? new Date(role.created_at).toLocaleDateString("vi-VN") : "-"}</td>
+                        <td className="overview-table__muted">{role.updated_at ? new Date(role.updated_at).toLocaleDateString("vi-VN") : "-"}</td>
                         <td className="actions bg-transparent">
                           <div className="admin-actions">
                             <button type="button" className="admin-actions__btn" aria-label="Chỉnh sửa">

@@ -3,6 +3,7 @@ import { Suspense } from "react";
 
 import { Dashboard, TableSkeleton } from "@/components/dashboard";
 import { getPermissions, getScopeTypes } from "@/lib/api/me";
+import { filterRoles } from "@/lib/api/roles";
 import { PermissionGroupsComponent } from "@/components/permission_groups/permission_groups_component";
 import { pageMetadata } from "@/lib/dashboard/navbar";
 
@@ -18,7 +19,21 @@ export default function PermissionGroupsPage() {
   );
 }
 async function RolesData() {
-  const [scopeTypes, permissions] = await Promise.all([getScopeTypes(), getPermissions()]);
-  return <PermissionGroupsComponent scopeTypes={scopeTypes} permissions={permissions} />;
+  const [scopeTypes, permissions, rolesResult] = await Promise.all([
+    getScopeTypes(),
+    getPermissions(),
+    filterRoles({ page: 1, page_size: 20 }),
+  ]);
+  const pageSize = rolesResult.meta?.page_size ?? 20;
+  const total = rolesResult.meta?.total ?? rolesResult.data?.length ?? 0;
+
+  return (
+    <PermissionGroupsComponent
+      scopeTypes={scopeTypes}
+      permissions={permissions}
+      initialRoles={rolesResult.data ?? []}
+      initialTotalPages={Math.max(1, Math.ceil(total / pageSize))}
+    />
+  );
 }
 
