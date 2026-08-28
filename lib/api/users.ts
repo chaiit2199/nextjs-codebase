@@ -8,6 +8,7 @@ import {
   createUserSchema,
   updateUserSchema,
   userIdSchema,
+  rejectUserSchema,
   type AssignUserAccessInput,
   type ChangePasswordInput,
   type CreateUserInput,
@@ -59,9 +60,9 @@ export async function approveUser(payload: { id: number }) {
   });
 }
 
-export async function rejectUser(payload: { id: number }) {
-  return runServerAction(userIdSchema, payload, "Không thể từ chối nhân viên", async ({ id }) => {
-    await client.post(`/api/v1/users/${id}/reject`);
+export async function rejectUser(payload: { id: number; reason: string }) {
+  return runServerAction(rejectUserSchema, payload, "Không thể từ chối nhân viên", async ({ id, reason }) => {
+    await client.post(`/api/v1/users/${id}/reject`, { reason });
     revalidatePath("/user");
     return { ok: true as const };
   });

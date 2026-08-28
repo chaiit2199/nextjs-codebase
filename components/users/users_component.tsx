@@ -144,10 +144,11 @@ export function UsersComponent({
         setIsConfirmOpen(true);
     }
 
-    async function handleConfirm() {
+    async function handleConfirm(formData: FormData) {
         const userId = Number(selectedUser?.id);
         if (!selectedUser || !userId || !confirmAction) return;
 
+        const reason = String(formData.get("reason") ?? "").trim();
         const result =
             confirmAction === "update"
                 ? selectedUser.status === UserStatus.Active && payload
@@ -155,7 +156,7 @@ export function UsersComponent({
                     : null
                 : confirmAction === "approve"
                     ? await approveUser({ id: userId })
-                    : await rejectUser({ id: userId });
+                    : await rejectUser({ id: userId, reason });
 
         if (!result?.ok) {
             setIsConfirmOpen(false);
@@ -374,22 +375,39 @@ export function UsersComponent({
                     setConfirmAction(null);
                 }}
             >
-                <form className="core_modal__actions" action={handleConfirm}>
-                <input type="hidden" name="user_id" value={selectedUser?.id ?? ""} />
-                <input type="hidden" name="action" value={confirmAction ?? ""} />
-                <button
-                    type="button"
-                    className="core_button core_button--secondary"
-                    onClick={() => {
-                        setIsConfirmOpen(false);
-                        setConfirmAction(null);
-                    }}
-                >
-                    Hủy
-                </button>
-                <FormSubmitButton>
-                    {confirmAction === "reject" ? "Từ chối" : confirmAction === "approve" ? "Duyệt" : "Xác nhận"}
-                </FormSubmitButton>
+                <form className="core_modal__form" action={handleConfirm}>
+                    <input type="hidden" name="user_id" value={selectedUser?.id ?? ""} />
+                    <input type="hidden" name="action" value={confirmAction ?? ""} />
+                    {confirmAction === "reject" && (
+                        <div className="core_field">
+                            <label htmlFor="reject-user-reason" className="core_label">
+                                <RequiredLabel>Lý do từ chối</RequiredLabel>
+                            </label>
+                            <textarea
+                                id="reject-user-reason"
+                                name="reason"
+                                rows={3}
+                                required
+                                placeholder="Nhập lý do từ chối"
+                                className="core_input core_input--textarea w-full"
+                            />
+                        </div>
+                    )}
+                    <div className="core_modal__actions">
+                    <button
+                        type="button"
+                        className="core_button core_button--secondary"
+                        onClick={() => {
+                            setIsConfirmOpen(false);
+                            setConfirmAction(null);
+                        }}
+                    >
+                        Hủy
+                    </button>
+                    <FormSubmitButton>
+                        {confirmAction === "reject" ? "Từ chối" : confirmAction === "approve" ? "Duyệt" : "Xác nhận"}
+                    </FormSubmitButton>
+                    </div>
                 </form>
             </Modal>
         </>
