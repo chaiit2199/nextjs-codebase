@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import {
   createDepartmentSchema,
   departmentIdSchema,
+  rejectDepartmentSchema,
   updateDepartmentSchema,
   type CreateDepartmentInput,
   type UpdateDepartmentInput,
@@ -47,9 +48,9 @@ export async function approveDepartment(payload: { id: number }) {
   });
 }
 
-export async function rejectDepartment(payload: { id: number }) {
-  return runServerAction(departmentIdSchema, payload, "Không thể từ chối phòng ban", async ({ id }) => {
-    await client.post(`/api/v1/departments/${id}/reject`);
+export async function rejectDepartment(payload: { id: number; reason: string }) {
+  return runServerAction(rejectDepartmentSchema, payload, "Không thể từ chối phòng ban", async ({ id, reason }) => {
+    await client.post(`/api/v1/departments/${id}/reject`, { reason });
     revalidatePath("/department");
     return { ok: true as const };
   });

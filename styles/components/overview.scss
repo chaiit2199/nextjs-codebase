@@ -484,9 +484,7 @@
     }
 
     &.actions {
-      position: sticky transition-all;
-      right: 0;
-      z-index: 1;
+      @apply sticky right-0 z-1;
   
       &:not(.bg-transparent) {
         background: #fff;
@@ -500,11 +498,10 @@
 
   tbody tr:hover {
     background: var(--theme-primary-border);
-
     td {
 
       &.actions {
-        background: transparent;
+        background: var(--theme-primary-border);
       }
     }
   }

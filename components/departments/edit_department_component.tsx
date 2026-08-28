@@ -128,10 +128,11 @@ export function EditDepartmentComponent({
     setIsConfirmOpen(true);
   }
 
-  async function handleConfirm() {
+  async function handleConfirm(formData: FormData) {
     const departmentId = Number(selectedDepartment?.id);
     if (!selectedDepartment || !departmentId || !confirmAction) return;
 
+    const reason = String(formData.get("reason") ?? "").trim();
     const result =
       confirmAction === "update"
         ? selectedDepartment.status === UserStatus.Active && payload
@@ -139,7 +140,7 @@ export function EditDepartmentComponent({
           : null
         : confirmAction === "approve"
           ? await approveDepartment({ id: departmentId })
-          : await rejectDepartment({ id: departmentId });
+          : await rejectDepartment({ id: departmentId, reason });
 
     if (!result?.ok) {
       setIsConfirmOpen(false);
@@ -174,53 +175,57 @@ export function EditDepartmentComponent({
             />
           ) : (
             <div className="overview-table-wrap">
-              <table className="overview-table" id="departments-table">
-                <colgroup>
-                  <col style={{ width: "16%" }} />
-                  <col />
-                  <col style={{ width: "12rem" }} />
-                  <col style={{ width: "3rem" }} />
-                </colgroup>
-                <thead>
-                  <tr>
-                    <th>Mã phòng ban</th>
-                    <th>Trạng thái</th>
-                    <th>Tên phòng ban</th>
-                    <th>Ngày tạo</th>
-                    <th>Ngày hiệu lực</th>
-                    <th className="actions" />
-                  </tr>
-                </thead>
-                <tbody>
-                  {departments.map((department) => {
-                    const meta = recordStatusMeta(department.status);
+              <div className="overview-table-inner">
+                <table className="overview-table min-w-[1000px]" id="departments-table">
+                  <colgroup> 
+                    <col style={{ width: "12%" }} />
+                    <col style={{ width: "21%" }} />
+                    <col style={{ width: "21%" }} />
+                    <col style={{ width: "21%" }} />
+                    <col style={{ width: "21%" }} />
+                    <col style={{ width: "4%" }} />
+                  </colgroup>
+                  <thead>
+                    <tr>
+                      <th>Mã phòng ban</th>
+                      <th>Trạng thái</th>
+                      <th>Tên phòng ban</th>
+                      <th>Ngày tạo</th>
+                      <th>Ngày hiệu lực</th>
+                      <th className="actions" />
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {departments.map((department) => {
+                      const meta = recordStatusMeta(department.status);
 
-                    return (
-                      <tr
-                        key={department.id}
-                        id={`department-row-${department.id}`}
-                        onClick={() => openEditForm(department)}
-                        className="cursor-pointer"
-                      >
-                        <td className="overview-table__muted">{department.code}</td>
-                        <td>
-                          <span className={`status status--${meta.kind}`}>{meta.label}</span>
-                        </td>
-                        <td>{department.name}</td>
-                        <td>dd/mm/yyyy</td>
-                        <td>dd/mm/yyyy</td>
-                        <td className="actions bg-transparent">
-                          <div className="admin-actions">
-                            <button type="button" className="admin-actions__btn" aria-label="Chỉnh sửa">
-                              <Icon name="hero-pencil-square" className="size-4" />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+                      return (
+                        <tr
+                          key={department.id}
+                          id={`department-row-${department.id}`}
+                          onClick={() => openEditForm(department)}
+                          className="cursor-pointer"
+                        >
+                          <td className="overview-table__muted">{department.code}</td>
+                          <td>
+                            <span className={`status status--${meta.kind}`}>{meta.label}</span>
+                          </td>
+                          <td>{department.name}</td>
+                          <td>dd/mm/yyyy</td>
+                          <td>dd/mm/yyyy</td>
+                          <td className="actions bg-transparent">
+                            <div className="admin-actions">
+                              <button type="button" className="admin-actions__btn" aria-label="Chỉnh sửa">
+                                <Icon name="hero-pencil-square" className="size-4" />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
             </div>
           )}
           <Pagination
@@ -313,22 +318,39 @@ export function EditDepartmentComponent({
           setConfirmAction(null);
         }}
       >
-        <form className="core_modal__actions" action={handleConfirm}>
+        <form className="core_modal__form" action={handleConfirm}>
           <input type="hidden" name="department_id" value={selectedDepartment?.id ?? ""} />
           <input type="hidden" name="action" value={confirmAction ?? ""} />
-          <button
-            type="button"
-            className="core_button core_button--secondary"
-            onClick={() => {
-              setIsConfirmOpen(false);
-              setConfirmAction(null);
-            }}
-          >
-            Hủy
-          </button>
-          <FormSubmitButton>
-            {confirmAction === "reject" ? "Từ chối" : confirmAction === "approve" ? "Duyệt" : "Xác nhận"}
-          </FormSubmitButton>
+          {confirmAction === "reject" && (
+            <div className="core_field">
+              <label htmlFor="reject-department-reason" className="core_label">
+                <RequiredLabel>Lý do từ chối</RequiredLabel>
+              </label>
+              <textarea
+                id="reject-department-reason"
+                name="reason"
+                rows={3}
+                required
+                placeholder="Nhập lý do từ chối"
+                className="core_input core_input--textarea w-full"
+              />
+            </div>
+          )}
+          <div className="core_modal__actions">
+            <button
+              type="button"
+              className="core_button core_button--secondary"
+              onClick={() => {
+                setIsConfirmOpen(false);
+                setConfirmAction(null);
+              }}
+            >
+              Hủy
+            </button>
+            <FormSubmitButton>
+              {confirmAction === "reject" ? "Từ chối" : confirmAction === "approve" ? "Duyệt" : "Xác nhận"}
+            </FormSubmitButton>
+          </div>
         </form>
       </Modal>
     </>
