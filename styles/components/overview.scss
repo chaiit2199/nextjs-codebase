@@ -421,9 +421,17 @@
 }
 
 .overview-table-wrap { 
-  @apply min-h-60 overflow-auto;
+  @apply  overflow-y-auto overflow-x-hidden; 
   max-height: calc(100vh - 336px); 
   min-height: calc(100vh - 336px); 
+  margin-right: -32px;
+  padding-right: 32px;
+}
+
+.overview-table-inner {
+  @apply overflow-y-hidden overflow-x-auto;
+  min-height: calc(100vh - 336px); 
+
 }
 
 .overview-table {

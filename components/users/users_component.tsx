@@ -191,64 +191,66 @@ export function UsersComponent({
                     />
                 ) : (
                 <div className="overview-table-wrap">
-                    <table className="overview-table min-w-[1400px]" id="users-table">
-                        <colgroup>
-                            <col style={{ width: "21%" }} />
-                            <col style={{ width: "12.5%" }} />
-                            <col style={{ width: "12.5%" }} />
-                            <col style={{ width: "12.5%" }} />
-                            <col style={{ width: "12.5%" }} />
-                            <col style={{ width: "12.5%" }} />
-                            <col style={{ width: "12.5%" }} />
-                            <col style={{ width: "4%" }} />
-                        </colgroup>
-                        <thead>
-                            <tr>
-                                <th>Tên</th>
-                                <th>Trạng thái</th>
-                                <th>Tên đăng nhập</th>
-                                <th>Số điện thoại</th>
-                                <th>Phòng ban</th>
-                                <th>Ngày tạo</th>
-                                <th>Ngày hiệu lực</th>
-                                <th className="actions" />
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {users.map((user) => (
-                                <tr key={user.id} id={`user-row-${user.id}`} onClick={() => openEditForm(user)} className="cursor-pointer">
-                                    <td>
-                                    <div className="admin-user">
-                                        <UserAvatar fullname={user.full_name} />
-                                        <div>
-                                            <p className="admin-user__name mb-1">{user.full_name}</p>
-                                            <p className="admin-user__email">{user.email}</p>    
-                                        </div>    
-                                    </div>
-                                    </td>
-                                    <td>
-                                        <UserStatusBadge status={user.status} />
-                                    </td>
-                                    <td className="overview-table__muted">{user.username}</td>
-                                    <td className="overview-table__muted">{user.phone}</td>
-                                    <td className="overview-table__muted">{user.department?.name ?? "—"}</td>
-                                    <td>dd/mm/yyyy</td>
-                                    <td>dd/mm/yyyy</td>
-                                    <td className="actions">
-                                        <div className="admin-actions">
-                                            <button
-                                            type="button"
-                                            className="admin-actions__btn"
-                                            aria-label="Chỉnh sửa"
-                                            >
-                                            <Icon name="hero-pencil-square" className="size-4" />
-                                            </button>
-                                        </div>
-                                    </td>
+                    <div className="overview-table-inner">  
+                        <table className="overview-table min-w-[1400px]" id="users-table">
+                            <colgroup>
+                                <col style={{ width: "21%" }} />
+                                <col style={{ width: "12.5%" }} />
+                                <col style={{ width: "12.5%" }} />
+                                <col style={{ width: "12.5%" }} />
+                                <col style={{ width: "12.5%" }} />
+                                <col style={{ width: "12.5%" }} />
+                                <col style={{ width: "12.5%" }} />
+                                <col style={{ width: "4%" }} />
+                            </colgroup>
+                            <thead>
+                                <tr>
+                                    <th>Tên</th>
+                                    <th>Trạng thái</th>
+                                    <th>Tên đăng nhập</th>
+                                    <th>Số điện thoại</th>
+                                    <th>Phòng ban</th>
+                                    <th>Ngày tạo</th>
+                                    <th>Ngày hiệu lực</th>
+                                    <th className="actions" />
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                {users.map((user) => (
+                                    <tr key={user.id} id={`user-row-${user.id}`} onClick={() => openEditForm(user)} className="cursor-pointer">
+                                        <td>
+                                        <div className="admin-user">
+                                            <UserAvatar fullname={user.full_name} />
+                                            <div>
+                                                <p className="admin-user__name mb-1">{user.full_name}</p>
+                                                <p className="admin-user__email">{user.email}</p>    
+                                            </div>    
+                                        </div>
+                                        </td>
+                                        <td>
+                                            <UserStatusBadge status={user.status} />
+                                        </td>
+                                        <td className="overview-table__muted">{user.username}</td>
+                                        <td className="overview-table__muted">{user.phone}</td>
+                                        <td className="overview-table__muted">{user.department?.name ?? "—"}</td>
+                                        <td>dd/mm/yyyy</td>
+                                        <td>dd/mm/yyyy</td>
+                                        <td className="actions">
+                                            <div className="admin-actions">
+                                                <button
+                                                type="button"
+                                                className="admin-actions__btn"
+                                                aria-label="Chỉnh sửa"
+                                                >
+                                                <Icon name="hero-pencil-square" className="size-4" />
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
                 )}
                 <Pagination
