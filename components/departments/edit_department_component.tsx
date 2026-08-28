@@ -211,8 +211,8 @@ export function EditDepartmentComponent({
                             <span className={`status status--${meta.kind}`}>{meta.label}</span>
                           </td>
                           <td>{department.name}</td>
-                          <td>dd/mm/yyyy</td>
-                          <td>dd/mm/yyyy</td>
+                          <td className="overview-table__muted">{department.created_at ? new Date(department.created_at).toLocaleDateString("vi-VN") : "-"}</td>
+                          <td className="overview-table__muted">{department.updated_at ? new Date(department.updated_at).toLocaleDateString("vi-VN") : "-"}</td>
                           <td className="actions bg-transparent">
                             <div className="admin-actions">
                               <button type="button" className="admin-actions__btn" aria-label="Chỉnh sửa">
@@ -274,6 +274,24 @@ export function EditDepartmentComponent({
                 defaultValue={selectedDepartment.name}
                 readOnly={!canEdit}
               />
+              {selectedDepartment.status === UserStatus.Rejected && (
+                <div className="admin-user-form__full">
+                  <div className="core_field">
+                    <label htmlFor="update-department-reason" className="core_label">
+                      Lý do từ chối
+                    </label>
+                    <textarea
+                      id="update-department-reason"
+                      name="reason"
+                      rows={3}
+                      readOnly
+                      defaultValue={selectedDepartment.reason ?? ""}
+                      placeholder="—"
+                      className="core_input core_input--textarea w-full"
+                    />
+                  </div>
+                </div>
+              )}
             </div>
             <div className="core_modal__actions">
               <button type="button" className="core_button core_button--secondary" onClick={resetForm}>

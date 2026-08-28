@@ -17,6 +17,8 @@ export type User = {
   status?: number;
   department?: Department | null;
   reason?: string;
+  created_at?: string;
+  updated_at?: string;
 };
 
 export type Department = {
@@ -24,6 +26,9 @@ export type Department = {
   code: string;
   name: string;
   status?: number;
+  reason?: string;
+  created_at?: string;
+  updated_at?: string;
 };
 
 export type RoleGrant = {

@@ -234,8 +234,12 @@ export function UsersComponent({
                                         <td className="overview-table__muted">{user.username}</td>
                                         <td className="overview-table__muted">{user.phone}</td>
                                         <td className="overview-table__muted">{user.department?.name ?? "—"}</td>
-                                        <td>dd/mm/yyyy</td>
-                                        <td>dd/mm/yyyy</td>
+                                        <td className="overview-table__muted">
+                                            {user.created_at ? new Date(user.created_at).toLocaleDateString("vi-VN") : "-"} 
+                                        </td>
+                                        <td className="overview-table__muted">
+                                            {user.updated_at ? new Date(user.updated_at).toLocaleDateString("vi-VN") : "-"}
+                                        </td>
                                         <td className="actions">
                                             <div className="admin-actions">
                                                 <button
