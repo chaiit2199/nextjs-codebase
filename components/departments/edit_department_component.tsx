@@ -5,7 +5,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import type { Department } from "@/lib/api/me";
 import { Icon } from "@/components/icon";
 import { Tab } from "@/components/tab";
-import { Input, Modal, EmptyData, Pagination, TableLoading } from "@/components/core_component";
+import { Input, Modal, EmptyData, Pagination, TableHead, TableLoading } from "@/components/core_component";
 import { FormSubmitButton } from "@/components/form-submit-button";
 import { RequiredLabel } from "@/components/form-fields";
 import {
@@ -178,20 +178,20 @@ export function EditDepartmentComponent({
               <div className="overview-table-inner">
                 <table className="overview-table min-w-[1000px]" id="departments-table">
                   <colgroup> 
-                    <col style={{ width: "12%" }} />
-                    <col style={{ width: "21%" }} />
-                    <col style={{ width: "21%" }} />
-                    <col style={{ width: "21%" }} />
-                    <col style={{ width: "21%" }} />
+                    <col style={{ width: "16%" }} />
+                    <col style={{ width: "20%" }} />
+                    <col style={{ width: "20%" }} />
+                    <col style={{ width: "20%" }} />
+                    <col style={{ width: "20%" }} />
                     <col style={{ width: "4%" }} />
                   </colgroup>
                   <thead>
                     <tr>
-                      <th>Mã phòng ban</th>
-                      <th>Trạng thái</th>
-                      <th>Tên phòng ban</th>
-                      <th>Ngày tạo</th>
-                      <th>Ngày hiệu lực</th>
+                      <TableHead icon="hero-hashtag">Mã phòng ban</TableHead>
+                      <TableHead icon="hero-tag">Trạng thái</TableHead>
+                      <TableHead icon="hero-building-office-2">Tên phòng ban</TableHead>
+                      <TableHead icon="hero-calendar-days">Ngày tạo</TableHead>
+                      <TableHead icon="hero-calendar-days">Ngày hiệu lực</TableHead>
                       <th className="actions" />
                     </tr>
                   </thead>

@@ -9,7 +9,7 @@ import { Icon } from "@/components/icon";
 import { USER_STATUS_TABS, UserStatus, type UserStatusTabValue, readFormStatus, userStatusMeta } from "@/lib/constants";
 import { FormSubmitButton } from "@/components/form-submit-button";
 import { RequiredLabel, SelectField } from "@/components/form-fields";
-import { Input, Modal, EmptyData, Pagination, TableLoading } from "@/components/core_component";
+import { Input, Modal, EmptyData, Pagination, TableHead, TableLoading } from "@/components/core_component";
 import { approveUser, filterUsers, rejectUser, updateUser } from "@/lib/api/users";
 import { putFlash } from "@/lib/flash/flash";
 
@@ -206,13 +206,13 @@ export function UsersComponent({
                             </colgroup>
                             <thead>
                                 <tr>
-                                    <th>Tên</th>
-                                    <th>Trạng thái</th>
-                                    <th>Tên đăng nhập</th>
-                                    <th>Số điện thoại</th>
-                                    <th>Phòng ban</th>
-                                    <th>Ngày tạo</th>
-                                    <th>Ngày hiệu lực</th>
+                                    <TableHead icon="hero-users">Tên người dùng</TableHead>
+                                    <TableHead icon="hero-tag">Trạng thái</TableHead>
+                                    <TableHead icon="hero-at-symbol">Tên đăng nhập</TableHead>
+                                    <TableHead icon="hero-phone">Số điện thoại</TableHead>
+                                    <TableHead icon="hero-building-office-2">Phòng ban</TableHead>
+                                    <TableHead icon="hero-calendar-days">Ngày tạo</TableHead>
+                                    <TableHead icon="hero-calendar-days">Ngày hiệu lực</TableHead>
                                     <th className="actions" />
                                 </tr>
                             </thead>

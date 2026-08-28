@@ -5,6 +5,7 @@ import { ChartPeriodFilter } from "@/components/charts/chart-period-filter";
 import { OrderPieChart } from "@/components/charts/order-pie-chart";
 import { SalesAreaChart } from "@/components/charts/sales-area-chart";
 import { Icon } from "@/components/icon";
+import { TableHead } from "@/components/table_head";
 import { KPIS, RECENT_ORDERS, SALES_SERIES, TOP_SALES } from "@/lib/mock/overview";
 import { ORDER_SERIES } from "@/lib/constants";
 import { pageMetadata } from "@/lib/dashboard/navbar";
@@ -54,11 +55,11 @@ export default function DashboardPage() {
             <table className="overview-table">
               <thead>
                 <tr>
-                  <th>Mã đơn hàng</th>
-                  <th>Đại lý</th>
-                  <th className="is-num">Tổng tiền</th>
-                  <th className="is-center">Trạng thái</th>
-                  <th className="is-muted">Ngày tạo</th>
+                  <TableHead icon="hero-clipboard-document-list">Mã đơn hàng</TableHead>
+                  <TableHead icon="hero-building-storefront">Đại lý</TableHead>
+                  <TableHead icon="hero-banknotes" className="is-num">Tổng tiền</TableHead>
+                  <TableHead icon="hero-tag" className="is-center">Trạng thái</TableHead>
+                  <TableHead icon="hero-calendar-days" className="is-muted">Ngày tạo</TableHead>
                 </tr>
               </thead>
               <tbody>
@@ -112,11 +113,11 @@ export default function DashboardPage() {
             <table className="overview-table overview-table--sellers">
               <thead>
                 <tr>
-                  <th className="is-center">Hạng</th>
-                  <th>Nhân viên</th>
-                  <th>Khu vực</th>
-                  <th className="is-num">Số đơn</th>
-                  <th className="is-num">Doanh thu</th>
+                  <TableHead icon="hero-chart-bar" className="is-center">Hạng</TableHead>
+                  <TableHead icon="hero-users">Nhân viên</TableHead>
+                  <TableHead icon="hero-map-pin">Khu vực</TableHead>
+                  <TableHead icon="hero-shopping-cart" className="is-num">Số đơn</TableHead>
+                  <TableHead icon="hero-currency-dollar" className="is-num">Doanh thu</TableHead>
                 </tr>
               </thead>
               <tbody>

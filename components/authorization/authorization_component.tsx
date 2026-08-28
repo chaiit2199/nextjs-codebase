@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-import { EmptyData, Pagination, TableLoading } from "@/components/core_component";
+import { EmptyData, Pagination, TableHead, TableLoading } from "@/components/core_component";
 import { Icon } from "@/components/icon";
 import { Tab } from "@/components/tab";
 import { UserAvatar } from "@/components/user-components";
@@ -97,11 +97,11 @@ export function AuthorizationComponent({ roles }: { roles: Role[] }) {
                 </colgroup>
                 <thead>
                   <tr>
-                    <th>ID</th>
-                    <th>Tên</th>
-                    <th>Username</th>
-                    <th>Phòng ban</th>
-                    <th>Trạng thái</th>
+                    <TableHead icon="hero-hashtag">ID</TableHead>
+                    <TableHead icon="hero-users">Tên</TableHead>
+                    <TableHead icon="hero-at-symbol">Username</TableHead>
+                    <TableHead icon="hero-building-office-2">Phòng ban</TableHead>
+                    <TableHead icon="hero-tag">Trạng thái</TableHead>
                     <th className="actions" />
                   </tr>
                 </thead>

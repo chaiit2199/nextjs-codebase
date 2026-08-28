@@ -2,7 +2,7 @@
 
 import { useEffect, useState, type FormEvent } from "react";
 
-import { Input, Modal, EmptyData, Pagination, TableLoading } from "@/components/core_component";
+import { Input, Modal, EmptyData, Pagination, TableHead, TableLoading } from "@/components/core_component";
 import { FormSubmitButton } from "@/components/form-submit-button";
 import { RequiredLabel } from "@/components/form-fields";
 import { Icon } from "@/components/icon";
@@ -162,11 +162,11 @@ export function PermissionGroupsComponent({
                 </colgroup>
                 <thead>
                   <tr>
-                    <th>Tên nhóm quyền</th>
-                    <th>Trạng thái</th>
-                    <th>Mô tả</th>
-                    <th>Ngày tạo</th>
-                    <th>Ngày hiệu lực</th>
+                    <TableHead icon="hero-user-group">Tên nhóm quyền</TableHead>
+                    <TableHead icon="hero-tag">Trạng thái</TableHead>
+                    <TableHead icon="hero-document-text">Mô tả</TableHead>
+                    <TableHead icon="hero-calendar-days">Ngày tạo</TableHead>
+                    <TableHead icon="hero-calendar-days">Ngày hiệu lực</TableHead>
                     <th className="actions" />
                   </tr>
                 </thead>

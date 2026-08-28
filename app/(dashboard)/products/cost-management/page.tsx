@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import { Dashboard } from "@/components/dashboard";
+import { TableHead } from "@/components/table_head";
 import { pageMetadata } from "@/lib/dashboard/navbar";
 
 export const metadata: Metadata = pageMetadata("/products/cost-management");
@@ -21,11 +22,11 @@ export default function CostPricePage() {
           <table className="overview-table">
             <thead>
               <tr>
-                <th>SKU</th>
-                <th>Sản phẩm</th>
-                <th>Đơn vị</th>
-                <th className="is-num">Giá vốn</th>
-                <th>Cập nhật</th>
+                <TableHead icon="hero-hashtag">SKU</TableHead>
+                <TableHead icon="hero-cube">Sản phẩm</TableHead>
+                <TableHead icon="hero-calculator">Đơn vị</TableHead>
+                <TableHead icon="hero-banknotes" className="is-num">Giá vốn</TableHead>
+                <TableHead icon="hero-calendar-days">Cập nhật</TableHead>
               </tr>
             </thead>
             <tbody>
