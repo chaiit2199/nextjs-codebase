@@ -144,8 +144,8 @@ export function PermissionGroupsComponent({
           scopeTypes={scopeTypes}
         />
       )}
-      <section className="admin-section" id="admin-permission-section">
-        <div className="admin-table-card mb-6">
+      <section className="section" id="admin-permission-section">
+        <div className="section-table mb-6">
           <Tab
             tabs={USER_STATUS_TABS}
             activeTab={activeTab}

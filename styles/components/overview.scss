@@ -422,16 +422,14 @@
 
 .overview-table-wrap { 
   @apply  overflow-y-auto overflow-x-hidden; 
-  max-height: calc(100vh - 336px); 
-  min-height: calc(100vh - 336px); 
+  height: calc(100vh - 325px); 
+  min-height: calc(100vh - 325px); 
   margin-right: -32px;
   padding-right: 32px;
 }
 
 .overview-table-inner {
   @apply overflow-y-hidden overflow-x-auto;
-  min-height: calc(100vh - 336px); 
-
 }
 
 .overview-table {

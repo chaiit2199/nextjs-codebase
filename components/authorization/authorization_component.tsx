@@ -70,8 +70,8 @@ export function AuthorizationComponent({ roles }: { roles: Role[] }) {
         <AssignRoleFormComponent user={selectedUser} users={users ?? []} roles={roles} onClose={closeForm} />
       )}
 
-      <section className="admin-section" id="admin-authorization-section">
-        <div className="admin-table-card mb-6">
+      <section className="section" id="admin-authorization-section">
+        <div className="section-table mb-6">
           <Tab tabs={ACTIVE_STATUS_TABS} activeTab={UserStatus.Active} />
 
           {users === null ? (

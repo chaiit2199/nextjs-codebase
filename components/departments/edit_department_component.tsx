@@ -155,8 +155,8 @@ export function EditDepartmentComponent({
 
   return (
     <>
-      <section className="admin-section" id="admin-departments-section">
-        <div className="admin-table-card mb-6">
+      <section className="section" id="admin-departments-section">
+        <div className="section-table mb-6">
           <Tab
             tabs={USER_STATUS_TABS}
             activeTab={activeTab}
