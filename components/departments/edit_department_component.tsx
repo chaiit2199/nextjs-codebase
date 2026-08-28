@@ -246,7 +246,7 @@ export function EditDepartmentComponent({
         show={isFormOpen && selectedDepartment !== null}
         title="Chi tiết phòng ban"
         closeable={!isConfirmOpen}
-        width="lg"
+        width="2xl"
         onClose={resetForm}
       >
         {selectedDepartment && (

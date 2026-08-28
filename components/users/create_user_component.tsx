@@ -82,7 +82,7 @@ export function CreateUserComponent({
         show
         title="Thêm nhân viên"
         closeable={!isConfirmOpen}
-        width="lg"
+        width="2xl"
         onClose={onClose}
       >
         <form

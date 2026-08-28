@@ -16,6 +16,7 @@ export type User = {
   role?: string | number;
   status?: number;
   department?: Department | null;
+  reason?: string;
 };
 
 export type Department = {

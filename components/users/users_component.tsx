@@ -272,7 +272,7 @@ export function UsersComponent({
                 show={isFormOpen && selectedUser !== null}
                 title="Chi tiết nhân viên"
                 closeable={!isConfirmOpen}
-                width="lg"
+                width="2xl"
                 onClose={resetForm}
             >
                 {selectedUser && (
@@ -284,60 +284,78 @@ export function UsersComponent({
                     onSubmit={handleFormSubmit}
                 >
                     <div className="admin-user-form gap-4 overflow-y-auto flex-auto h-full">
-                    <Input
-                        id="update-user-username"
-                        name="username"
-                        label={<RequiredLabel>Tên đăng nhập</RequiredLabel>}
-                        defaultValue={selectedUser.username}
-                        readOnly
-                    />
-                    <Input
-                        id="update-user-full-name"
-                        name="full_name"
-                        label={<RequiredLabel>Họ và tên</RequiredLabel>}
-                        defaultValue={selectedUser.full_name}
-                        readOnly={!canEdit}
-                    />
-                    <Input
-                        id="update-user-phone"
-                        name="phone"
-                        label={<RequiredLabel>Số điện thoại</RequiredLabel>}
-                        defaultValue={selectedUser.phone}
-                        readOnly={!canEdit}
-                    />
-                    <Input
-                        id="update-user-email"
-                        name="email"
-                        type="email"
-                        label={<RequiredLabel>Email</RequiredLabel>}
-                        placeholder="Email"
-                        defaultValue={selectedUser.email ?? ""}
-                        readOnly={!canEdit}
-                    />
-                    <SelectField
-                        id="update-user-department"
-                        name="department_id"
-                        label={<RequiredLabel>Phòng ban</RequiredLabel>}
-                        defaultValue={departmentOptionValue(selectedUser.department)}
-                        disabled={!canEdit}
-                    >
-                        <option value="" disabled>
-                        Chọn phòng ban
-                        </option>
-                        {departments.map((department) => (
-                        <option key={department.id} value={department.id}>
-                            {department.name}
-                        </option>
-                        ))}
-                    </SelectField>
-                    <Input
-                        id="update-user-address"
-                        name="address"
-                        label={<RequiredLabel>Địa chỉ</RequiredLabel>}
-                        placeholder="Địa chỉ"
-                        defaultValue={selectedUser.address ?? ""}
-                        readOnly={!canEdit}
-                    />
+                        <Input
+                            id="update-user-username"
+                            name="username"
+                            label={<RequiredLabel>Tên đăng nhập</RequiredLabel>}
+                            defaultValue={selectedUser.username}
+                            readOnly
+                        />
+                        <Input
+                            id="update-user-full-name"
+                            name="full_name"
+                            label={<RequiredLabel>Họ và tên</RequiredLabel>}
+                            defaultValue={selectedUser.full_name}
+                            readOnly={!canEdit}
+                        />
+                        <Input
+                            id="update-user-phone"
+                            name="phone"
+                            label={<RequiredLabel>Số điện thoại</RequiredLabel>}
+                            defaultValue={selectedUser.phone}
+                            readOnly={!canEdit}
+                        />
+                        <Input
+                            id="update-user-email"
+                            name="email"
+                            type="email"
+                            label={<RequiredLabel>Email</RequiredLabel>}
+                            placeholder="Email"
+                            defaultValue={selectedUser.email ?? ""}
+                            readOnly={!canEdit}
+                        />
+                        <SelectField
+                            id="update-user-department"
+                            name="department_id"
+                            label={<RequiredLabel>Phòng ban</RequiredLabel>}
+                            defaultValue={departmentOptionValue(selectedUser.department)}
+                            disabled={!canEdit}
+                        >
+                            <option value="" disabled>
+                            Chọn phòng ban
+                            </option>
+                            {departments.map((department) => (
+                            <option key={department.id} value={department.id}>
+                                {department.name}
+                            </option>
+                            ))}
+                        </SelectField>
+                        <Input
+                            id="update-user-address"
+                            name="address"
+                            label={<RequiredLabel>Địa chỉ</RequiredLabel>}
+                            placeholder="Địa chỉ"
+                            defaultValue={selectedUser.address ?? ""}
+                            readOnly={!canEdit}
+                        />
+                        {selectedUser.status === UserStatus.Rejected && (
+                            <div className="admin-user-form__full">
+                                <div className="core_field">
+                                    <label htmlFor="update-user-reason" className="core_label">
+                                        Lý do từ chối
+                                    </label>
+                                    <textarea
+                                        id="update-user-reason"
+                                        name="reason"
+                                        rows={3}
+                                        readOnly
+                                        defaultValue={selectedUser.reason ?? ""}
+                                        placeholder="—"
+                                        className="core_input core_input--textarea w-full"
+                                    />
+                                </div>
+                            </div>
+                        )}
                     </div>
 
                     <div className="core_modal__actions">
