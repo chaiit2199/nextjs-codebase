@@ -42,11 +42,9 @@ $sidebar-label-delay: 0.15s;
 }
 
 .dashboard__container {
-  @apply min-h-screen overflow-y-auto pb-2;
+  @apply min-h-screen pb-2;
   max-height: 100vh;
   width: calc(100% - 300px);
-  transition: width $sidebar-duration $sidebar-ease;
-  will-change: width;
 }
 
 .dash-sidebar__brand {
