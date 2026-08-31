@@ -16,7 +16,10 @@ export function SidebarComponent({ user, menu }: { user?: User | null; menu: Nav
   const pathname = usePathname();
   const currentPage = getPageId(pathname);
   const [collapsed, setCollapsed] = useState(false);
-  const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const [openIndex, setOpenIndex] = useState<number | null>(() => {
+    const match = menu.findIndex((item) => item.children?.some((child) => child.href === pathname));
+    return match >= 0 ? match : null;
+  });
   const displayName = user?.full_name || user?.username || "User";
   const role = user?.role ?? "1002";
   const userId = String(user?.id ?? user?.username ?? "guest");
@@ -26,8 +29,8 @@ export function SidebarComponent({ user, menu }: { user?: User | null; menu: Nav
     if (match >= 0) setOpenIndex(match);
   }, [pathname, menu]);
 
-  function groupOpen(index: number, item: Navbar) {
-    return openIndex === index || Boolean(item.children?.some((child) => child.id === currentPage));
+  function groupOpen(index: number) {
+    return openIndex === index;
   }
 
   function groupActive(item: Navbar) {
@@ -60,7 +63,7 @@ export function SidebarComponent({ user, menu }: { user?: User | null; menu: Nav
 
       <ul className="dash-sidebar__nav">
         {menu.map((item, index) => {
-          const isOpen = groupOpen(index, item);
+          const isOpen = groupOpen(index);
 
           return (
             <li
