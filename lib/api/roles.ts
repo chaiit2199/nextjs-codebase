@@ -69,7 +69,6 @@ export async function fetchScopeTargets(scopeType: string): Promise<ScopeTarget[
 }
 
 export async function filterRoles(params: FilterRolesParams = {}) {
-  console.log(params);
   const response = await client.get<RolesResponse>("/api/v1/roles", { params });
   return { ok: true as const, data: response.data, meta: response.meta };
 }

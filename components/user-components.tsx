@@ -38,7 +38,6 @@ export function UserAvatarRow({
   className,
   showChevron = true,
 }: UserAvatarRowProps) {
-  console.log(role);
   return (
     <div id={id} className={["profile", className].filter(Boolean).join(" ")}>
       <UserAvatar fullname={fullname} className="profile__avatar" />

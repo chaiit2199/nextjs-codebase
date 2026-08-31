@@ -12,7 +12,6 @@ import type { User } from "@/lib/api/me";
 import { ChangePasswordComponent } from "@/components/users/change_password";
 
 export function SidebarComponent({ user, menu }: { user?: User | null; menu: Navbar[] }) {
-  console.log(user);
   const pathname = usePathname();
   const currentPage = getPageId(pathname);
   const [collapsed, setCollapsed] = useState(false);
