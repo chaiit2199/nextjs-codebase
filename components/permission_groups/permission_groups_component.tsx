@@ -15,6 +15,7 @@ import { putFlash } from "@/lib/flash/flash";
 import { readUpdateRoleForm } from "@/lib/roles/read-update-role-form";
 import { SelectRoles } from "./select_roles_component";
 import { CreatePermissionGroupComponent } from "./create_permission_group_component";
+import { UserStatus } from "@/lib/constants";
 
 export function PermissionGroupsComponent({
   scopeTypes,
@@ -89,6 +90,9 @@ export function PermissionGroupsComponent({
 
     try {
       const userPermissions = await fetchRolePermissions(role.id);
+      if (userPermissions.role.status == UserStatus.WaitingForApproval || userPermissions.role.status == UserStatus.Inactive) {
+        return;
+      }
       setScopePermissions(userPermissions.role.allowed_scope_types);
       setUserPermissionIds(userPermissions.permissions.map((permission) => permission.id));
     } catch (error) {
