@@ -17,5 +17,16 @@ export const updateRoleSchema = z.object({
   upsert: z.array(z.object({ permission_id: positiveInt })),
 });
 
+export const roleIdSchema = z.object({
+  id: positiveInt,
+});
+
+export const rejectRoleSchema = z.object({
+  id: positiveInt,
+  reason: trimmed.min(1, "Vui lòng nhập lý do từ chối").max(1000),
+});
+
 export type CreateRoleInput = z.infer<typeof createRoleSchema>;
 export type UpdateRoleInput = z.infer<typeof updateRoleSchema>;
+export type RoleIdInput = z.infer<typeof roleIdSchema>;
+export type RejectRoleInput = z.infer<typeof rejectRoleSchema>;

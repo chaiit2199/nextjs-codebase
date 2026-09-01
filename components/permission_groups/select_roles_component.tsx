@@ -39,15 +39,18 @@ export function SelectRoles({
   permissions,
   scopePermissions,
   selectedPermissionIds = [],
+  readOnly = false,
 }: {
   permissions: Permission[];
   scopePermissions: string[];
   selectedPermissionIds?: number[];
+  readOnly?: boolean;
 }) {
   const groups = groupPermissions(permissions);
   const [permissionIds, setPermissionIds] = useState(() => uniqueSortedIds(selectedPermissionIds));
 
   function toggleAction(id: number) {
+    if (readOnly) return;
     setPermissionIds((current) => {
       if (current.includes(id)) return current.filter((item) => item !== id);
       return uniqueSortedIds([...current, id]);
@@ -55,6 +58,7 @@ export function SelectRoles({
   }
 
   function togglePage(group: PermissionGroup) {
+    if (readOnly) return;
     const actionIds = group.actions.map((action) => action.id);
     setPermissionIds((current) => {
       const allSelected = actionIds.every((id) => current.includes(id));
@@ -75,6 +79,7 @@ export function SelectRoles({
       <div className="auth-permission__list">
         {groups.map((group) => {
           const isPageEnabled = group.actions.some((action) => matchesScope(action, scopePermissions));
+          const canToggle = isPageEnabled && !readOnly;
           const actionIds = group.actions.map((action) => action.id);
           const isPageChecked =
             actionIds.length > 0 && actionIds.every((id) => permissionIds.includes(id));
@@ -90,11 +95,11 @@ export function SelectRoles({
                 className={[
                   "auth-permission__page",
                   isPageChecked && "is-checked",
-                  !isPageEnabled && "is-disabled",
+                  !canToggle && "is-disabled",
                 ]
                   .filter(Boolean)
                   .join(" ")}
-                disabled={!isPageEnabled}
+                disabled={!canToggle}
                 onClick={() => togglePage(group)}
               >
                 <span
@@ -116,11 +121,11 @@ export function SelectRoles({
                       className={[
                         "auth-permission__action",
                         isActionEnabled && "is-checked",
-                        !isPageEnabled && "is-disabled",
+                        !canToggle && "is-disabled",
                       ]
                         .filter(Boolean)
                         .join(" ")}
-                      disabled={!isPageEnabled}
+                      disabled={!canToggle}
                       onClick={() => toggleAction(action.id)}
                     >
                       <span

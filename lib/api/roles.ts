@@ -5,6 +5,8 @@ import { revalidatePath } from "next/cache";
 import { requireCurrentUser } from "@/lib/api/me";
 import {
   createRoleSchema,
+  rejectRoleSchema,
+  roleIdSchema,
   updateRoleSchema,
   type CreateRoleInput,
   type UpdateRoleInput,
@@ -43,7 +45,24 @@ export async function updateRole(payload: UpdateRoleInput) {
       remove,
       upsert,
     });
-    
+
+    revalidatePath("/role");
+    return { ok: true as const };
+  });
+}
+
+export async function approveRole(payload: { id: number }) {
+  return runServerAction(roleIdSchema, payload, "Không thể duyệt nhóm quyền", async ({ id }) => {
+    await client.post(`/api/v1/roles/${id}/approve`);
+    revalidatePath("/role");
+    return { ok: true as const };
+  });
+}
+
+export async function rejectRole(payload: { id: number; reason: string }) {
+  return runServerAction(rejectRoleSchema, payload, "Không thể từ chối nhóm quyền", async ({ id, reason }) => {
+    console.log(id, reason);
+    await client.post(`/api/v1/roles/${id}/reject`, { reason });
     revalidatePath("/role");
     return { ok: true as const };
   });
