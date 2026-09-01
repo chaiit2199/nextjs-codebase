@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 
 import { Dashboard, TableSkeleton } from "@/components/dashboard";
+import { PageLoadError } from "@/components/load_error";
 import { DepartmentsComponent } from "@/components/departments/departments_component";
 import { filterDepartments } from "@/lib/api/departments";
 import { pageMetadata } from "@/lib/dashboard/navbar";
@@ -21,7 +22,7 @@ export default function DepartmentsPage() {
 async function DepartmentsData() {
   const result = await filterDepartments({ page: 1, page_size: 20, status: "ALL" });
   if (!result.ok) {
-    throw new Error(result.message);
+    return <PageLoadError message={result.message} />;
   }
 
   const pageSize = result.meta?.page_size ?? 20;
