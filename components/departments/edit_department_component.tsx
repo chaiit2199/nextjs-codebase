@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 
 import type { Department } from "@/lib/api/me";
 import { Icon } from "@/components/icon";
 import { Tab } from "@/components/tab";
 import { Input, Modal, EmptyData, Pagination, TableHead, TableLoading } from "@/components/core_component";
+import { LoadError } from "@/components/load_error";
 import { FormSubmitButton } from "@/components/form-submit-button";
 import { RequiredLabel } from "@/components/form-fields";
 import {
@@ -55,9 +56,13 @@ function readUpdateForm(data: FormData): UpdateDepartmentForm {
 export function EditDepartmentComponent({
   search,
   reloadAt: externalReloadAt = 0,
+  initialDepartments,
+  initialTotalPages = 1,
 }: {
   search: string;
   reloadAt?: number;
+  initialDepartments: Department[];
+  initialTotalPages?: number;
 }) {
   const [selectedDepartment, setSelectedDepartment] = useState<Department | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -68,8 +73,10 @@ export function EditDepartmentComponent({
   const [activeTab, setActiveTab] = useState<UserStatusTabValue>("all");
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
-  const [totalPages, setTotalPages] = useState(1);
-  const [departments, setDepartments] = useState<Department[] | null>(null);
+  const [totalPages, setTotalPages] = useState(initialTotalPages);
+  const [departments, setDepartments] = useState<Department[] | null>(initialDepartments);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const skipFirstFetch = useRef(true);
   const canEdit = selectedDepartment?.status === UserStatus.Active;
   const isPendingApproval = selectedDepartment?.status === UserStatus.WaitingForApproval;
 
@@ -78,6 +85,11 @@ export function EditDepartmentComponent({
   }, [search]);
 
   useEffect(() => {
+    if (skipFirstFetch.current) {
+      skipFirstFetch.current = false;
+      return;
+    }
+
     let cancelled = false;
 
     filterDepartments({
@@ -86,7 +98,14 @@ export function EditDepartmentComponent({
       page,
       page_size: pageSize,
     }).then((result) => {
-      if (cancelled || !result.ok) return;
+      if (cancelled) return;
+      if (!result.ok) {
+        setLoadError(result.message);
+        setDepartments([]);
+        return;
+      }
+
+      setLoadError(null);
       setDepartments(result.data ?? []);
       const total = result.meta?.total ?? result.data?.length ?? 0;
       const size = result.meta?.page_size ?? pageSize;
@@ -157,87 +176,100 @@ export function EditDepartmentComponent({
     <>
       <section className="section" id="admin-departments-section">
         <div className="section-table mb-6">
-          <Tab
-            tabs={USER_STATUS_TABS}
-            activeTab={activeTab}
-            onTabClick={(tab) => {
-              setActiveTab(tab.value);
-              setPage(1);
-            }}
-          />
-
-          {departments === null ? (
-            <TableLoading />
-          ) : departments.length === 0 ? (
-            <EmptyData
-              title="Không có phòng ban"
-              description="Thử đổi bộ lọc hoặc từ khóa tìm kiếm."
+          {loadError ? (
+            <LoadError
+              message={loadError}
+              onRetry={() => {
+                setLoadError(null);
+                setDepartments(null);
+                setReloadAt((value) => value + 1);
+              }}
             />
           ) : (
-            <div className="overview-table-wrap">
-              <div className="overview-table-inner">
-                <table className="overview-table min-w-[1000px]" id="departments-table">
-                  <colgroup> 
-                    <col style={{ width: "16%" }} />
-                    <col style={{ width: "20%" }} />
-                    <col style={{ width: "20%" }} />
-                    <col style={{ width: "20%" }} />
-                    <col style={{ width: "20%" }} />
-                    <col style={{ width: "4%" }} />
-                  </colgroup>
-                  <thead>
-                    <tr>
-                      <TableHead icon="hero-hashtag">Mã phòng ban</TableHead>
-                      <TableHead icon="hero-tag">Trạng thái</TableHead>
-                      <TableHead icon="hero-building-office-2">Tên phòng ban</TableHead>
-                      <TableHead icon="hero-calendar-days">Ngày tạo</TableHead>
-                      <TableHead icon="hero-calendar-days">Ngày hiệu lực</TableHead>
-                      <th className="actions" />
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {departments.map((department) => {
-                      const meta = recordStatusMeta(department.status);
+            <>
+              <Tab
+                tabs={USER_STATUS_TABS}
+                activeTab={activeTab}
+                onTabClick={(tab) => {
+                  setActiveTab(tab.value);
+                  setPage(1);
+                }}
+              />
 
-                      return (
-                        <tr
-                          key={department.id}
-                          id={`department-row-${department.id}`}
-                          onClick={() => openEditForm(department)}
-                          className="cursor-pointer"
-                        >
-                          <td className="overview-table__muted">{department.code}</td>
-                          <td>
-                            <span className={`status status--${meta.kind}`}>{meta.label}</span>
-                          </td>
-                          <td>{department.name}</td>
-                          <td className="overview-table__muted">{department.created_at ? new Date(department.created_at).toLocaleDateString("vi-VN") : "-"}</td>
-                          <td className="overview-table__muted">{department.updated_at ? new Date(department.updated_at).toLocaleDateString("vi-VN") : "-"}</td>
-                          <td className="actions bg-transparent">
-                            <div className="admin-actions">
-                              <button type="button" className="admin-actions__btn" aria-label="Chỉnh sửa">
-                                <Icon name="hero-pencil-square" className="size-4" />
-                              </button>
-                            </div>
-                          </td>
+              {departments === null ? (
+                <TableLoading />
+              ) : departments.length === 0 ? (
+                <EmptyData
+                  title="Không có phòng ban"
+                  description="Thử đổi bộ lọc hoặc từ khóa tìm kiếm."
+                />
+              ) : (
+                <div className="overview-table-wrap">
+                  <div className="overview-table-inner">
+                    <table className="overview-table min-w-[1000px]" id="departments-table">
+                      <colgroup>
+                        <col style={{ width: "16%" }} />
+                        <col style={{ width: "20%" }} />
+                        <col style={{ width: "20%" }} />
+                        <col style={{ width: "20%" }} />
+                        <col style={{ width: "20%" }} />
+                        <col style={{ width: "4%" }} />
+                      </colgroup>
+                      <thead>
+                        <tr>
+                          <TableHead icon="hero-hashtag">Mã phòng ban</TableHead>
+                          <TableHead icon="hero-tag">Trạng thái</TableHead>
+                          <TableHead icon="hero-building-office-2">Tên phòng ban</TableHead>
+                          <TableHead icon="hero-calendar-days">Ngày tạo</TableHead>
+                          <TableHead icon="hero-calendar-days">Ngày hiệu lực</TableHead>
+                          <th className="actions" />
                         </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            </div>
+                      </thead>
+                      <tbody>
+                        {departments.map((department) => {
+                          const meta = recordStatusMeta(department.status);
+
+                          return (
+                            <tr
+                              key={department.id}
+                              id={`department-row-${department.id}`}
+                              onClick={() => openEditForm(department)}
+                              className="cursor-pointer"
+                            >
+                              <td className="overview-table__muted">{department.code}</td>
+                              <td>
+                                <span className={`status status--${meta.kind}`}>{meta.label}</span>
+                              </td>
+                              <td>{department.name}</td>
+                              <td className="overview-table__muted">{department.created_at ? new Date(department.created_at).toLocaleDateString("vi-VN") : "-"}</td>
+                              <td className="overview-table__muted">{department.updated_at ? new Date(department.updated_at).toLocaleDateString("vi-VN") : "-"}</td>
+                              <td className="actions bg-transparent">
+                                <div className="admin-actions">
+                                  <button type="button" className="admin-actions__btn" aria-label="Chỉnh sửa">
+                                    <Icon name="hero-pencil-square" className="size-4" />
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+              <Pagination
+                currentPage={page}
+                totalPages={totalPages}
+                pageSize={pageSize}
+                onPageChange={setPage}
+                onPageSizeChange={(size) => {
+                  setPageSize(size);
+                  setPage(1);
+                }}
+              />
+            </>
           )}
-          <Pagination
-            currentPage={page}
-            totalPages={totalPages}
-            pageSize={pageSize}
-            onPageChange={setPage}
-            onPageSizeChange={(size) => {
-              setPageSize(size);
-              setPage(1);
-            }}
-          />
         </div>
       </section>
 

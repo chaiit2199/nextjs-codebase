@@ -11,7 +11,7 @@ import {
   type UpdateDepartmentInput,
 } from "@/lib/validate/departments";
 import { runServerAction } from "@/lib/server-actions";
-import { client } from "@/lib/http/client";
+import { client, HttpError } from "@/lib/http/client";
 import type { DepartmentsResponse } from "@/lib/api/types";
 
 export type FilterDepartmentsParams = {
@@ -57,7 +57,13 @@ export async function rejectDepartment(payload: { id: number; reason: string }) 
 }
 
 export async function filterDepartments(params: FilterDepartmentsParams = {}) {
-  
-  const response = await client.get<DepartmentsResponse>("/api/v1/departments", { params });
-  return { ok: true as const, data: response.data, meta: response.meta };
+  try {
+    const response = await client.get<DepartmentsResponse>("/api/v1/departments", { params });
+    return { ok: true as const, data: response.data, meta: response.meta };
+  } catch (error) {
+    return {
+      ok: false as const,
+      message: error instanceof HttpError ? error.message : "Không thể tải phòng ban",
+    };
+  }
 }

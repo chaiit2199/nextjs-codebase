@@ -1,14 +1,16 @@
 "use client";
 
 import { Dashboard } from "@/components/dashboard";
+import { LoadError } from "@/components/load_error";
 
-export default function Error({ reset }: { error: Error; reset: () => void }) {
+export default function Error({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
   return (
     <Dashboard id="error">
-      <h2>Không tải được dữ liệu</h2>
-      <button type="button" className="core_button core_button--primary" onClick={reset}>
-        Thử lại
-      </button>
+      <section className="section">
+        <div className="section-table">
+          <LoadError message={error.message} onRetry={reset} />
+        </div>
+      </section>
     </Dashboard>
   );
 }
