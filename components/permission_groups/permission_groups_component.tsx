@@ -62,7 +62,7 @@ export function PermissionGroupsComponent({
   const isPendingApproval = selectedRole?.status === UserStatus.WaitingForApproval;
 
   useEffect(() => {
-    return subscribeHeaderAction("/role", (detail) => {
+    return subscribeHeaderAction("/roles", (detail) => {
       if (detail.action === "create") setIsCreateOpen(true);
       if (detail.action === "search") {
         setSearch(detail.query ?? "");

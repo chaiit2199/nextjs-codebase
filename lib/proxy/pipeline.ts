@@ -12,9 +12,9 @@ const PROTECTED_ROUTES = [
   "/order",
   "/agents",
   "/promotion",
-  "/user",
-  "/department",
-  "/role",
+  "/users",
+  "/departments",
+  "/roles",
   "/authorization",
 ];
 

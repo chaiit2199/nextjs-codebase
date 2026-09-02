@@ -19,7 +19,7 @@ export function DepartmentsComponent({
   const [isCreateOpen, setIsCreateOpen] = useState(false);
 
   useEffect(() => {
-    return subscribeHeaderAction("/department", (detail) => {
+    return subscribeHeaderAction("/departments", (detail) => {
       if (detail.action === "create") setIsCreateOpen(true);
       if (detail.action === "search") setSearch(detail.query ?? "");
     });

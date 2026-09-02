@@ -111,7 +111,7 @@ export const MENU: Navbar[] = [
         id: "user",
         resource: "user",
         label: "Nhân viên",
-        href: "/user",
+        href: "/users",
         icon: "hero-identification",
         title: "Nhân viên",
         create: true,
@@ -121,7 +121,7 @@ export const MENU: Navbar[] = [
       {
         id: "departments",
         label: "Phòng ban",
-        href: "/department",
+        href: "/departments",
         icon: "hero-user-group",
         title: "Phòng ban",
         create: true,
@@ -131,7 +131,7 @@ export const MENU: Navbar[] = [
       {
         id: "role",
         label: "Nhóm quyền",
-        href: "/role",
+        href: "/roles",
         icon: "hero-shield-check",
         title: "Nhóm quyền",
         create: true,

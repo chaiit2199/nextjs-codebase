@@ -31,7 +31,7 @@ export type { CreateUserInput, UpdateUserInput, ChangePasswordInput, AssignUserA
 export async function createUser(payload: CreateUserInput) {
   return runServerAction(createUserSchema, payload, "Không thể tạo nhân viên", async (input) => {
     await client.post("/api/v1/users", input);
-    revalidatePath("/user");
+    revalidatePath("/users");
     return { ok: true as const };
   });
 }
@@ -47,7 +47,7 @@ export async function updateUser(payload: UpdateUserInput) {
   return runServerAction(updateUserSchema, payload, "Không thể cập nhật nhân viên", async (input) => {
     const { id, ...body } = input;
     await client.patch(`/api/v1/users/${id}`, body);
-    revalidatePath("/user");
+    revalidatePath("/users");
     return { ok: true as const };
   });
 }
@@ -55,7 +55,7 @@ export async function updateUser(payload: UpdateUserInput) {
 export async function approveUser(payload: { id: number }) {
   return runServerAction(userIdSchema, payload, "Không thể duyệt nhân viên", async ({ id }) => {
     await client.post(`/api/v1/users/${id}/approve`);
-    revalidatePath("/user");
+    revalidatePath("/users");
     return { ok: true as const };
   });
 }
@@ -63,7 +63,7 @@ export async function approveUser(payload: { id: number }) {
 export async function rejectUser(payload: { id: number; reason: string }) {
   return runServerAction(rejectUserSchema, payload, "Không thể từ chối nhân viên", async ({ id, reason }) => {
     await client.post(`/api/v1/users/${id}/reject`, { reason });
-    revalidatePath("/user");
+    revalidatePath("/users");
     return { ok: true as const };
   });
 }

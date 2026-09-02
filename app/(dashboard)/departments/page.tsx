@@ -7,7 +7,7 @@ import { DepartmentsComponent } from "@/components/departments/departments_compo
 import { filterDepartments } from "@/lib/api/departments";
 import { pageMetadata } from "@/lib/dashboard/navbar";
 
-export const metadata: Metadata = pageMetadata("/department");
+export const metadata: Metadata = pageMetadata("/departments");
 
 export default function DepartmentsPage() {
   return (

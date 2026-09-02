@@ -8,7 +8,7 @@ import { catchPageLoadError } from "@/lib/catch-page-load";
 import { pageMetadata } from "@/lib/dashboard/navbar";
 import { StaffUsers } from "./staff-users";
 
-export const metadata: Metadata = pageMetadata("/user");
+export const metadata: Metadata = pageMetadata("/users");
 
 export default function StaffPage() {
   return (

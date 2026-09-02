@@ -8,7 +8,7 @@ import { catchPageLoadError } from "@/lib/catch-page-load";
 import { PermissionGroupsComponent } from "@/components/permission_groups/permission_groups_component";
 import { pageMetadata } from "@/lib/dashboard/navbar";
 
-export const metadata: Metadata = pageMetadata("/role");
+export const metadata: Metadata = pageMetadata("/roles");
 
 export default function PermissionGroupsPage() {
   return (

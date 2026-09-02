@@ -20,7 +20,7 @@ export function StaffUsers({
     const [isCreateOpen, setIsCreateOpen] = useState(false); 
  
     useEffect(() => {
-        return subscribeHeaderAction("/user", (detail) => {
+        return subscribeHeaderAction("/users", (detail) => {
           if (detail.action === "create") setIsCreateOpen(true);
           if (detail.action === "search") setSearch(detail.query ?? "");
         });
