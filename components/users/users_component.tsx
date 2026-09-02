@@ -12,6 +12,7 @@ import { RequiredLabel, SelectField } from "@/components/form-fields";
 import { Input, Modal, EmptyData, Pagination, TableHead, TableLoading } from "@/components/core_component";
 import { approveUser, filterUsers, rejectUser, updateUser } from "@/lib/api/users";
 import { putFlash } from "@/lib/flash/flash";
+import { formatDateVi } from "@/lib/format/date";
 
 type ConfirmAction = "update" | "approve" | "reject";
 
@@ -234,12 +235,8 @@ export function UsersComponent({
                                         <td className="overview-table__muted">{user.username}</td>
                                         <td className="overview-table__muted">{user.phone}</td>
                                         <td className="overview-table__muted">{user.department?.name ?? "—"}</td>
-                                        <td className="overview-table__muted">
-                                            {user.created_at ? new Date(user.created_at).toLocaleDateString("vi-VN") : "-"} 
-                                        </td>
-                                        <td className="overview-table__muted">
-                                            {user.updated_at ? new Date(user.updated_at).toLocaleDateString("vi-VN") : "-"}
-                                        </td>
+                                        <td className="overview-table__muted">{formatDateVi(user.created_at)}</td>
+                                        <td className="overview-table__muted">{formatDateVi(user.activated_at)}</td>
                                         <td className="actions">
                                             <div className="admin-actions">
                                                 <button

@@ -18,7 +18,7 @@ export type User = {
   department?: Department | null;
   reason?: string;
   created_at?: string;
-  updated_at?: string;
+  activated_at?: string;
 };
 
 export type Department = {
@@ -28,7 +28,7 @@ export type Department = {
   status?: number;
   reason?: string;
   created_at?: string;
-  updated_at?: string;
+  activated_at?: string;
 };
 
 export type RoleGrant = {
@@ -48,7 +48,7 @@ export type Role = {
   grants: RoleGrant[];
   users_count: number;
   created_at?: string;
-  updated_at?: string;
+  activated_at?: string;
   reason?: string;
 };
 

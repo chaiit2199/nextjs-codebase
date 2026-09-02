@@ -10,6 +10,7 @@ import { filterUsers } from "@/lib/api/users";
 import type { Role, User } from "@/lib/api/types";
 import { UserStatus, userStatusMeta } from "@/lib/constants";
 import { subscribeHeaderAction } from "@/lib/dashboard/header-actions";
+import { formatDateVi } from "@/lib/format/date";
 import { AssignRoleFormComponent } from "./assign_role_form_component";
 
 const ACTIVE_STATUS_TABS = [{ value: UserStatus.Active, label: "Đang hoạt động" }] as const;
@@ -130,12 +131,8 @@ export function AuthorizationComponent({ roles }: { roles: Role[] }) {
                           <td className="overview-table__muted">{user.username}</td>
                           <td className="overview-table__muted">{user.phone}</td>
                           <td className="overview-table__muted">{user.department?.name ?? "—"}</td>
-                          <td className="overview-table__muted">
-                            {user.created_at ? new Date(user.created_at).toLocaleDateString("vi-VN") : "-"}
-                          </td>
-                          <td className="overview-table__muted">
-                            {user.updated_at ? new Date(user.updated_at).toLocaleDateString("vi-VN") : "-"}
-                          </td>
+                          <td className="overview-table__muted">{formatDateVi(user.created_at)}</td>
+                          <td className="overview-table__muted">{formatDateVi(user.activated_at)}</td>
                           <td className="actions">
                             <div className="admin-actions">
                               <button type="button" className="admin-actions__btn" aria-label="Chỉnh sửa">

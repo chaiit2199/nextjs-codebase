@@ -12,6 +12,7 @@ import type { Permission, Role, ScopeType } from "@/lib/api/types";
 import { USER_STATUS_TABS, UserStatus, type UserStatusTabValue, roleStatusMeta } from "@/lib/constants";
 import { subscribeHeaderAction } from "@/lib/dashboard/header-actions";
 import { putFlash } from "@/lib/flash/flash";
+import { formatDateVi } from "@/lib/format/date";
 import { readUpdateRoleForm } from "@/lib/roles/read-update-role-form";
 import { SelectRoles } from "./select_roles_component";
 import { CreatePermissionGroupComponent } from "./create_permission_group_component";
@@ -233,8 +234,8 @@ export function PermissionGroupsComponent({
                           <span className={`status status--${meta.kind}`}>{meta.label}</span>
                         </td>
                         <td>{role.description}</td>
-                        <td className="overview-table__muted">{role.created_at ? new Date(role.created_at).toLocaleDateString("vi-VN") : "-"}</td>
-                        <td className="overview-table__muted">{role.updated_at ? new Date(role.updated_at).toLocaleDateString("vi-VN") : "-"}</td>
+                        <td className="overview-table__muted">{formatDateVi(role.created_at)}</td>
+                        <td className="overview-table__muted">{formatDateVi(role.activated_at)}</td>
                         <td className="actions bg-transparent">
                           <div className="admin-actions">
                             <button type="button" className="admin-actions__btn" aria-label="Chỉnh sửa">

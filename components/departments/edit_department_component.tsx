@@ -24,6 +24,7 @@ import {
   type UpdateDepartmentInput,
 } from "@/lib/api/departments";
 import { putFlash } from "@/lib/flash/flash";
+import { formatDateVi } from "@/lib/format/date";
 
 type ConfirmAction = "update" | "approve" | "reject";
 
@@ -241,8 +242,8 @@ export function EditDepartmentComponent({
                                 <span className={`status status--${meta.kind}`}>{meta.label}</span>
                               </td>
                               <td>{department.name}</td>
-                              <td className="overview-table__muted">{department.created_at ? new Date(department.created_at).toLocaleDateString("vi-VN") : "-"}</td>
-                              <td className="overview-table__muted">{department.updated_at ? new Date(department.updated_at).toLocaleDateString("vi-VN") : "-"}</td>
+                              <td className="overview-table__muted">{formatDateVi(department.created_at)}</td>
+                              <td className="overview-table__muted">{formatDateVi(department.activated_at)}</td>
                               <td className="actions bg-transparent">
                                 <div className="admin-actions">
                                   <button type="button" className="admin-actions__btn" aria-label="Chỉnh sửa">
